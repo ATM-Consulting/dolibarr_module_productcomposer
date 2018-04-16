@@ -11,11 +11,9 @@ if(!defined('INC_FROM_DOLIBARR')) {
 }
 
 
-/* uncomment
 
+dol_include_once('/productcomposer/class/roadmap.class.php');
 
-dol_include_once('/productcomposer/class/productcomposer.class.php');
-
-$o=new Tproductcomposer($db);
+$o=new PCRoadMap($db);
 $o->init_db_by_vars();
-*/
+

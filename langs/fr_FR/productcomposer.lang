@@ -39,3 +39,8 @@ Modify=Modifier
 Reopen=Rouvrir
 ToClone=Cloner
 Delete=Supprimer
+ProductGenerator=Générateur de produit
+
+#JS
+PopUpTitle_ProductComposer=Comosition de produit
+ImportInDocument=Importer le produit

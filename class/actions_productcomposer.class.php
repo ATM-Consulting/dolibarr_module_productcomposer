@@ -26,6 +26,10 @@
 /**
  * Class Actionsproductcomposer
  */
+
+// Translations
+$langs->load("productcomposer@productcomposer");
+
 class Actionsproductcomposer
 {
 	/**
@@ -62,16 +66,7 @@ class Actionsproductcomposer
 	function doActions($parameters, &$object, &$action, $hookmanager)
 	{
 		$error = 0; // Error counter
-		$myvalue = 'test'; // A result value
-
-		print_r($parameters);
-		echo "action: " . $action;
-		print_r($object);
-
-		if (in_array('somecontext', explode(':', $parameters['context'])))
-		{
-		  // do something only for the context 'somecontext'
-		}
+		
 
 		if (! $error)
 		{
@@ -85,4 +80,39 @@ class Actionsproductcomposer
 			return -1;
 		}
 	}
+	
+	/**
+	 * Overloading the addMoreActionsButtons function : replacing the parent's function with the one below
+	 *
+	 * @param   array()         $parameters     Hook metadatas (context, etc...)
+	 * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param   string          &$action        Current action (if set). Generally create or edit or null
+	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+	 */
+	function addMoreActionsButtons(&$parameters, &$object, &$action, $hookmanager)
+	{
+	    global $conf, $langs, $user, $db;
+	    
+	    $contexts = explode(':',$parameters['context']);
+	    $displayBtn=false;
+	    $data=array(
+	        'data-element="'.$object->element.'"',
+	        'data-id="'.$object->id.'"',
+	    );
+	    
+	    if( (in_array('ordercard',$contexts) && $user->rights->commande->creer && $object->statut <1 )
+	        || (in_array('propalcard',$contexts) && $user->rights->propal->creer && $object->statut <1  ) 
+	        ){
+	        $displayBtn = true;
+	    }
+	    
+	    
+	    if(!empty($displayBtn))
+	    {
+	        print '<div class="inline-block divButAction"><button '.implode(' ', $data).' class="butAction" id="pc-product-generator-btn" >'.$langs->trans("ProductGenerator").'</button></div>';
+	    }
+	    
+	}
+	
 }
