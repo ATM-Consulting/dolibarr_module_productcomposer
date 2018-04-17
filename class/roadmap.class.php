@@ -35,7 +35,7 @@ class PCRoadMap extends SeedObject
 	public $withChild = true;
 	
 	public $childtables = array(
-	    'pcroadmapdet'
+	    'PCRoadMapStep'
 	    
 	);
 	
@@ -206,7 +206,7 @@ class PCRoadMap extends SeedObject
 	    $TResult = array();
 	    
 	    $sql = 'SELECT r.rowid as id, r.label, r.date_creation';
-	    $sql.= ' FROM '.MAIN_DB_PREFIX.$object->table_element.' r ';
+	    $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' r ';
 	    $sql.= ' WHERE 1=1';
 	    
 
@@ -228,7 +228,6 @@ class PCRoadMap extends SeedObject
         	    }
             }
         }
-	    
 	    
 	    return $TResult; 
 	    
@@ -328,7 +327,7 @@ class PCRoadMapStep extends SeedObject
     static public function updateRankOfLine($rowid,$rank)
     {
         global $db;
-        $sql = 'UPDATE '.MAIN_DB_PREFIX.$tis->table_element.' SET rank = '.$rank;
+        $sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element.' SET rank = '.$rank;
         $sql.= ' WHERE rowid = '.$rowid;
         
         if (! $db->query($sql))
@@ -336,7 +335,35 @@ class PCRoadMapStep extends SeedObject
             dol_print_error($db->db);
         }
     }
-
+    
+    
+    public function getClosest($next = false)
+    {
+        
+        $operateur =  !empty($next)?'>':'<';
+        
+        $sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$this->table_element;
+        $sql.= ' WHERE fk_pcroadmap = '.$this->fk_pcroadmap . ' AND rank '.$operateur.' '.$this->rank.' LIMIT 1 ';
+        $TResult = array();
+        
+        
+        $res = $this->db->query($sql);
+        if ($res)
+        {
+            return  $this->db->fetch_object($res);
+        }
+        
+        return 0;
+        
+    }
+    
+    public function getNext(){
+        return $this->getClosest(true);
+    }
+    
+    public function getPrevious(){
+        return $this->getClosest();
+    }
     
     
 }

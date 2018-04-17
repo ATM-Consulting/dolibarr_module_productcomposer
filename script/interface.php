@@ -9,24 +9,37 @@ $get = GETPOST('get');
 $post = GETPOST('post');
 $fromelement = GETPOST('fromelement');
 $fromelementid = GETPOST('fromelementid','int');
-
+$roadmapid = GETPOST('roadmapid','int');
+$stepid = GETPOST('stepid','int');
+/*
 if( ($post=='roadmapRank' || $post=='roadmapRankDet') && !empty($fromelement) )
 {
     _postRoadmapRank($fromelement);
-}
+}*/
 
-if($get=='selectRoadmap'  && !empty($fromelement) )
+if($get=='selectRoadmap' && !empty($fromelement) && !empty($fromelementid) )
 {
     
     $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
-    if($PComposer)
+    
+    if(!empty($PComposer))
     {
         $PComposer->print_roadmapSelection();
     }
 }
 
+if($get=='loadnextstep'  && !empty($fromelement) && !empty($fromelementid) && !empty($roadmapid) )
+{
     
-
+    $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
+    if(!empty($PComposer))
+    {
+        $PComposer->loadCurentRoadMap($roadmapid);
+        //$PComposer->print_roadmapSelection();
+    }
+}
+    
+/*
 function _postRoadmapRank($objectName)
 {
     global $db,$user;
@@ -61,5 +74,5 @@ function _postRoadmapRank($objectName)
 	}
 	
 	exit();
-}
+}*/
 

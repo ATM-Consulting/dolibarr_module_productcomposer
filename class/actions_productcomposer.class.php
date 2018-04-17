@@ -110,6 +110,7 @@ class Actionsproductcomposer
 	    
 	    if(!empty($displayBtn))
 	    {
+	        print '<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/productcomposer/css/style.css',2).'">';
 	        print '<div class="inline-block divButAction"><button '.implode(' ', $data).' class="butAction" id="pc-product-generator-btn" >'.$langs->trans("ProductGenerator").'</button></div>';
 	    }
 	    

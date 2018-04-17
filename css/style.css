@@ -1,0 +1,12 @@
+
+
+.productcomposer-item{
+	padding: 10px;
+	border: 1px solid #666;
+	background-color: #ededed;
+	margin: 5px;
+	cursor: pointer;
+}
+.productcomposer-item:hover{
+	background-color: #daff96;
+}
