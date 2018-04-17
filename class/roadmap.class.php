@@ -187,6 +187,19 @@ class PCRoadMap extends SeedObject
 		elseif ($mode == 1) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($keytrans);
 	}
 	
+	
+	
+	static public function updateRankOfLine($rowid,$rank)
+	{
+	    global $db;
+	    $sql = 'UPDATE '.MAIN_DB_PREFIX.$tis->table_element.' SET rank = '.$rank;
+	    $sql.= ' WHERE rowid = '.$rowid;
+	    
+	    if (! $db->query($sql))
+	    {
+	        dol_print_error($db->db);
+	    }
+	}
 }
 
 
@@ -278,7 +291,17 @@ class PCRoadMapStep extends SeedObject
     }
     
     
-    
+    static public function updateRankOfLine($rowid,$rank)
+    {
+        global $db;
+        $sql = 'UPDATE '.MAIN_DB_PREFIX.$tis->table_element.' SET rank = '.$rank;
+        $sql.= ' WHERE rowid = '.$rowid;
+        
+        if (! $db->query($sql))
+        {
+            dol_print_error($db->db);
+        }
+    }
 
     
     

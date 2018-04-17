@@ -10,6 +10,8 @@
 
 $( document ).ready(function() {
 
+	var readyToImport = false;
+
 
 	$("#pc-product-generator-btn").click(function (e) {
 		
@@ -26,7 +28,7 @@ $( document ).ready(function() {
 			
 	        
 	        
-	        var $composerDialog = $('<div></div>').dialog({
+	        var $composerDialog = $('<div id="product-composer-popin" ></div>').dialog({
 	            autoOpen: false,
 	            modal: true,
 	            height: windowHeight,
@@ -42,13 +44,19 @@ $( document ).ready(function() {
 	        $composerDialog.dialog('open');
 	        
 	        // add 
-	        var buttons = $composerDialog.dialog("option", "buttons"); // getter
-			$.extend(buttons, { "<?php echo $langs->trans('ImportInDocument')?>": function () { 
-			
-			alert('foo'); 
-			
-			} });
-			$composerDialog.dialog("option", "buttons", buttons); // setter
+	        if(readyToImport)
+	        {
+	        
+    	        var buttons = $composerDialog.dialog("option", "buttons"); // getter
+    			$.extend(buttons, { "<?php echo $langs->trans('ImportInDocument')?>": function () { 
+    			
+    			alert('foo'); 
+    			
+    			} });
+    			$composerDialog.dialog("option", "buttons", buttons); // setter
+    			
+	        }
+	        
 		}
 		else
 		{
@@ -57,4 +65,25 @@ $( document ).ready(function() {
 		
 	
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 });
