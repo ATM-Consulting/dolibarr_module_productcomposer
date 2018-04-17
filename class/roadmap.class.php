@@ -200,6 +200,40 @@ class PCRoadMap extends SeedObject
 	        dol_print_error($db->db);
 	    }
 	}
+	
+	public function getAll($returntype = 'object' )
+	{
+	    $TResult = array();
+	    
+	    $sql = 'SELECT r.rowid as id, r.label, r.date_creation';
+	    $sql.= ' FROM '.MAIN_DB_PREFIX.$object->table_element.' r ';
+	    $sql.= ' WHERE 1=1';
+	    
+
+        $res = $this->db->query($sql);
+        if ($res)
+        {
+            while ($obj = $this->db->fetch_object($res))
+            {
+        	                
+        	    if($returntype=='id')
+        	    {
+        	        $TResult[] = $obj->id;
+        	    }
+        	    else
+        	    {
+        	        $objectElement = new self($this->db);
+        	        $objectElement->fetch($obj->id);
+        	        $TResult[$obj->id] = $objectElement;
+        	    }
+            }
+        }
+	    
+	    
+	    return $TResult; 
+	    
+	    
+	}
 }
 
 

@@ -3,17 +3,27 @@
 require('../config.php');
 
 dol_include_once( '/productcomposer/lib/productcomposer.lib.php');
-dol_include_once('/productcomposer/class/roadmap.class.php');
+dol_include_once('/productcomposer/class/productcomposer.class.php');
 
 $get = GETPOST('get');
 $post = GETPOST('post');
+$fromelement = GETPOST('fromelement');
+$fromelementid = GETPOST('fromelementid','int');
 
-if($post=='roadmapRank' || $post=='roadmapRankDet' )
+if( ($post=='roadmapRank' || $post=='roadmapRankDet') && !empty($fromelement) )
 {
-    $objectName = GETPOST('objectName');
-    _postRoadmapRank($objectName);
+    _postRoadmapRank($fromelement);
 }
 
+if($get=='selectRoadmap'  && !empty($fromelement) )
+{
+    
+    $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
+    if($PComposer)
+    {
+        $PComposer->print_roadmapSelection();
+    }
+}
 
     
 
