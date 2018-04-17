@@ -11,9 +11,11 @@ if(!defined('INC_FROM_DOLIBARR')) {
 }
 
 
-
 dol_include_once('/productcomposer/class/roadmap.class.php');
 
 $o=new PCRoadMap($db);
+$o->init_db_by_vars();
+
+$o=new PCRoadMapStep($db);
 $o->init_db_by_vars();
 

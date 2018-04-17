@@ -49,9 +49,10 @@ class PCRoadMap extends SeedObject
 		$this->db = $db;
 		
 		$this->fields=array(
-				,'label'=>array('type'=>'string')
-				,'status'=>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
-		        ,'entity'=>array('type'=>'integer','index'=>true)
+		    'label'  => array('type'=>'string')
+		    ,'status' =>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
+		    ,'entity' =>array('type'=>'integer','index'=>true)
+		    ,'rank'=>array('type'=>'int')
 		);
 		
 		
@@ -102,7 +103,7 @@ class PCRoadMap extends SeedObject
 		return $res;
 	}
 	
-	public function delete()
+	public function delete(User &$user)
 	{
 		global $user;
 		
@@ -205,7 +206,6 @@ class PCRoadMapStep extends SeedObject
      */
     const TYPE_SELECT_CATEGORY = 1;
     const TYPE_SELECT_PRODUCT  = 2;
-    const TYPE_SELECT_PRODUCT  = 3;
     
     
     public function __construct($db)
@@ -215,7 +215,9 @@ class PCRoadMapStep extends SeedObject
         $this->db = $db;
         
         $this->fields=array(
-            'label'=>array('type'=>'string')
+            
+            'fk_pcroadmap'=>array('type'=>'int')
+            ,'label'=>array('type'=>'string')
             ,'type'=>array('type'=>'int')
             ,'rank'=>array('type'=>'int')
         );
@@ -266,7 +268,7 @@ class PCRoadMapStep extends SeedObject
         return $res;
     }
     
-    public function delete()
+    public function delete(User &$user)
     {
         global $user;
         

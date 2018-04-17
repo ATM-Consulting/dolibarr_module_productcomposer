@@ -23,8 +23,9 @@ Refused=Refusé
 Accepted=Accepté
 
 # LIST
-productcomposerList=Liste productcomposer
+RoadmapList=Liste des feuilles de route
 Noproductcomposer=(vide)
+Roadmaps=Feuilles de route
 
 # CARD
 Newproductcomposer=Création productcomposer

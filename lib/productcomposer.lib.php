@@ -31,10 +31,14 @@ function productcomposerAdminPrepareHead()
 
     $h = 0;
     $head = array();
-
+    
     $head[$h][0] = dol_buildpath("/productcomposer/admin/productcomposer_setup.php", 1);
     $head[$h][1] = $langs->trans("Parameters");
     $head[$h][2] = 'settings';
+    $h++;
+    $head[$h][0] = dol_buildpath("/productcomposer/list.php", 1);
+    $head[$h][1] = $langs->trans("Roadmaps");
+    $head[$h][2] = 'roadmaps';
     $h++;
     $head[$h][0] = dol_buildpath("/productcomposer/admin/productcomposer_about.php", 1);
     $head[$h][1] = $langs->trans("About");

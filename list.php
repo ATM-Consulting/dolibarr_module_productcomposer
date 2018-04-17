@@ -1,15 +1,18 @@
 <?php
 
 require 'config.php';
-dol_include_once('/productcomposer/class/productcomposer.class.php');
+// Libraries
+require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
+dol_include_once( '/productcomposer/lib/productcomposer.lib.php');
+dol_include_once('/productcomposer/class/roadmap.class.php');
 
-if(empty($user->rights->productcomposer->read)) accessforbidden();
+if( empty($user->rights->productcomposer->read) && !$user->admin) accessforbidden();
 
 $langs->load('abricot@abricot');
 $langs->load('productcomposer@productcomposer');
 
 $PDOdb = new TPDOdb;
-$object = new Tproductcomposer;
+$object = new PCRoadMap($db);
 
 $hookmanager->initHooks(array('productcomposerlist'));
 
@@ -31,15 +34,27 @@ if (empty($reshook))
  * View
  */
 
-llxHeader('',$langs->trans('productcomposerList'),'','');
+llxHeader('',$langs->trans('RoadmapList'),'','');
+
+// Configuration header
+$head = productcomposerAdminPrepareHead();
+dol_fiche_head(
+    $head,
+    'roadmaps',
+    $langs->trans("Module103998Name"),
+    0,
+    "productcomposer@productcomposer"
+    );
+
+
 
 //$type = GETPOST('type');
 //if (empty($user->rights->productcomposer->all->read)) $type = 'mine';
 
 // TODO ajouter les champs de son objet que l'on souhaite afficher
-$sql = 'SELECT t.rowid, t.ref, t.label, t.date_cre, t.date_maj, \'\' AS action';
+$sql = 'SELECT r.rowid, r.label, r.date_creation, \'\' AS action';
 
-$sql.= ' FROM '.MAIN_DB_PREFIX.'productcomposer t ';
+$sql.= ' FROM '.MAIN_DB_PREFIX.$object->table_element.' r ';
 
 $sql.= ' WHERE 1=1';
 //$sql.= ' AND t.entity IN ('.getEntity('productcomposer', 1).')';
@@ -59,34 +74,34 @@ echo $r->render($sql, array(
 	,'subQuery' => array()
 	,'link' => array()
 	,'type' => array(
-		'date_cre' => 'date' // [datetime], [hour], [money], [number], [integer]
-		,'date_maj' => 'date'
+		//'date_creation' => 'date' // [datetime], [hour], [money], [number], [integer]
 	)
 	,'search' => array(
-		'date_cre' => array('recherche' => 'calendars', 'allow_is_null' => true)
-		,'date_maj' => array('recherche' => 'calendars', 'allow_is_null' => false)
-		,'ref' => array('recherche' => true, 'table' => 't', 'field' => 'ref')
-		,'label' => array('recherche' => true, 'table' => array('t', 't'), 'field' => array('label', 'description')) // input text de recherche sur plusieurs champs
-		,'status' => array('recherche' => TProductcomposer::$TStatus, 'to_translate' => true) // select html, la clé = le status de l'objet, 'to_translate' à true si nécessaire
+		//'date_creation' => array('recherche' => 'calendars', 'allow_is_null' => true)
+		//'label' => array(
+		    //'recherche' => true, 
+		    //'table' => array('r'), 
+		    //'field' => array('label')
+		//) // input text de recherche sur plusieurs champs
+	    //'status' => array('recherche' => PCRoadMap::$TStatus, 'to_translate' => true) // select html, la clé = le status de l'objet, 'to_translate' à true si nécessaire
 	)
 	,'translate' => array()
 	,'hide' => array(
 		'rowid'
 	)
-	,'liste' => array(
-		'titre' => $langs->trans('productcomposerList')
-		,'image' => img_picto('','title_generic.png', '', 0)
+    ,'list' => array(
+        'title'=>$langs->trans('RoadmapList')
+		,'image' => 'title_generic.png'
 		,'picto_precedent' => '<'
 		,'picto_suivant' => '>'
 		,'noheader' => 0
 		,'messageNothing' => $langs->trans('Noproductcomposer')
 		,'picto_search' => img_picto('','search.png', '', 0)
 	)
+    
 	,'title'=>array(
-		'ref' => $langs->trans('Ref.')
-		,'label' => $langs->trans('Label')
-		,'date_cre' => $langs->trans('DateCre')
-		,'date_maj' => $langs->trans('DateMaj')
+		'label' => $langs->trans('Label')
+		,'date_creation' => $langs->trans('DateCre')
 	)
 	,'eval'=>array(
 //		'fk_user' => '_getUserNomUrl(@val@)' // Si on a un fk_user dans notre requête

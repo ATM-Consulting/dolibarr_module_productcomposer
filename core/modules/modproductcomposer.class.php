@@ -43,7 +43,7 @@ class modproductcomposer extends DolibarrModules
         global $langs,$conf;
 
         $this->db = $db;
-
+        
 		$this->editor_name = 'ATM-Consulting';
 		$this->editor_url = 'https://www.atm-consulting.fr';
 		
@@ -335,11 +335,15 @@ class modproductcomposer extends DolibarrModules
 	{
 		$sql = array();
 		
+		$db = $this->db;
 		define('INC_FROM_DOLIBARR',true);
 
-		dol_include_once('/productcomposer/config.php');
-		dol_include_once('/productcomposer/script/create-maj-base.php');
-
+		
+		include dol_buildpath('/productcomposer/script/create-maj-base.php');
+		
+		
+		
+		
 		$result=$this->_load_tables('/productcomposer/sql/');
 
 		return $this->_init($sql, $options);
