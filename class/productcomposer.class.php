@@ -22,6 +22,7 @@ class productcomposer
     private $curentRoadMapIndex = 0;
     
     private $TcurentComposer = null;
+    private $roadmap = null;
     
     
 	
@@ -29,32 +30,50 @@ class productcomposer
 	{
 		global $conf,$langs;
 		
-		if(empty($object->db)) return false;
+		if(empty($object->db) || empty($object->id)) return false;
 		
 		$this->db = $object->db;
 		$this->langs = $langs;
 		
+		$this->load();
+		
 	}
 	
 	
-
+    /*
+     * Dans un premier temps la sauvegarde va être basique
+     */
 	public function save()
 	{
-		global $user;
-		
-		
+	    global $user;
+	    $_SESSION['roadmap'][$object->element][$object->id] = array(
+	        'curentRoadMapIndex' => $this->curentRoadMapIndex,
+	        'Tcomposer' => $_SESSION['roadmap'][$object->element][$object->id]
+	    );
+	    return true;
 	}
 	
 	public function load()
 	{
-		
+	    if(!empty($_SESSION['roadmap'][$object->element][$object->id])){
+	        $this->Tcomposer = $_SESSION['roadmap'][$object->element][$object->id]['Tcomposer'];
+	        $index = $_SESSION['roadmap'][$object->element][$object->id]['curentRoadMapIndex'];
+	        $this->setCurentRoadMap($index);
+	        return true;
+	    }
+	    
+	    return false;
 	}
 
 	
 	public function delete()
 	{
-		
+	    unset($_SESSION['roadmap'][$object->element][$object->id]);
+	    return true;
 	}
+	
+	
+	
 	
 	public static function loadbyelement($id,$objectName)
 	{
@@ -79,7 +98,7 @@ class productcomposer
 	    return 0;
 	}
 	
-	public function print_roadmapSelection()
+	public function print_roadmapSelection($new = true)
 	{
 	    // load all roadmaps
 	    $PCRoadMap = new PCRoadMap($this->db);
@@ -91,7 +110,7 @@ class productcomposer
 	        {
 	            $data = array();
 	            $data[] = 'data-fk_pcroadmap="'.$roadmap->id.'"';
-	            $data[] = 'data-target-action="loadnextstep"';
+	            $data[] = 'data-target-action="newroadmap"';
 	            $data[] = 'data-fk_step="0"';
 	            
 	            print '<div  class="roadmap-item productcomposer-item" '.implode(' ', $data).' >'.dol_htmlentities($roadmap->label).'</div>';
@@ -105,6 +124,10 @@ class productcomposer
 	
 	public function print_step($id)
 	{
+	    if(empty($id)){
+	        print hStyle::callout($this->langs->trans('StepNotFound').' : '.$id, 'error');
+	        return 0;
+	    }
 	    
 	    // load all roadmaps
 	    $curentStep = new PCRoadMapStep($this->db);
@@ -118,33 +141,92 @@ class productcomposer
 	        print '</div>';
 	    }
 	    else{
-	        print hStyle::callout($this->langs->trans('Noproductcomposer'));
+	        print hStyle::callout($this->langs->trans('StepNotFound').' : '.$id);
 	    }
 	}
 	
 	public function print_nextstep($curentStepId)
 	{
-	    $curentStep = new PCRoadMapStep($this->db);
-	    
-	    if($curentStep->fetch($curentStepId) > 0)
+	    if(empty($curentStepId))
 	    {
-	        $this->print_step($curentStep->getNext());
+	        $stepId = $this->roadmap->getFirstStepId();
+	        $this->print_step($stepId);
+	    }
+	    else
+	    {
+	        $curentStep = new PCRoadMapStep($this->db);
+	        if($curentStep->fetch($curentStepId) > 0)
+	        {
+	            $this->print_step($curentStep->getNext());
+	        }
 	    }
 	}
 	
-	public function loadCurentRoadMap($roadmapid=0, $force=0){
-	    
-	    // loading curent roadmap
-	    if(!empty($this->curentRoadMapIndex) && !$force)
+	
+	
+	public function addRoadmap($roadmapid,$setcurent=true)
+	{
+	    $roadMap = new PCRoadMap($this->db);
+	    if($roadMap->fetch($roadmapid)>0)
 	    {
-	        $this->TcurentComposer =& $this->TcurentComposer[$this->curentRoadMapIndex];
+	        
+	        $T = array(
+	            'roadmapid' => $roadmapid,
+	            'steps'  =>array()
+	        );
+	        
+	        if(!empty($this->Tcomposer)){
+	            $this->Tcomposer[] = $T;
+	        }
+	        else
+	        {
+	            $this->Tcomposer[1] = $T; // pour eviter les index à 0
+	        }
+	        
+	        $keys = array_keys($this->Tcomposer);
+	        
+	        $index = end($keys);
+	        
+	        $this->cache_PCRoadMap[$index][$roadMap->id] = $roadMap;
+	        if($setcurent)
+	        {
+	            return $this->setCurentRoadMap($index);
+	        }
+	        else
+	        {
+	            return $this->curentRoadMapIndex;
+	        }
 	    }
-	    /*elseif(!empty($roadmapid))
-	    {
-	        $this->TcurentComposer =& $this->TcurentComposer[$roadmapid];
-	    }*/
+	    
+	    return -1;
 	    
 	}
+	
+	public function setCurentRoadMap($index,$cache=true){
+	    
+	    if(empty($index) && !isset($this->Tcomposer[$index])) return 0;
+	    
+	    // set curent roadmap
+	    $this->curentRoadMapIndex = $index;
+	    $this->TcurentComposer =& $this->Tcomposer[$this->curentRoadMapIndex];
+	    
+	    if($cache && !empty($this->cache_PCRoadMap[$this->curentRoadMapIndex][$this->TcurentComposer['roadmapid']]))
+	    {
+	        $this->roadmap = $this->cache_PCRoadMap[$this->curentRoadMapIndex][$this->TcurentComposer['roadmapid']];
+	    }
+	    else{
+	        $this->roadmap = new PCRoadMap($this->db);
+	        if($this->roadmap->fetch($this->TcurentComposer['roadmapid'])<1)
+	        {
+	           return -1;
+	        }
+	        
+	    }
+	    
+	    return $this->curentRoadMapIndex;
+	}
+	
+	
 	
 }
 

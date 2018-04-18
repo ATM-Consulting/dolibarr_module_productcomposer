@@ -15,7 +15,7 @@ $( document ).ready(function() {
 	var popinId = "product-composer-popin";
 	$("#pc-product-generator-btn").click(function (e) {
 		
-        e.preventDefault();
+       // e.preventDefault();
         var page = interfaceurl + "?get=selectRoadmap";
         var fromelement = $(this).data("element");
         var fromelementid = $(this).data("id");
@@ -43,7 +43,10 @@ $( document ).ready(function() {
 	            title: "<?php echo $langs->trans('PopUpTitle_ProductComposer'); ?>",
                 buttons: {
                   "<?php echo $langs->trans('Cancel')?>": function() {
-                    $( this ).dialog( "close" );
+                  
+                  	loadInPopin(interfaceurl + "?get=delete") ;
+                  
+                    $( this ).dialog( "close" ).dialog('destroy').remove();
                   }
                 }
 	        });
@@ -77,16 +80,27 @@ $( document ).ready(function() {
 	$( document ).on("click", "[data-target-action]", function(){
 		// store curent step
 		var targetAction = $( this ).data('target-action');
-		
+		var page = interfaceurl + "?get=" + targetAction;
 		
 		if(targetAction == "loadnextstep")
 		{
-			var targetAction = $( this ).data('target-action');
-			var page = interfaceurl + "?get=" + targetAction;
-			
 			loadInPopin(page);
-			
 		}
+		
+		if(targetAction == "newroadmap")
+		{
+			var fk_pcroadmap = $( this ).data('fk_pcroadmap');
+			
+			// store choice
+			$("#" + popinId).data('fk_pcroadmap',fk_pcroadmap);
+			
+			page =  page + "&roadmapid=" + fk_pcroadmap;
+			loadInPopin(page);
+		}
+		
+		
+		
+		
 	
 	});
 	
@@ -100,7 +114,20 @@ $( document ).ready(function() {
 	function loadInPopin(target){
 		
 		var dialogContent =  $("#" + popinId);
-		
+        
+		var fromelement = dialogContent.data("element");
+        var fromelementid = dialogContent.data("id");
+        
+		if( fromelement != undefined && fromelementid != undefined)
+		{
+			var appendUrl = "fromelement=" + fromelement + "&fromelementid=" + fromelementid;
+			if (target.indexOf("?") >= 0){
+				target = target + '&' + appendUrl;
+			}else{
+				target = target + '?' + appendUrl;
+			}
+		}
+        
 		dialogContent.load( target );
 			
 	}

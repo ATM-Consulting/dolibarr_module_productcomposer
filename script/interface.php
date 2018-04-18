@@ -28,16 +28,69 @@ if($get=='selectRoadmap' && !empty($fromelement) && !empty($fromelementid) )
     }
 }
 
+
+if($get=='newroadmap' )
+{
+    if(!empty($fromelement) && !empty($fromelementid) && !empty($roadmapid))
+    {
+        $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
+        
+        if(!empty($PComposer))
+        {
+            $res =$PComposer->addRoadmap($roadmapid);
+            if($res > 0)
+            {
+                $PComposer->print_nextstep(0);
+            }
+            else{
+                print hStyle::callout($langs->trans('ErrorLoadingRoadmap').' : '.$res,'error');
+            }
+        }
+        else{
+            print hStyle::callout($langs->trans('ErrorLoadingProductcomposer'),'error');
+        }
+        
+    }
+    else { echo $langs->trans('paramMissed'); }
+}
+
 if($get=='loadnextstep'  && !empty($fromelement) && !empty($fromelementid) && !empty($roadmapid) )
 {
-    
-    $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
-    if(!empty($PComposer))
+    if(!empty($fromelement) && !empty($fromelementid) && !empty($roadmapid))
     {
-        $PComposer->loadCurentRoadMap($roadmapid);
-        //$PComposer->print_roadmapSelection();
+    
+        $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
+        if(!empty($PComposer))
+        {
+            echo 'la';
+            //addRoadmap($roadmapid,$setcurent=true)
+            
+            //$PComposer->loadCurentRoadMap($roadmapid);
+            //$PComposer->print_roadmapSelection();
+        }
+    
     }
+    else { echo $langs->trans('paramMissed'); }
 }
+
+if($get=='delete'  && !empty($fromelement) && !empty($fromelementid) && !empty($roadmapid) )
+{
+    if(!empty($fromelement) && !empty($fromelementid) && !empty($roadmapid))
+    {
+        
+        $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
+        if(!empty($PComposer))
+        {
+            if($PComposer->delete())
+            {
+                echo 'deleted';
+            }
+        }
+        
+    }
+    else { echo $langs->trans('paramMissed'); }
+}
+
     
 /*
 function _postRoadmapRank($objectName)
@@ -76,3 +129,5 @@ function _postRoadmapRank($objectName)
 	exit();
 }*/
 
+
+var_dump($_REQUEST);

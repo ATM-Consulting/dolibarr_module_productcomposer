@@ -16,6 +16,8 @@ class hStyle
 	    $ret  =  '<div class="'.$style.' clearboth" >';
 	    $ret .=  $message;
 	    $ret .=  '</div>';
+	    
+	    return $ret;
 	}
 	
 	

@@ -209,27 +209,48 @@ class PCRoadMap extends SeedObject
 	    $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' r ';
 	    $sql.= ' WHERE 1=1';
 	    
-
-        $res = $this->db->query($sql);
-        if ($res)
-        {
-            while ($obj = $this->db->fetch_object($res))
-            {
-        	                
-        	    if($returntype=='id')
-        	    {
-        	        $TResult[] = $obj->id;
-        	    }
-        	    else
-        	    {
-        	        $objectElement = new self($this->db);
-        	        $objectElement->fetch($obj->id);
-        	        $TResult[$obj->id] = $objectElement;
-        	    }
-            }
-        }
 	    
-	    return $TResult; 
+	    $res = $this->db->query($sql);
+	    if ($res)
+	    {
+	        while ($obj = $this->db->fetch_object($res))
+	        {
+	            
+	            if($returntype=='id')
+	            {
+	                $TResult[] = $obj->id;
+	            }
+	            else
+	            {
+	                $objectElement = new self($this->db);
+	                $objectElement->fetch($obj->id);
+	                $TResult[$obj->id] = $objectElement;
+	            }
+	        }
+	    }
+	    
+	    return $TResult;
+	    
+	    
+	}
+	
+	public function getFirstStepId()
+	{
+	    if(empty($this->id)) return -1;
+	    
+	    $sql = 'SELECT rowid as id';
+	    $sql.= ' FROM '.MAIN_DB_PREFIX.'pcroadmapdet  ';
+	    $sql.= ' WHERE fk_pcroadmap = '.$this->id . ' ORDER BY rank ASC LIMIT 1 ';
+
+	    $res = $this->db->query($sql);
+	    if ($res)
+	    {
+	        $obj = $this->db->fetch_object($res);
+	        return $obj->id;
+	    }
+	    
+	    
+	    return 0;
 	    
 	    
 	}
@@ -240,7 +261,6 @@ class PCRoadMap extends SeedObject
 
 class PCRoadMapStep extends SeedObject
 {
-    
     
     public $table_element = 'pcroadmapdet';
     
