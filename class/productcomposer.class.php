@@ -13,7 +13,6 @@ if (!class_exists('TObjetStd'))
 dol_include_once('/productcomposer/class/roadmap.class.php');
 dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/productcomposer/class/helper_style.class.php');
-dol_include_once('/productcomposer/class/pcdbtool.class.php');
 
 class productcomposer 
 {
@@ -93,7 +92,7 @@ class productcomposer
 	        }
 	        else
 	        {
-	            return $res;
+	            return -1;
 	        }
 	    }else{ print 'no class '.$objectName;}
 	    
@@ -124,6 +123,20 @@ class productcomposer
 	    }
 	}
 	
+	public function inlineData($data,$prefixKey=true){
+	    $ret = '';
+	    if(!empty($data) && is_array($data))
+	    {
+	        $ret .= ' ';
+	        foreach ($data as $key => $value)
+	        {
+	            $ret .= ($prefixKey?'data-':'').dol_htmlentities($key);
+	            $ret .= '="'.dol_htmlentities($value).'" ';
+	        }
+	    }
+	    return $ret;
+	}
+	
 	public function print_step($id)
 	{
 	    if(empty($id)){
@@ -131,6 +144,7 @@ class productcomposer
 	        return 0;
 	    }
 	    
+	    //exit();
 	    // load step
 	    $curentStep = new PCRoadMapStep($this->db);
 	    $loadRes = $curentStep->fetch($id);
@@ -138,16 +152,36 @@ class productcomposer
 	    {
 	        print '<div id="step-wrap-'.$curentStep->id.'" class="productcomposer-selector" >';
 	        
-	        print '<h4>'.dol_htmlentities($curentStep->label).'</h4>';
+	        print '<h2><span class="rank" >'.$curentStep->rank.'.</span> '.dol_htmlentities($curentStep->label).'</h2>';
 	        
-	        if($curentStep->type == $curentStep->TYPE_SELECT_CATEGORY)
+	        if($curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
 	        {
-	            print 'TYPE_SELECT_CATEGORY';
+	            //print 'TYPE_SELECT_CATEGORY';
+	            
+	            
+	            if($elements = $curentStep->getCatList())
+	            {
+	                print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
+	                foreach ($elements as $catid)
+	                {
+	                    $categorie = new Categorie($this->db);
+	                    $categorie->fetch($catid);
+	                    
+	                    $this->print_catForStep($curentStep,$categorie);
+	                    
+	                }
+	                print '</div>';
+	            }
+	            else{
+	                print hStyle::callout($this->langs->trans('Noproductcomposer'), 'error');
+	            }
 	        }
 	        elseif($curentStep->type == $curentStep::TYPE_SELECT_PRODUCT)
 	        {
 	            if($products = $curentStep->getProductList())
 	            {
+	                
+	                $this->print_searchFilter(".productcomposer-catproduct");
 	                
 	                print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
 	                foreach ($products as $productid)
@@ -173,13 +207,95 @@ class productcomposer
 	}
 	
 	
-	public function print_productForStep($curentStep,$product)
+	public function print_productForStep($curentStep,$product,$wrapData = false)
 	{
-	   print '<div class="productcomposer-product-item" >';
+	    global $conf;
 	   
-	   print $product->label;
+	   $maxvisiblephotos = 1;
+	   $width=150;
+	   $photo = $product->show_photos($conf->product->multidir_output[$product->entity],'small',$maxvisiblephotos,0,0,0,$width,$width,1);
+	  
+	   $data=array();
+	   $data['id'] = $product->id;
+	   $data['element'] = $product->element;
+	   $data['fk_step'] = $curentStep->id;
+	   
+	   
+	   $nextStep = $curentStep->getNext();
+	   if(!empty($nextStep))
+	   {
+	       $data['target-action'] = 'addproductandnextstep';
+	       $data['fk_nextstep'] = $nextStep->id;
+	       
+	   }
+	   
+	   
+	   
+	   
+	   
+	   
+	   if(!empty($wrapData) && is_array($wrapData))
+	   {
+	       $data = array_replace($data, $wrapData);
+	   }
+	   
+	   $attr = !empty($data)?$this->inlineData($data):'';
+	   
+	   print '<div class="productcomposer-product-item searchitem" '.$attr.' >';
+	   
+	   print '<div class="productcomposer-product-item-photo" >';
+	   print $photo;
+	   print '</div>';
+	   
+	   print '<div class="productcomposer-product-item-info" >';
+	   
+	   print '<span class="label" >'.$product->label.'</span><br/>';
+	   print '<span class="ref" >#'.$product->ref.'</span>';
+	   print '</div>';
 	   
 	   print '</div>';
+	}
+	
+	public function print_catForStep($curentStep,$cat,$wrapData = false)
+	{
+	    global $conf;
+	    
+	    $maxvisiblephotos = 1;
+	    $width=150;
+	    
+	    $data=array();
+	    $data['id'] = $cat->id;
+	    $data['element'] = $cat->element;
+	    $data['fk_step'] = $curentStep->id;
+	    
+	    
+	    $nextStep = $curentStep->getNext();
+	    if(!empty($nextStep))
+	    {
+	        $data['target-action'] = 'selectcatandnextstep';
+	        $data['fk_nextstep'] = $nextStep->id;
+	        
+	    }
+	    
+	    if(!empty($wrapData) && is_array($wrapData))
+	    {
+	        $data = array_replace($data, $wrapData);
+	    }
+	    
+	    $attr = !empty($data)?$this->inlineData($data):'';
+	    
+	    print '<div class="productcomposer-cat-item searchitem" '.$attr.' >';
+	    
+	    print '<div class="productcomposer-cat-item-photo" >';
+	    //print $photo;
+	    print '</div>';
+	    
+	    print '<div class="productcomposer-cat-item-info" >';
+	    
+	    print '<span class="label" >'.$cat->label.'</span>';
+	    print '</div>';
+	    
+	    print '</div>';
 	}
 	
 	public function print_nextstep($curentStepId)
@@ -192,9 +308,11 @@ class productcomposer
 	    else
 	    {
 	        $curentStep = new PCRoadMapStep($this->db);
-	        if($curentStep->fetch($curentStepId) > 0)
+	        $res = $curentStep->fetch($curentStepId);
+	        if($res > 0)
 	        {
-	            $this->print_step($curentStep->getNext());
+	            $nextStep = $curentStep->getNext();
+	            $this->print_step($nextStep->id);
 	        }
 	    }
 	}
@@ -264,8 +382,30 @@ class productcomposer
 	}
 	
 	
+	public function print_searchFilter($target = '#search-filter-target')
+	{
+        global $langs;
+	    print '<div class="search-filter-wrap"  >';
+	    
+	    print '<input type="text" id="item-filter" class="search-filter" data-target="'.$target.'" value="" placeholder="'.$langs->trans('Search').'" ';
+	    
+	    print '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
+	    
+	    print '</div>';
+	}
 	
 	
+	
+	public function addProduct($productid,$stepid,$qty=1)
+	{
+	    $curQty = 0;
+	    if(!empty($TcurentComposer['steps'][$stepid][$productid])){
+	        $curQty = $TcurentComposer['steps'][$stepid][$productid];
+	    }
+	    
+	    $TcurentComposer['steps'][$stepid][$productid] =$curQty + $qty;
+	        
+	}
 	
 	
 	

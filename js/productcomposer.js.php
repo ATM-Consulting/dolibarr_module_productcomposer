@@ -99,6 +99,24 @@ $( document ).ready(function() {
 		}
 		
 		
+		if(targetAction == "addproductandnextstep")
+		{
+			var fk_pcroadmap = $("#" + popinId).data('fk_pcroadmap');
+			page =  page + "&roadmapid=" + fk_pcroadmap;
+			
+			var productid = $( this ).data('id');
+			page =  page + "&productid=" + productid;
+			
+			var nextstepid = $( this ).data('fk_nextstep');
+			page =  page + "&nextstepid=" + nextstepid;
+			
+			var stepid = $( this ).data('fk_step');
+			page =  page + "&stepid=" + stepid;
+			
+			
+			loadInPopin(page);
+		}
+		
 		
 		
 	
@@ -107,34 +125,56 @@ $( document ).ready(function() {
 	
 	
 	
-	
+	function addProduct(id){
+		var dialogContent =  $("#" + popinId);
+		var fk_pcroadmap = $("#" + popinId).data('fk_pcroadmap');
+	}
 	
 	
 	
 	function loadInPopin(target){
 		
 		var dialogContent =  $("#" + popinId);
+        dialogContent.fadeTo('fast',0,function() {
+    		// Animation complete.
+            var fromelement = dialogContent.data("element");
+            var fromelementid = dialogContent.data("id");
+            
+    		if( fromelement != undefined && fromelementid != undefined)
+    		{
+    			var appendUrl = "fromelement=" + fromelement + "&fromelementid=" + fromelementid;
+    			if (target.indexOf("?") >= 0){
+    				target = target + '&' + appendUrl;
+    			}else{
+    				target = target + '?' + appendUrl;
+    			}
+    		}
+    		dialogContent.load( target , function() {
+              dialogContent.fadeTo('fast',100);
+            });
         
-		var fromelement = dialogContent.data("element");
-        var fromelementid = dialogContent.data("id");
+  		});
         
-		if( fromelement != undefined && fromelementid != undefined)
-		{
-			var appendUrl = "fromelement=" + fromelement + "&fromelementid=" + fromelementid;
-			if (target.indexOf("?") >= 0){
-				target = target + '&' + appendUrl;
-			}else{
-				target = target + '?' + appendUrl;
-			}
-		}
-        
-		dialogContent.load( target );
+		
 			
 	}
 	
 	
-	
-	
+	$( document ).on("keyup", "#item-filter", function () {
+
+        var filter = $(this).val(), count = 0;
+        var target = $(this).data("target");
+        $(target + " .searchitem").each(function () {
+       
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).addClass("hidden");
+            } else {
+                $(this).removeClass("hidden");
+                count++;
+            }
+        });
+        $("#filter-count").text(count);
+    });
 	
 	
 });

@@ -11,64 +11,71 @@ $fromelement = GETPOST('fromelement');
 $fromelementid = GETPOST('fromelementid','int');
 $roadmapid = GETPOST('roadmapid','int');
 $stepid = GETPOST('stepid','int');
+$nextstepid = GETPOST('nextstepid','int');
 /*
 if( ($post=='roadmapRank' || $post=='roadmapRankDet') && !empty($fromelement) )
 {
     _postRoadmapRank($fromelement);
 }*/
 
-if($get=='selectRoadmap' && !empty($fromelement) && !empty($fromelementid) )
+if(!empty($fromelement) && !empty($fromelementid) )
 {
-    
+    // load product composer
     $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
-    
-    if(!empty($PComposer))
+    if($PComposer < 1)
     {
-        $PComposer->print_roadmapSelection();
+        print hStyle::callout($langs->trans('ErrorLoadingProductcomposer'),'error');
+        exit();
     }
 }
+else{
+    print hStyle::callout($langs->trans('ErrorLoadingProductcomposer'),'error');
+}
+
+
+if($get=='selectRoadmap')
+{
+    $PComposer->print_roadmapSelection();
+}
+
 
 
 if($get=='newroadmap' )
 {
     if(!empty($fromelement) && !empty($fromelementid) && !empty($roadmapid))
     {
-        $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
-        
-        if(!empty($PComposer))
+        $res =$PComposer->addRoadmap($roadmapid);
+        if($res > 0)
         {
-            $res =$PComposer->addRoadmap($roadmapid);
-            if($res > 0)
-            {
-                $PComposer->print_nextstep(0);
-            }
-            else{
-                print hStyle::callout($langs->trans('ErrorLoadingRoadmap').' : '.$res,'error');
-            }
+            $PComposer->print_nextstep(0);
         }
         else{
-            print hStyle::callout($langs->trans('ErrorLoadingProductcomposer'),'error');
+            print hStyle::callout($langs->trans('ErrorLoadingRoadmap').' : '.$res,'error');
         }
-        
     }
     else { echo $langs->trans('paramMissed'); }
 }
 
-if($get=='loadnextstep'  && !empty($fromelement) && !empty($fromelementid) && !empty($roadmapid) )
+if( $get == 'addproductandnextstep' )
 {
-    if(!empty($fromelement) && !empty($fromelementid) && !empty($roadmapid))
+    $productid = GETPOST('productid');
+    if(!empty($stepid) && !empty($productid) )
     {
-    
-        $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
-        if(!empty($PComposer))
-        {
-            echo 'la';
-            //addRoadmap($roadmapid,$setcurent=true)
-            
-            //$PComposer->loadCurentRoadMap($roadmapid);
-            //$PComposer->print_roadmapSelection();
-        }
-    
+        $PComposer->addProduct($productid,$stepid);
+        
+        
+        // go to loadnextstep action
+        $PComposer->print_nextstep($stepid);
+    }
+    else { echo $langs->trans('paramMissed'); }
+}
+
+
+if( $get == 'loadnextstep' )
+{
+    if(!empty($stepid))
+    {
+        $PComposer->print_nextstep($stepid);
     }
     else { echo $langs->trans('paramMissed'); }
 }

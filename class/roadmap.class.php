@@ -10,6 +10,7 @@ if (!class_exists('TObjetStd'))
 }
 
 require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
+dol_include_once('/productcomposer/class/pcdbtool.class.php');
 /*
  * Product composer roadmap
  */
@@ -53,6 +54,7 @@ class PCRoadMap extends SeedObject
 		    'label'  => array('type'=>'string')
 		    ,'status' =>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
 		    ,'entity' =>array('type'=>'integer','index'=>true)
+		    ,'fk_categorie'=>array('type'=>'int') // la catégorie principal dans laquele chaque produits devra être associé 
 		    ,'rank'=>array('type'=>'int')
 		);
 		
@@ -391,7 +393,7 @@ class PCRoadMapStep extends SeedObject
         
         $operateur =  !empty($next)?'>':'<';
         
-        $sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$this->table_element;
+        $sql = 'SELECT rowid as id FROM '.MAIN_DB_PREFIX.$this->table_element;
         $sql.= ' WHERE fk_pcroadmap = '.$this->fk_pcroadmap . ' AND rank '.$operateur.' '.$this->rank.' LIMIT 1 ';
         $TResult = array();
         
@@ -432,6 +434,29 @@ class PCRoadMapStep extends SeedObject
             return $Tlist;
         }
     
+        return false;
+    }
+    
+    
+    
+    public function getCatList(){
+        
+        $sql = "SELECT o.rowid as id" ;
+        $sql .= " FROM " . MAIN_DB_PREFIX . "categorie o";
+        $sql .= " WHERE o.entity IN (" . getEntity('category').")";
+        $sql .= " AND o.rowid = ".$this->fk_categorie;
+        
+        $results = $this->dbTool->executeS($sql);
+        if($results)
+        {
+            $Tlist = array();
+            foreach ($results as $obj)
+            {
+                $Tlist[] = $obj->id;
+            }
+            return $Tlist;
+        }
+        
         return false;
     }
     
