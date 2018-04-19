@@ -9,6 +9,7 @@ if (!class_exists('TObjetStd'))
 	require_once dirname(__FILE__).'/../config.php';
 }
 
+require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 /*
  * Product composer roadmap
  */
@@ -264,8 +265,13 @@ class PCRoadMapStep extends SeedObject
     
     public $table_element = 'pcroadmapdet';
     
-    public $element = 'pcroadmapdet';
     
+    public $element = 'pcroadmapdet';
+    public $type;
+    public $label;
+    public $fk_categorie;
+    public $rank;
+    public $categorie;
     
     /**
      * Type status
@@ -278,13 +284,15 @@ class PCRoadMapStep extends SeedObject
     {
         global $conf,$langs;
         
-        $this->db = $db;
+        $this->db =& $db;
+        $this->dbTool = new PCDbTool($this->db);
         
         $this->fields=array(
             
             'fk_pcroadmap'=>array('type'=>'int')
             ,'label'=>array('type'=>'string')
             ,'type'=>array('type'=>'int')
+            ,'fk_categorie'=>array('type'=>'int')
             ,'rank'=>array('type'=>'int')
         );
         
@@ -293,6 +301,27 @@ class PCRoadMapStep extends SeedObject
         
         $this->entity = $conf->entity;
     }
+    
+    /**
+     *	Get object and children from database
+     *
+     *	@param      int			$id       		Id of object to load
+     * 	@param		bool		$loadChild		used to load children from database
+     *	@return     int         				>0 if OK, <0 if KO, 0 if not found
+     */
+    public function fetch($id, $loadChild = true)
+    {
+        $res = parent::fetch($id, $loadChild);
+        
+        if($res>0 && !empty($this->fk_categorie))
+        {
+            $this->categorie = new Categorie($this->db);
+            $this->categorie->fetch($this->fk_categorie);
+        }
+        
+        return $res;
+    }
+    
     
     public function save()
     {
@@ -385,6 +414,26 @@ class PCRoadMapStep extends SeedObject
         return $this->getClosest();
     }
     
+    public function getProductList(){
+    
+        $sql = "SELECT c.fk_product as id" ;
+        $sql .= " FROM " . MAIN_DB_PREFIX . "categorie_product as c, " . MAIN_DB_PREFIX . "categorie o";
+        $sql .= " WHERE o.entity IN (" . getEntity('category').")";
+        $sql .= " AND c.fk_categorie = ".$this->fk_categorie;
+        $sql .= " AND c.fk_categorie = o.rowid";
+        $products = $this->dbTool->executeS($sql);
+        if($products)
+        {
+            $Tlist = array();
+            foreach ($products as $obj)
+            {
+                $Tlist[] = $obj->id;
+            }
+            return $Tlist;
+        }
+    
+        return false;
+    }
     
 }
 

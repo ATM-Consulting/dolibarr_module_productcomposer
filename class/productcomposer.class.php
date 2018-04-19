@@ -13,6 +13,7 @@ if (!class_exists('TObjetStd'))
 dol_include_once('/productcomposer/class/roadmap.class.php');
 dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/productcomposer/class/helper_style.class.php');
+dol_include_once('/productcomposer/class/pcdbtool.class.php');
 
 class productcomposer 
 {
@@ -32,7 +33,8 @@ class productcomposer
 		
 		if(empty($object->db) || empty($object->id)) return false;
 		
-		$this->db = $object->db;
+		$this->db =& $object->db;
+		$this->dbTool = new PCDbTool($object->db);
 		$this->langs = $langs;
 		
 		$this->load();
@@ -129,7 +131,7 @@ class productcomposer
 	        return 0;
 	    }
 	    
-	    // load all roadmaps
+	    // load step
 	    $curentStep = new PCRoadMapStep($this->db);
 	    $loadRes = $curentStep->fetch($id);
 	    if($loadRes>0)
@@ -138,11 +140,46 @@ class productcomposer
 	        
 	        print '<h4>'.dol_htmlentities($curentStep->label).'</h4>';
 	        
+	        if($curentStep->type == $curentStep->TYPE_SELECT_CATEGORY)
+	        {
+	            print 'TYPE_SELECT_CATEGORY';
+	        }
+	        elseif($curentStep->type == $curentStep::TYPE_SELECT_PRODUCT)
+	        {
+	            if($products = $curentStep->getProductList())
+	            {
+	                
+	                print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
+	                foreach ($products as $productid)
+	                {
+	                    $product = new Product($this->db);
+	                    $product->fetch($productid);
+	                    
+	                    $this->print_productForStep($curentStep,$product);
+	                    
+	                }
+	                print '</div>';
+	            }
+	            else{
+	                print hStyle::callout($this->langs->trans('Noproductcomposer'), 'error');
+	            }
+	        }
+	        
 	        print '</div>';
 	    }
 	    else{
 	        print hStyle::callout($this->langs->trans('StepNotFound').' : '.$id);
 	    }
+	}
+	
+	
+	public function print_productForStep($curentStep,$product)
+	{
+	   print '<div class="productcomposer-product-item" >';
+	   
+	   print $product->label;
+	   
+	   print '</div>';
 	}
 	
 	public function print_nextstep($curentStepId)
@@ -225,6 +262,10 @@ class productcomposer
 	    
 	    return $this->curentRoadMapIndex;
 	}
+	
+	
+	
+	
 	
 	
 	
