@@ -156,8 +156,6 @@ class productcomposer
 	        
 	        if($curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
 	        {
-	            //print 'TYPE_SELECT_CATEGORY';
-	            
 	            
 	            if($elements = $curentStep->getCatList())
 	            {
@@ -183,7 +181,7 @@ class productcomposer
 	                
 	                $this->print_searchFilter(".productcomposer-catproduct");
 	                
-	                print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
+	                print '<div class="productcomposer-cat" style="border-color: '.$curentStep->categorie->color.';" >';
 	                foreach ($products as $productid)
 	                {
 	                    $product = new Product($this->db);
@@ -249,23 +247,61 @@ class productcomposer
 	   
 	   print '<div class="productcomposer-product-item-info" >';
 	   
-	   print '<span class="label" >'.$product->label.'</span><br/>';
+	   print '<span class="label" >'.$product->label.'</span>';
 	   print '<span class="ref" >#'.$product->ref.'</span>';
 	   print '</div>';
 	   
 	   print '</div>';
 	}
 	
-	public function print_catForStep($curentStep,$cat,$wrapData = false)
+	public function print_catForStep($curentStep,$object,$wrapData = false)
 	{
 	    global $conf;
 	    
 	    $maxvisiblephotos = 1;
-	    $width=150;
+	    $maxWidth=$maxHeight=150;
+	    
+	    
+	    $upload_dir = $conf->categorie->multidir_output[$object->entity];
+	    $pdir = get_exdir($object->id,2,0,0,$object,'category') . $object->id ."/photos/";
+	    $dir = $upload_dir.'/'.$pdir;
+	    
+	    $photo = '';
+	    foreach ($object->liste_photos($dir) as $key => $obj)
+	    {
+	        $nbphoto++;
+	      
+	        // Si fichier vignette disponible, on l'utilise, sinon on utilise photo origine
+	        if ($obj['photo_vignette'])
+	        {
+	            $filename=$obj['photo_vignette'];
+	        }
+	        else
+	        {
+	            $filename=$obj['photo'];
+	        }
+	        
+	        // Nom affiche
+	        $viewfilename=$obj['photo'];
+	        
+	        // Taille de l'image
+	        $object->get_image_size($dir.$filename);
+	        $imgWidth = ($object->imgWidth < $maxWidth) ? $object->imgWidth : $maxWidth;
+	        $imgHeight = ($object->imgHeight < $maxHeight) ? $object->imgHeight : $maxHeight;
+	        
+	        $photo = '<img border="0" src="'.DOL_URL_ROOT.'/viewimage.php?modulepart=category&entity='.$object->entity.'&file='.urlencode($pdir.$filename).'">';
+	        break;
+	    }
+	    
+	    $forced_color='categtextwhite';
+	    if ($object->color)
+	    {
+	        if (colorIsLight($cat->color)) $forced_color='categtextblack';
+	    }
 	    
 	    $data=array();
-	    $data['id'] = $cat->id;
-	    $data['element'] = $cat->element;
+	    $data['id'] = $object->id;
+	    $data['element'] = $object->element;
 	    $data['fk_step'] = $curentStep->id;
 	    
 	    
@@ -287,12 +323,12 @@ class productcomposer
 	    print '<div class="productcomposer-cat-item searchitem" '.$attr.' >';
 	    
 	    print '<div class="productcomposer-cat-item-photo" >';
-	    //print $photo;
+	    print $photo;
 	    print '</div>';
 	    
-	    print '<div class="productcomposer-cat-item-info" >';
+	    print '<div class="productcomposer-cat-item-info" style="background:'.(!empty($object->color)?'#':'').$object->color.'"  >';
 	    
-	    print '<span class="label" >'.$cat->label.'</span>';
+	    print '<span class="label '.$forced_color.'"  >'.$object->label.'</span>';
 	    print '</div>';
 	    
 	    print '</div>';
