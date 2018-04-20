@@ -8,6 +8,13 @@ productcomposerAbout = A propos du module productcomposer
 
 productcomposer=productcomposer
 
+#COMPOSER
+NoRoadmapCat=Catégorie manquante : vérifier les paramètre de la feuille de route
+NoChildCat=Aucune catégorie fille
+NoStepFound=Etape suivante non trouvée
+NoSelectedRoadmapCat=Oops, la selection de la catégorie de la feille de route est manquante.
+NoFirstStepFound=La première étape n'est pas trouvée.
+
 # MENU
 TopMenuproductcomposer=productcomposer
 

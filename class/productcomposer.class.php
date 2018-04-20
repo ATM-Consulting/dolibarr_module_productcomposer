@@ -35,8 +35,13 @@ class productcomposer
 		$this->db =& $object->db;
 		$this->dbTool = new PCDbTool($object->db);
 		$this->langs = $langs;
+		$this->object = $object;
 		
-		$this->load();
+		if(!$this->load())
+		{
+		    var_dump($_SESSION['roadmap'], $this->object->element,$this->object->id);
+		    print hStyle::callout($this->langs->trans('NotLoaded'), 'error');
+		}
 		
 	}
 	
@@ -47,18 +52,18 @@ class productcomposer
 	public function save()
 	{
 	    global $user;
-	    $_SESSION['roadmap'][$object->element][$object->id] = array(
+	    $_SESSION['roadmap'][$this->object->element][$this->object->id] = array(
 	        'curentRoadMapIndex' => $this->curentRoadMapIndex,
-	        'Tcomposer' => $_SESSION['roadmap'][$object->element][$object->id]
+	        'Tcomposer' => $this->Tcomposer,
 	    );
 	    return true;
 	}
 	
 	public function load()
 	{
-	    if(!empty($_SESSION['roadmap'][$object->element][$object->id])){
-	        $this->Tcomposer = $_SESSION['roadmap'][$object->element][$object->id]['Tcomposer'];
-	        $index = $_SESSION['roadmap'][$object->element][$object->id]['curentRoadMapIndex'];
+	    if(!empty($_SESSION['roadmap'][$this->object->element][$this->object->id])){
+	        $this->Tcomposer = $_SESSION['roadmap'][$this->object->element][$this->object->id]['Tcomposer'];
+	        $index = $_SESSION['roadmap'][$this->object->element][$this->object->id]['curentRoadMapIndex'];
 	        $this->setCurentRoadMap($index);
 	        return true;
 	    }
@@ -69,10 +74,19 @@ class productcomposer
 	
 	public function delete()
 	{
-	    unset($_SESSION['roadmap'][$object->element][$object->id]);
+	    unset($_SESSION['roadmap'][$this->object->element][$this->object->id]);
 	    return true;
 	}
 	
+	public function annuleCurent()
+	{
+	    unset( $this->Tcomposer[$this->curentRoadMapIndex] ); // remove curent
+	    unset( $this->cache_PCRoadMap[$this->cache_PCRoadMap[$index]] ); // remove cache
+	    $this->curentRoadMapIndex = 0;
+	    
+	    unset($this->roadmap);
+	    
+	}
 	
 	
 	
@@ -137,7 +151,9 @@ class productcomposer
 	    return $ret;
 	}
 	
-	public function print_step($id)
+	
+	
+	public function print_step($id,$param=false)
 	{
 	    if(empty($id)){
 	        print hStyle::callout($this->langs->trans('StepNotFound').' : '.$id, 'error');
@@ -151,8 +167,17 @@ class productcomposer
 	    if($loadRes>0)
 	    {
 	        print '<div id="step-wrap-'.$curentStep->id.'" class="productcomposer-selector" >';
+	     
+	        $curentSelectedRoadMapLabel = '';
+	        if(!empty($this->TcurentComposer['fk_categorie_selected']))
+	        {
+	            $categorie = new Categorie($this->db);
+	            $categorie->fetch($this->TcurentComposer['fk_categorie_selected']);
+	            $curentSelectedRoadMapLabel =  '('.$categorie->label.')';
+	        }
 	        
-	        print '<h2><span class="rank" >'.$curentStep->rank.'.</span> '.dol_htmlentities($curentStep->label).'</h2>';
+	        
+	        print '<h2><span class="rank" >'.$curentStep->rank.'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
 	        
 	        if($curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
 	        {
@@ -254,7 +279,7 @@ class productcomposer
 	   print '</div>';
 	}
 	
-	public function print_catForStep($curentStep,$object,$wrapData = false)
+	public function print_cat($object,$wrapData = false)
 	{
 	    global $conf;
 	    
@@ -294,6 +319,12 @@ class productcomposer
 	    }
 	    
 	    $forced_color='categtextwhite';
+	    
+	    if(empty($object->color))
+	    {
+	        $object->color = "ebebeb";
+	    }
+	    
 	    if ($object->color)
 	    {
 	        if (colorIsLight($cat->color)) $forced_color='categtextblack';
@@ -302,16 +333,8 @@ class productcomposer
 	    $data=array();
 	    $data['id'] = $object->id;
 	    $data['element'] = $object->element;
-	    $data['fk_step'] = $curentStep->id;
 	    
-	    
-	    $nextStep = $curentStep->getNext();
-	    if(!empty($nextStep))
-	    {
-	        $data['target-action'] = 'selectcatandnextstep';
-	        $data['fk_nextstep'] = $nextStep->id;
-	        
-	    }
+	   
 	    
 	    if(!empty($wrapData) && is_array($wrapData))
 	    {
@@ -334,15 +357,87 @@ class productcomposer
 	    print '</div>';
 	}
 	
-	public function print_nextstep($curentStepId)
+	public function print_catForStep($curentStep,$object,$wrapData = false)
+	{
+	    global $conf;
+	    
+	    
+	    $data['fk_step'] = $curentStep->id;
+	    
+	    
+	    $nextStep = $curentStep->getNext();
+	    if(!empty($nextStep))
+	    {
+	        $data['target-action'] = 'selectcatandnextstep';
+	        $data['fk_nextstep'] = $nextStep->id;
+	        
+	    }
+	    
+	    if(!empty($wrapData) && is_array($wrapData))
+	    {
+	        $data = array_replace($data, $wrapData);
+	    }
+	    
+	    return $this->print_cat($object,$data);
+	}
+	
+	
+	public function print_nextstep($curentStepId, $param = false)
 	{
 	    if(empty($curentStepId))
-	    {
-	        $stepId = $this->roadmap->getFirstStepId();
-	        $this->print_step($stepId);
+	    { 
+	        $firstStepId = $this->roadmap->getFirstStepId();
+	        if(empty($firstStepId))
+	        {
+	            print hStyle::callout($this->langs->trans('NoFirstStepFound'), 'error');
+	            return;
+	        }
+	        
+	        if(!empty($this->roadmap->fk_categorie))
+	        {
+	            
+	            $roadmapCat = new Categorie($this->db);
+	            if(!empty($param['fk_categorie'])){
+	                $res = $roadmapCat->fetch($param['fk_categorie']);
+	            }
+	            else{
+	                $res = $roadmapCat->fetch($this->roadmap->fk_categorie);
+	            }
+	            //var_dump($this->roadmap->fk_categorie,$roadmapCat->get_filles());
+	            if($res>0 && $elements = $roadmapCat->get_filles())
+	            {
+	                print '<div class="productcomposer-catproduct" style="border-color: '.$roadmapCat->color.';" >';
+	                foreach ($elements as $categorie)
+	                {
+	                    $data  = array(
+	                        'target-action' => 'selectroadmapcategorie',
+	                        'fk_step' => $curentStepId,
+	                    );
+	                    
+	                    $this->print_cat($categorie, $data);
+	                }
+	                print '</div>';
+	            }
+	            else{
+	                //print hStyle::callout($this->langs->trans('NoChildCat'), 'error');
+	                
+	                // if no child cat so $this->roadmap->fk_categorie is the selected cat (or param
+	                $this->TcurentComposer['fk_categorie_selected'] = !empty($param['fk_categorie'])?!$param['fk_categorie']:$this->roadmap->fk_categorie;
+	                $this->save();
+	                $this->print_step($firstStepId);
+	            }
+	        }
+	        else{
+	            print hStyle::callout($this->langs->trans('NoRoadmapCat'), 'error');
+	        }
 	    }
 	    else
 	    {
+	        if(empty($this->TcurentComposer['fk_categorie_selected']))
+	        {
+	            print hStyle::callout($this->langs->trans('NoSelectedRoadmapCat'), 'error');
+	        }
+	        
 	        $curentStep = new PCRoadMapStep($this->db);
 	        $res = $curentStep->fetch($curentStepId);
 	        if($res > 0)
@@ -399,6 +494,10 @@ class productcomposer
 	    
 	    // set curent roadmap
 	    $this->curentRoadMapIndex = $index;
+	    
+	    // IMPORTANT : supression de la référence précédante
+	    unset($this->TcurentComposer);
+	    
 	    $this->TcurentComposer =& $this->Tcomposer[$this->curentRoadMapIndex];
 	    
 	    if($cache && !empty($this->cache_PCRoadMap[$this->curentRoadMapIndex][$this->TcurentComposer['roadmapid']]))
@@ -409,6 +508,7 @@ class productcomposer
 	        $this->roadmap = new PCRoadMap($this->db);
 	        if($this->roadmap->fetch($this->TcurentComposer['roadmapid'])<1)
 	        {
+	            
 	           return -1;
 	        }
 	        
@@ -435,11 +535,11 @@ class productcomposer
 	public function addProduct($productid,$stepid,$qty=1)
 	{
 	    $curQty = 0;
-	    if(!empty($TcurentComposer['steps'][$stepid][$productid])){
-	        $curQty = $TcurentComposer['steps'][$stepid][$productid];
+	    if(!empty($this->TcurentComposer['steps'][$stepid][$productid])){
+	        $curQty = $this->TcurentComposer['steps'][$stepid][$productid];
 	    }
 	    
-	    $TcurentComposer['steps'][$stepid][$productid] =$curQty + $qty;
+	    $this->TcurentComposer['steps'][$stepid][$productid] =$curQty + $qty;
 	        
 	}
 	

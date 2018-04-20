@@ -8,17 +8,21 @@
     $langs->load("productcomposer@productcomposer");
 ?>
 
+var $composerDialog;
+	
 $( document ).ready(function() {
-
 	var readyToImport = false;
 	var interfaceurl = "<?php print dol_buildpath('/productcomposer/script/interface.php',2); ?>";
-	var popinId = "product-composer-popin";
+	var popinId = "jquery-product-composer-dialog-box";
 	$("#pc-product-generator-btn").click(function (e) {
 		
        // e.preventDefault();
+       
+	    $composerDialog = $("#" + popinId);
         var page = interfaceurl + "?get=selectRoadmap";
-        var fromelement = $(this).data("element");
-        var fromelementid = $(this).data("id");
+        console.log($composerDialog.data());
+        var fromelement = $composerDialog.data("element");
+        var fromelementid = $composerDialog.data("id");
         
 		if( page != undefined && fromelement != undefined && fromelementid != undefined)
 		{
@@ -31,23 +35,37 @@ $( document ).ready(function() {
 	        	htmlLines = $(data) ;
 	        });*/
 	        
-	        var $composerDialog = $('<div id="' + popinId +'" data-element="' + fromelement + '" data-id="' + fromelementid + '" ></div>');
-	        $composerDialog.load( page , function() {
+	        if($("#" + popinId).data('fk_pcroadmap') == undefined)
+          	{
+          		 $composerDialog.load( page);
+          	}
 	        
-	        })
-	        .dialog({
+	        
+	        $composerDialog.dialog({
 	            autoOpen: false,
 	            modal: true,
 	            height: windowHeight,
 	            width: windowWidth,
 	            title: "<?php echo $langs->trans('PopUpTitle_ProductComposer'); ?>",
                 buttons: {
-                  "<?php echo $langs->trans('Cancel')?>": function() {
-                  
-                  	loadInPopin(interfaceurl + "?get=delete") ;
-                  
-                    $( this ).dialog( "close" ).dialog('destroy').remove();
-                  }
+                      "<?php echo $langs->trans('Cancel')?>": function() {
+                          	if($("#" + popinId).data('fk_pcroadmap') != undefined)
+                          	{
+                          		loadInPopin(interfaceurl + "?get=annuleCurent") ;
+                          		$("#" + popinId).removeData('fk_pcroadmap');
+                          	}
+                            $( this ).dialog( "close" ).html(''); //.dialog('destroy');
+                      },
+                      
+                      "<?php echo $langs->trans('DeleteAllwork')?>": function() {
+                      
+                          	loadInPopin(interfaceurl + "?get=delete") ;
+                          	if($("#" + popinId).data('fk_pcroadmap') != undefined)
+                          	{
+                          		$("#" + popinId).removeData('fk_pcroadmap');
+                          	}
+                            $( this ).dialog( "close" ).html('');
+                      }
                 }
 	        });
 	        
@@ -82,6 +100,8 @@ $( document ).ready(function() {
 		var targetAction = $( this ).data('target-action');
 		var page = interfaceurl + "?get=" + targetAction;
 		
+		var data = $( this ).data();
+		
 		if(targetAction == "loadnextstep")
 		{
 			loadInPopin(page);
@@ -101,6 +121,8 @@ $( document ).ready(function() {
 		
 		if(targetAction == "addproductandnextstep")
 		{
+			console.log($( this ).data());
+		
 			var fk_pcroadmap = $("#" + popinId).data('fk_pcroadmap');
 			page =  page + "&roadmapid=" + fk_pcroadmap;
 			
@@ -117,13 +139,46 @@ $( document ).ready(function() {
 			loadInPopin(page);
 		}
 		
+		if(targetAction == "selectroadmapcategorie")
+		{		
+			var parametters = { 
+					roadmapid: $("#" + popinId).data('fk_pcroadmap'), 
+					nextstepid: $( this ).data('fk_nextstep'), 
+					stepid: $( this ).data('fk_step'), 
+				};
+		
+			console.log( dataTransmitToUrl(parametters , page));
+			loadInPopin(  dataTransmitToUrl(parametters , page)   );
+		}
 		
 		
 	
 	});
 	
 	
+	function dataTransmitToUrl(data, target=''){
+		
+		if(data != undefined)
+		{
+			var appendUrl = jQuery.param( data );
+			
+    		if (target.indexOf("?") >= 0){
+    			target = target + '&' + appendUrl;
+    		}
+    		else
+    		{
+    			target = target + '?' + appendUrl;
+    		}
+    		
+    		return target;
+		}
+		else
+		{
+			return '';
+		}
+		
 	
+	}
 	
 	function addProduct(id){
 		var dialogContent =  $("#" + popinId);

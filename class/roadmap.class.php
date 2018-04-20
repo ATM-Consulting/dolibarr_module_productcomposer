@@ -204,13 +204,17 @@ class PCRoadMap extends SeedObject
 	    }
 	}
 	
-	public function getAll($returntype = 'object' )
+	public function getAll($returntype = 'object', $active=1 )
 	{
 	    $TResult = array();
 	    
 	    $sql = 'SELECT r.rowid as id, r.label, r.date_creation';
 	    $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' r ';
-	    $sql.= ' WHERE 1=1';
+	    
+	    if($active>=0)
+	    {
+	        $sql.= ' WHERE status = '.intval($active);
+	    }
 	    
 	    
 	    $res = $this->db->query($sql);
@@ -444,7 +448,7 @@ class PCRoadMapStep extends SeedObject
         $sql = "SELECT o.rowid as id" ;
         $sql .= " FROM " . MAIN_DB_PREFIX . "categorie o";
         $sql .= " WHERE o.entity IN (" . getEntity('category').")";
-        $sql .= " AND o.rowid = ".$this->fk_categorie;
+        $sql .= " AND o.fk_parent = ".$this->fk_categorie;
         
         $results = $this->dbTool->executeS($sql);
         if($results)

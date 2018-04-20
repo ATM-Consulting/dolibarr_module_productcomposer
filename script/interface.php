@@ -5,6 +5,8 @@ require('../config.php');
 dol_include_once( '/productcomposer/lib/productcomposer.lib.php');
 dol_include_once('/productcomposer/class/productcomposer.class.php');
 
+var_dump((isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+
 $get = GETPOST('get');
 $post = GETPOST('post');
 $fromelement = GETPOST('fromelement');
@@ -71,6 +73,18 @@ if( $get == 'addproductandnextstep' )
 }
 
 
+
+if( $get == 'selectroadmapcategorie' )
+{
+    if(!empty($PComposer->roadmap) )
+    {
+        $PComposer->print_nextstep(0);
+    }
+    else { echo $langs->trans('paramMissed'); }
+}
+
+
+
 if( $get == 'loadnextstep' )
 {
     if(!empty($stepid))
@@ -80,22 +94,18 @@ if( $get == 'loadnextstep' )
     else { echo $langs->trans('paramMissed'); }
 }
 
-if($get=='delete'  && !empty($fromelement) && !empty($fromelementid) && !empty($roadmapid) )
+if($get=='delete'  && !empty($fromelement) && !empty($fromelementid))
 {
-    if(!empty($fromelement) && !empty($fromelementid) && !empty($roadmapid))
+    if($PComposer->delete())
     {
-        
-        $PComposer = productcomposer::loadbyelement($fromelementid,$fromelement);
-        if(!empty($PComposer))
-        {
-            if($PComposer->delete())
-            {
-                echo 'deleted';
-            }
-        }
-        
+        echo 'deleted';
     }
-    else { echo $langs->trans('paramMissed'); }
+}
+
+
+if($get=='annuleCurent')
+{
+    $PComposer->annuleCurent();
 }
 
     
@@ -136,5 +146,5 @@ function _postRoadmapRank($objectName)
 	exit();
 }*/
 
-
-//var_dump($_REQUEST);
+print '<div style="clear:both;" ></div>';
+var_dump($_SESSION['roadmap'][$fromelement][$fromelementid]['Tcomposer']);

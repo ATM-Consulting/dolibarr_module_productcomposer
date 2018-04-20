@@ -112,6 +112,7 @@ class Actionsproductcomposer
 	    {
 	        print '<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/productcomposer/css/style.css',2).'">';
 	        print '<div class="inline-block divButAction"><button '.implode(' ', $data).' class="butAction" id="pc-product-generator-btn" >'.$langs->trans("ProductGenerator").'</button></div>';
+	        print '<div id="jquery-product-composer-dialog-box" data-element="' . $object->element . '" data-id="' . $object->id . '" ></div>';
 	    }
 	    
 	}
