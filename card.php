@@ -3,10 +3,10 @@
 require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
-dol_include_once('/productcomposer/class/productcomposer.class.php');
 dol_include_once('/productcomposer/lib/productcomposer.lib.php');
+dol_include_once('/productcomposer/class/roadmap.class.php');
 
-if(empty($user->rights->productcomposer->read)) accessforbidden();
+if( empty($user->rights->productcomposer->read) && !$user->admin) accessforbidden();
 
 $langs->load('productcomposer@productcomposer');
 
@@ -18,7 +18,7 @@ $mode = 'view';
 if (empty($user->rights->productcomposer->write)) $mode = 'view'; // Force 'view' mode if can't edit object
 else if ($action == 'create' || $action == 'edit') $mode = 'edit';
 
-$object = new productcomposer($db);
+$object = new PCRoadmap($db);
 
 if (!empty($id)) $object->load($id);
 elseif (!empty($ref)) $object->loadBy($ref, 'ref');
@@ -110,7 +110,7 @@ if ($action == 'create' && $mode == 'edit')
 }
 else
 {
-	$head = productcomposer_prepare_head($object);
+    $head = roadmap_prepare_head($object);
 	$picto = 'generic';
 	dol_fiche_head($head, 'card', $langs->trans("productcomposer"), 0, $picto);
 }
@@ -139,7 +139,7 @@ print $TBS->render('tpl/card.tpl.php'
 			,'action' => 'save'
 			,'urlcard' => dol_buildpath('/productcomposer/card.php', 1)
 			,'urllist' => dol_buildpath('/productcomposer/list.php', 1)
-			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object->generic, 'ref', $linkback, 1, 'ref', 'ref', '')
+			//,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object->generic, 'ref', $linkback, 1, 'ref', 'ref', '')
 			,'showLabel' => $formcore->texte('', 'label', $object->label, 80, 255)
 //			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
 			,'showStatus' => $object->getLibStatut(1)
@@ -148,16 +148,14 @@ print $TBS->render('tpl/card.tpl.php'
 		,'user' => $user
 		,'conf' => $conf
 		,'Tproductcomposer' => array(
-			'STATUS_DRAFT' => Tproductcomposer::STATUS_DRAFT
-			,'STATUS_VALIDATED' => Tproductcomposer::STATUS_VALIDATED
-			,'STATUS_REFUSED' => Tproductcomposer::STATUS_REFUSED
-			,'STATUS_ACCEPTED' => Tproductcomposer::STATUS_ACCEPTED
+			'STATUS_DRAFT' => PCRoadMap::STATUS_DRAFT
+		    ,'STATUS_VALIDATED' => PCRoadMap::STATUS_VALIDATED
 		)
 	)
 );
 
 if ($mode == 'edit') echo $formcore->end_form();
 
-if ($mode == 'view' && $object->getId()) $somethingshown = $form->showLinkedObjectBlock($object->generic);
+
 
 llxFooter();

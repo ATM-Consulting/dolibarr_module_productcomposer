@@ -49,6 +49,7 @@ class PCRoadMap extends SeedObject
 		global $conf,$langs;
 		
 		$this->db = $db;
+		$this->dbTool = new PCDbTool($object->db);
 		
 		$this->fields=array(
 		    'label'  => array('type'=>'string')
@@ -87,6 +88,10 @@ class PCRoadMap extends SeedObject
 		return $res;
 	}
 	
+	public function getId()
+	{
+	    return $this->id;
+	}
 	
 	public function loadBy($value, $field, $annexe = false)
 	{
@@ -95,7 +100,7 @@ class PCRoadMap extends SeedObject
 		return $res;
 	}
 	
-	public function load($id, $ref, $loadChild = true)
+	public function load($id, $ref='', $loadChild = true)
 	{
 		global $db;
 		
@@ -260,6 +265,56 @@ class PCRoadMap extends SeedObject
 	    return 0;
 	    
 	    
+	}
+	
+	/**
+	 *      Load properties id_previous and id_next by rank
+	 *
+	 *      @param	string	$filter		Optional filter. Example: " AND (t.field1 = 'aa' OR t.field2 = 'bb')"
+	 *	 	@param  string	$fieldid   	Name of field to use for the select MAX and MIN
+	 *		@param	int		$nodbprefix	Do not include DB prefix to forge table name
+	 *      @return int         		<0 if KO, >0 if OK
+	 */
+	function load_previous_next_ref($filter, $fieldid, $nodbprefix=0)
+	{
+	    global $user;
+	    
+	    
+	    
+	    $sql = 'SELECT te.rowid id';
+	    $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as te';
+	    $sql.= ' WHERE te.rank < '.intval($this->rank);
+	    if (! empty($filter))
+	    {
+	        if (! preg_match('/^\s*AND/i', $filter)) $sql.=' AND ';   // For backward compatibility
+	        $sql.=$filter;
+	    }
+	    
+	    if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql.= ' AND te.entity IN ('.getEntity($this->element).')';
+	    
+	    $sql.= ' ORDER BY te.rank DESC';
+	    
+	    $this->ref_previous =  $this->dbTool->getvalue($sql);
+	    
+	    
+	    
+	    
+	    $sql = 'SELECT te.rowid id';
+	    $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as te';
+	    $sql.= ' WHERE te.rank > '.intval($this->rank);
+	    if (! empty($filter))
+	    {
+	        if (! preg_match('/^\s*AND/i', $filter)) $sql.=' AND ';   // For backward compatibility
+	        $sql.=$filter;
+	    }
+	    
+	    if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql.= ' AND te.entity IN ('.getEntity($this->element).')';
+	    
+	    $sql.= ' ORDER BY te.rank ASC';
+	    
+	    $this->ref_next = $this->dbTool->getvalue($sql);
+	    
+	    return 1;
 	}
 }
 
@@ -464,5 +519,54 @@ class PCRoadMapStep extends SeedObject
         return false;
     }
     
+    /**
+     *      Load properties id_previous and id_next by rank
+     *
+     *      @param	string	$filter		Optional filter. Example: " AND (t.field1 = 'aa' OR t.field2 = 'bb')"
+     *	 	@param  string	$fieldid   	Name of field to use for the select MAX and MIN
+     *		@param	int		$nodbprefix	Do not include DB prefix to forge table name
+     *      @return int         		<0 if KO, >0 if OK
+     */
+    function load_previous_next_ref($filter, $fieldid, $nodbprefix=0)
+    {
+        global $user;
+        
+        
+        
+        $sql = 'SELECT te.rowid id';
+        $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as te';
+        $sql.= ' WHERE te.rank < '.intval($this->rank); 
+        if (! empty($filter))
+        {
+            if (! preg_match('/^\s*AND/i', $filter)) $sql.=' AND ';   // For backward compatibility
+            $sql.=$filter;
+        }
+        
+        if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql.= ' AND te.entity IN ('.getEntity($this->element).')';
+        
+        $sql.= ' ORDER BY te.rank DESC'; 
+        
+        $this->ref_previous =  $this->dbTool->getvalue($sql);
+        
+        
+        
+        
+        $sql = 'SELECT te.rowid id';
+        $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as te';
+        $sql.= ' WHERE te.rank > '.intval($this->rank);
+        if (! empty($filter))
+        {
+            if (! preg_match('/^\s*AND/i', $filter)) $sql.=' AND ';   // For backward compatibility
+            $sql.=$filter;
+        }
+        
+        if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql.= ' AND te.entity IN ('.getEntity($this->element).')';
+        
+        $sql.= ' ORDER BY te.rank ASC';
+        
+        $this->ref_next = $this->dbTool->getvalue($sql);
+        
+        return 1;
+    }
 }
 

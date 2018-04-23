@@ -2,10 +2,7 @@
 	<input type="hidden" name="action" value="[view.action]" />
 	<table width="100%" class="border">
 		<tbody>
-			<tr class="ref">
-				<td width="25%">[langs.transnoentities(Ref)]</td>
-				<td>[view.showRef;strconv=no]</td>
-			</tr>
+			
 
 			<tr class="label">
 				<td width="25%">[langs.transnoentities(Label)]</td>
@@ -58,12 +55,7 @@
 		
 		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=clone" class="butAction">[langs.transnoentities(ToClone)]</a></div>
 		
-		<!-- '-+' est l'équivalent d'un signe '<' (TBS oblige) -->
-		[onshow;block=begin;when [object.status]-+[Tproductcomposer.STATUS_REFUSED]]
-			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
-			
-		[onshow;block=end]
+	
 		
 	[onshow;block=end]
 </div>

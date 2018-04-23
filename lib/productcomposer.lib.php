@@ -64,7 +64,7 @@ function productcomposerAdminPrepareHead()
  * @param 	Tproductcomposer	$object		Object company shown
  * @return 	array				Array of tabs
  */
-function productcomposer_prepare_head(Tproductcomposer $object)
+function roadmap_prepare_head(PCRoadMap $object)
 {
     global $db, $langs, $conf, $user;
     $h = 0;

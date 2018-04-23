@@ -72,7 +72,9 @@ echo $r->render($sql, array(
 		'nbLine' => $nbLine
 	)
 	,'subQuery' => array()
-	,'link' => array()
+	,'link' => array(
+	    'label' => '<a href="'.dol_buildpath('/productcomposer/card.php',2).'?id=@rowid@" >@val@</a>',
+	)
 	,'type' => array(
 		//'date_creation' => 'date' // [datetime], [hour], [money], [number], [integer]
 	)
