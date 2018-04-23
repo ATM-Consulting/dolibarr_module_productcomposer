@@ -18,11 +18,14 @@ class productcomposer
 {
 	
     public $Tcomposer = array();
+    public $roadmap = null;
     
     private $curentRoadMapIndex = 0;
     
     private $TcurentComposer = null;
-    private $roadmap = null;
+    
+    
+
     
     
 	
@@ -39,8 +42,8 @@ class productcomposer
 		
 		if(!$this->load())
 		{
-		    var_dump($_SESSION['roadmap'], $this->object->element,$this->object->id);
-		    print hStyle::callout($this->langs->trans('NotLoaded'), 'error');
+		    //var_dump($_SESSION['roadmap'], $this->object->element,$this->object->id);
+		    //print hStyle::callout($this->langs->trans('ErrorRoadMapNotLoaded'), 'error');
 		}
 		
 	}
@@ -62,8 +65,8 @@ class productcomposer
 	public function load()
 	{
 	    if(!empty($_SESSION['roadmap'][$this->object->element][$this->object->id])){
-	        $this->Tcomposer = $_SESSION['roadmap'][$this->object->element][$this->object->id]['Tcomposer'];
-	        $index = $_SESSION['roadmap'][$this->object->element][$this->object->id]['curentRoadMapIndex'];
+	        $this->Tcomposer   = $_SESSION['roadmap'][$this->object->element][$this->object->id]['Tcomposer'];
+	        $index             = $_SESSION['roadmap'][$this->object->element][$this->object->id]['curentRoadMapIndex'];
 	        $this->setCurentRoadMap($index);
 	        return true;
 	    }
@@ -423,9 +426,9 @@ class productcomposer
 	                
 	                // if no child cat so $this->roadmap->fk_categorie is the selected cat (or param
 	                $this->TcurentComposer['fk_categorie_selected'] = !empty($param['fk_categorie'])?!$param['fk_categorie']:$this->roadmap->fk_categorie;
-	                $this->save();
 	                $this->print_step($firstStepId);
 	            }
+	            $this->save();
 	        }
 	        else{
 	            print hStyle::callout($this->langs->trans('NoRoadmapCat'), 'error');

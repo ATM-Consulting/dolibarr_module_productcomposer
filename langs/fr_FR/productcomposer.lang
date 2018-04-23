@@ -14,6 +14,7 @@ NoChildCat=Aucune catégorie fille
 NoStepFound=Etape suivante non trouvée
 NoSelectedRoadmapCat=Oops, la selection de la catégorie de la feille de route est manquante.
 NoFirstStepFound=La première étape n'est pas trouvée.
+ErrorRoadMapNotLoaded=La feuille de route en cours n'a pas pu être chargée.
 
 # MENU
 TopMenuproductcomposer=productcomposer

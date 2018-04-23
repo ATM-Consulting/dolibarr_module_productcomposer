@@ -145,6 +145,7 @@ $( document ).ready(function() {
 					roadmapid: $("#" + popinId).data('fk_pcroadmap'), 
 					nextstepid: $( this ).data('fk_nextstep'), 
 					stepid: $( this ).data('fk_step'), 
+					fk_categorie: $( this ).data('id'), 
 				};
 		
 			console.log( dataTransmitToUrl(parametters , page));
