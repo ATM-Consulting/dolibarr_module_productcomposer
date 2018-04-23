@@ -379,7 +379,7 @@ class PCRoadMapStep extends SeedObject
     }
     
     
-    static public function updateRankOfLine($rowid,$rank)
+    public function updateRankOfLine($rowid,$rank)
     {
         global $db;
         $sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element.' SET rank = '.$rank;
