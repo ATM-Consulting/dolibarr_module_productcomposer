@@ -1,4 +1,11 @@
-
+tr.ui-state-highlight td{
+	border: 1px solid #dad55e;
+	background: #fffa90;
+	color: #777620;
+}
+            
+            
+            
 
 .productcomposer-item{
 	padding: 10px;

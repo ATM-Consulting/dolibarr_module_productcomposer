@@ -18,11 +18,12 @@ $fromelementid = GETPOST('fromelementid','int');
 $roadmapid = GETPOST('roadmapid','int');
 $stepid = GETPOST('stepid','int');
 $nextstepid = GETPOST('nextstepid','int');
-/*
-if( ($post=='roadmapRank' || $post=='roadmapRankDet') && !empty($fromelement) )
+
+if( ($post=='roadmapRank' || $post=='roadmapRankDet') )
 {
-    _postRoadmapRank($fromelement);
-}*/
+    _postRoadmapRank($post=='roadmapRank'?'PCRoadMap':'PCRoadMapDet');
+    exit;
+}
 
 if(!empty($fromelement) && !empty($fromelementid) )
 {
@@ -114,12 +115,12 @@ if($get=='annuleCurent')
 }
 
     
-/*
+
 function _postRoadmapRank($objectName)
 {
     global $db,$user;
 	$TRowOrder= GETPOST('TRowOrder');
-	$contractId= GETPOST('objet_id');
+	$objId= GETPOST('objet_id');
 	
 	$objectHaveRank =  false;
 	if(class_exists($objectName) )
@@ -133,7 +134,7 @@ function _postRoadmapRank($objectName)
 	
 	if(!$objectHaveRank){ exit; }
 	
-	if(is_array($TRowOrder) && !empty($TRowOrder) && !empty($contractId))
+	if(is_array($TRowOrder) && !empty($TRowOrder) && !empty($objId))
 	{
 		foreach($TRowOrder as $rang => $value)
 		{
@@ -149,7 +150,7 @@ function _postRoadmapRank($objectName)
 	}
 	
 	exit();
-}*/
+}
 
 print '<div style="clear:both;" ></div>';
 //var_dump($_REQUEST);

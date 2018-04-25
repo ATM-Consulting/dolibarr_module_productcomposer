@@ -18,7 +18,7 @@ $mode = 'view';
 if (empty($user->rights->productcomposer->write)) $mode = 'view'; // Force 'view' mode if can't edit object
 else if ($action == 'create' || $action == 'edit') $mode = 'edit';
 
-$object = new PCRoadmap($db);
+$object = new PCRoadMapStep($db);
 
 if (!empty($id)) $object->load($id);
 elseif (!empty($ref)) $object->loadBy($ref, 'ref');
@@ -26,7 +26,7 @@ elseif (!empty($ref)) $object->loadBy($ref, 'ref');
 $hookmanager->initHooks(array('productcomposercard', 'globalcard'));
 
 /*
- * Actions
+ * Actions 
  */
 
 $parameters = array('id' => $id, 'ref' => $ref, 'mode' => $mode);
@@ -63,32 +63,23 @@ if (empty($reshook))
 			exit;
 			
 			break;
-		case 'confirm_clone':
-			$object->cloneObject();
-			
-			header('Location: '.dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId());
-			exit;
-			break;
+	
 		case 'modif':
 			if (!empty($user->rights->productcomposer->write)) $object->setDraft();
 				
 			break;
-		case 'validate':
-			if (!empty($user->rights->productcomposer->write)) $object->setValid();
-			
-			header('Location: '.dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId());
-			exit;
-			break;
+
 		case 'confirm_delete':
-			if (!empty($user->rights->productcomposer->write)) $object->delete($user);
-			
-			header('Location: '.dol_buildpath('/productcomposer/list.php', 1));
-			exit;
-			break;
-		// link from llx_element_element
-		case 'dellink':
-			$object->generic->deleteObjectLinked(null, '', null, '', GETPOST('dellinkid'));
-			header('Location: '.dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId());
+		    
+		    $listUrl = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->fk_pcroadmap;
+		    if($object->delete($user)>0){
+		        setEventMessage($langs->trans('RoadmapDetDeleteSuccess'));
+		        header('Location: '.$listUrl);
+		    }
+		    else {
+		        setEventMessage($langs->trans('RoadmapDetDeleteError', 'errors'));
+		        header('Location: '.dol_buildpath('/productcomposer/card_roadmapdet.php', 1).'?id='.$object->id);
+		    }
 			exit;
 			break;
 	}
@@ -111,12 +102,16 @@ else
 {
     $head = productcomposerAdminPrepareHead();
     $h = count($head) +1; 
-    $head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId();
+    $head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->fk_pcroadmap;
     $head[$h][1] = $langs->trans("productcomposerCard");
     $head[$h][2] = 'card';
+    $h++;
+    $head[$h][0] = dol_buildpath('/productcomposer/card_roadmapdet.php', 1).'?id='.$object->id;
+    $head[$h][1] = $langs->trans("RoadMapStepCard");
+    $head[$h][2] = 'roadmapdetcard';
     
 	$picto = 'generic';
-	dol_fiche_head($head, 'card', $langs->trans("productcomposer"), 0, $picto);
+	dol_fiche_head($head, 'roadmapdetcard', $langs->trans("productcomposer"), 0, $picto);
 }
 
 $formcore = new TFormCore;
@@ -142,42 +137,34 @@ if(!empty($object->fk_categorie))
 }
 
 
-
+$formUrl = dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 2);
 if ($mode == 'edit') echo $formcore->begin_form($_SERVER['PHP_SELF'], 'form_productcomposer');
 
-$linkback = '<a href="'.dol_buildpath('/productcomposer/list.php', 1).'">' . $langs->trans("BackToList") . '</a>';
-print $TBS->render('tpl/card.tpl.php'
+$linkback = '<a href="'.$formUrl .'">' . $langs->trans("BackToList") . '</a>';
+print $TBS->render('tpl/card_roadmapdet.tpl.php'
 	,array() // Block
 	,array(
 		'object'=>$object
 		,'view' => array(
 			'mode' => $mode
 			,'action' => 'save'
-			,'urlcard' => dol_buildpath('/productcomposer/card.php', 1)
-			,'urllist' => dol_buildpath('/productcomposer/list.php', 1)
+			,'urlcard' => dol_buildpath('/productcomposer/card_roadmapdet.php', 1)
+		    ,'urllist' => dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 1)
 			//,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object->generic, 'ref', $linkback, 1, 'ref', 'ref', '')
 			,'showLabel' => $formcore->texte('', 'label', $object->label, 80, 255)
 //			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
-		    ,'showStatus' => $object->getLibStatut(1)
 		    ,'showCat' => ($mode == 'edit')? $form->select_all_categories('product', $object->fk_categorie,"fk_categorie") : $categorieLabel
+		    
 		)
 		,'langs' => $langs
 		,'user' => $user
 		,'conf' => $conf
-		,'Tproductcomposer' => array(
-			'STATUS_DRAFT' => PCRoadMap::STATUS_DRAFT
-		    ,'STATUS_VALIDATED' => PCRoadMap::STATUS_VALIDATED
-		)
 	)
 );
 
 if ($mode == 'edit')
 {
     echo $formcore->end_form();
-}
-else
-{
-    include __DIR__ . '/list_children.php';
 }
 
 

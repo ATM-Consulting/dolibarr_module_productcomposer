@@ -2,23 +2,17 @@
 	<input type="hidden" name="action" value="[view.action]" />
 	<table width="100%" class="border">
 		<tbody>
-			
 
 			<tr class="label">
 				<td width="25%">[langs.transnoentities(Label)]</td>
 				<td>[view.showLabel;strconv=no]</td>
 			</tr>
-
-			<tr class="status">
-				<td width="25%">[langs.transnoentities(Status)]</td>
-				<td>[object.getLibStatut(1);strconv=no]</td>
-			</tr>
-			
 			
 			<tr class="label">
 				<td width="25%">[langs.transnoentities(Category)]</td>
 				<td>[view.showCat;strconv=no]</td>
 			</tr>
+			
 		</tbody>
 	</table>
 
@@ -46,22 +40,13 @@
 <div class="tabsAction">
 	[onshow;block=begin;when [user.rights.productcomposer.write;noerr]=1]
 	
-		[onshow;block=begin;when [object.status]=[Tproductcomposer.STATUS_DRAFT]]
+	<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=edit" class="butAction">[langs.transnoentities(Modify)]</a></div>
 			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=validate" class="butAction">[langs.transnoentities(Activate)]</a></div>
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=edit" class="butAction">[langs.transnoentities(Modify)]</a></div>
+	<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
 			
-		[onshow;block=end]
+	
 		
-		[onshow;block=begin;when [object.status]=[Tproductcomposer.STATUS_VALIDATED]]
-			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=modif" class="butAction">[langs.transnoentities(Disable)]</a></div>
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=edit" class="butAction">[langs.transnoentities(Modify)]</a></div>
-			
-		[onshow;block=end]
-		
-		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
-			
+
 	
 		
 	[onshow;block=end]

@@ -61,6 +61,18 @@ $sql.= ' WHERE 1=1';
 //if ($type == 'mine') $sql.= ' AND t.fk_user = '.$user->id;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 $formcore = new TFormCore($_SERVER['PHP_SELF'], 'form_list_productcomposer', 'GET');
 
 $nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;

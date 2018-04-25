@@ -20,10 +20,8 @@ ErrorRoadMapNotLoaded=La feuille de route en cours n'a pas pu être chargée.
 TopMenuproductcomposer=productcomposer
 
 # STATUS
-productcomposerStatusDraft=Brouillon (à valider)
-productcomposerStatusValidated=Validée (à accepter)
-productcomposerStatusRefused=Refusée (fermée)
-productcomposerStatusAccepted=Acceptée (fermée)
+productcomposerStatusDraft=Désactivé
+productcomposerStatusValidated=Actif
 
 Draft=Brouillon
 Validate=Validé
@@ -34,10 +32,14 @@ Accepted=Accepté
 RoadmapList=Liste des feuilles de route
 Noproductcomposer=(vide)
 Roadmaps=Feuilles de route
+RoadmapStep=Liste des étapes
 
 # CARD
 Newproductcomposer=Création productcomposer
-productcomposerCard=Fiche productcomposer
+productcomposerCard=Fiche feuille de route
+RoadMapStepCard=Fiche Etape
+RoadmapDetDeleteSuccess=Element supprimé
+RoadmapDetDeleteError=Une erreur est survenue lors de la suppression
 
 # CARD TPL
 Save=Enregistrer
@@ -50,6 +52,13 @@ ToClone=Cloner
 Delete=Supprimer
 ProductGenerator=Générateur de produit
 
+#Right
+productcomposer_write=Droit d'écriture sur les feuilles de route
+
+
 #JS
 PopUpTitle_ProductComposer=Composition de produit
 ImportInDocument=Importer le produit
+Deleteproductcomposer=Confirmation de suppression
+ConfirmDeleteproductcomposer=Vous êtes sur le point de supprimer l'élément sélectionné, vous confirmez ?
+

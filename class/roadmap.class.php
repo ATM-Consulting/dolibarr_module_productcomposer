@@ -37,7 +37,7 @@ class PCRoadMap extends SeedObject
 	public $withChild = true;
 	
 	public $childtables = array(
-	    'PCRoadMapStep'
+	    'PCRoadMapDet'
 	    
 	);
 	
@@ -106,7 +106,7 @@ class PCRoadMap extends SeedObject
 		
 		$res = parent::fetchCommon($id, $ref);
 		
-		if ($loadChild) $this->fetchObjectLinked();
+		if ($loadChild) $this->fetchChild();
 		
 		return $res;
 	}
@@ -115,9 +115,29 @@ class PCRoadMap extends SeedObject
 	{
 		global $user;
 		
-		$this->generic->deleteObjectLinked();
+		$this->fetchChild();
 		
-		parent::deleteCommon($user);
+		$errors = 0;
+		
+		if(!empty($this->TPCRoadMapDet))
+		{
+		    foreach ($this->TPCRoadMapDet as $roadmapdet )
+		    {
+		        if($roadmapdet->delete($user) < 1)
+		        {
+		            $errors ++;
+		        }
+		    }
+		}
+		
+		if(empty($errors))
+		{
+		    return parent::deleteCommon($user);
+		}
+		else {
+		    return -1 * $errors;
+		}
+		
 	}
 	
 	public function setDraft()
@@ -137,7 +157,6 @@ class PCRoadMap extends SeedObject
 	{
 //		global $user;
 		
-		$this->ref = $this->getNumero();
 		$this->status = self::STATUS_VALIDATED;
 		
 		return self::save();
@@ -321,7 +340,7 @@ class PCRoadMap extends SeedObject
 
 
 
-class PCRoadMapStep extends SeedObject
+class PCRoadMapDet extends SeedObject
 {
     
     public $table_element = 'pcroadmapdet';
@@ -405,6 +424,10 @@ class PCRoadMapStep extends SeedObject
         return $res;
     }
     
+    public function getId()
+    {
+        return $this->id;
+    }
     
     public function loadBy($value, $field, $annexe = false)
     {
@@ -413,7 +436,7 @@ class PCRoadMapStep extends SeedObject
         return $res;
     }
     
-    public function load($id, $ref, $loadChild = true)
+    public function load($id, $ref='', $loadChild = true)
     {
         global $db;
         
@@ -428,16 +451,16 @@ class PCRoadMapStep extends SeedObject
     {
         global $user;
         
-        $this->generic->deleteObjectLinked();
+        //$this->generic->deleteObjectLinked();
         
-        parent::deleteCommon($user);
+        return parent::deleteCommon($user);
     }
     
     
-    public function updateRankOfLine($rowid,$rank)
+    public static function updateRankOfLine($rowid,$rank)
     {
         global $db;
-        $sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element.' SET rank = '.$rank;
+        $sql = 'UPDATE '.MAIN_DB_PREFIX.'pcroadmapdet SET rank = '.$rank;
         $sql.= ' WHERE rowid = '.$rowid;
         
         if (! $db->query($sql))
