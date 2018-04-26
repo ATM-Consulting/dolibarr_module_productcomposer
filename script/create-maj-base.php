@@ -16,6 +16,6 @@ dol_include_once('/productcomposer/class/roadmap.class.php');
 $o=new PCRoadMap($db);
 $o->init_db_by_vars();
 
-$o=new PCRoadMapStep($db);
+$o=new PCRoadMapDet($db);
 $o->init_db_by_vars();
 
