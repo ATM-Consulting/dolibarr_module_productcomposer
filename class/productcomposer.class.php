@@ -167,7 +167,7 @@ class productcomposer
 	    
 	    //exit();
 	    // load step
-	    $curentStep = new PCRoadMapStep($this->db);
+	    $curentStep = new PCRoadMapDet($this->db);
 	    $loadRes = $curentStep->fetch($id);
 	    if($loadRes>0)
 	    {
@@ -448,7 +448,7 @@ class productcomposer
 	            print hStyle::callout($this->langs->trans('NoSelectedRoadmapCat'), 'error');
 	        }
 	        
-	        $curentStep = new PCRoadMapStep($this->db);
+	        $curentStep = new PCRoadMapDet($this->db);
 	        $res = $curentStep->fetch($curentStepId);
 	        if($res > 0)
 	        {
