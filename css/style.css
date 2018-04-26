@@ -5,7 +5,7 @@ tr.ui-state-highlight td{
 }
             
             
-            
+   
 
 .productcomposer-item{
 	padding: 10px;
@@ -54,13 +54,17 @@ tr.ui-state-highlight td{
 	color: #666;
 }
 
-
+.no-img-placeholder{
+	background: #fbfbfb url("../img/no-img.png") no-repeat center; 
+	background-size: contain;
+	background-position: center, center;
+}    
 .productcomposer-product-item-photo , .productcomposer-cat-item-photo {
 	height: 150px;
     width: 150px;
     position:relative;
 }
-.productcomposer-product-item-photo img.photo.photowithmargin, .productcomposer-cat-item-photo img {
+.productcomposer-product-item-photo img.photo.photowithmargin, .productcomposer-cat-item-photo img, .no-img-placeholder {
 
     margin:0;
     padding:0;

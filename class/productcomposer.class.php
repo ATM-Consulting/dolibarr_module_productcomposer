@@ -12,6 +12,7 @@ if (!class_exists('TObjetStd'))
 
 dol_include_once('/productcomposer/class/roadmap.class.php');
 dol_include_once('/commande/class/commande.class.php');
+dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/productcomposer/class/helper_style.class.php');
 
 class productcomposer 
@@ -98,6 +99,7 @@ class productcomposer
 	    global $db;
 	    
 	    if($objectName == 'commande') $objectName = 'Commande';
+	    if($objectName == 'propal') $objectName = 'Propal';
 	    
 	    if(class_exists($objectName) )
 	    {
@@ -320,6 +322,11 @@ class productcomposer
 	        $photo = '<img border="0" src="'.DOL_URL_ROOT.'/viewimage.php?modulepart=category&entity='.$object->entity.'&file='.urlencode($pdir.$filename).'">';
 	        break;
 	    }
+	    
+	    if(empty($photo)){
+	        $photo = '<span class="no-img-placeholder"></span>';
+	    }
+	 
 	    
 	    $forced_color='categtextwhite';
 	    
