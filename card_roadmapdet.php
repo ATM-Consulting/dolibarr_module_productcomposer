@@ -52,6 +52,11 @@ if (empty($reshook))
 	        //$object->fk_pcroadmap = $fk_pcroadmap;
 	        if(empty($object->fk_pcroadmap)) $object->fk_pcroadmap=$fk_pcroadmap;
 	        
+	        if(empty($object->label)){
+	            $error++;
+	            setEventMessage($langs->trans('LabelIsEmpty'), 'errors');
+	        }
+	        
 	        //var_dump($fk_pcroadmap);
 	        //var_dump($object);exit;
 //			$object->date_other = dol_mktime(GETPOST('starthour'), GETPOST('startmin'), 0, GETPOST('startmonth'), GETPOST('startday'), GETPOST('startyear'));
@@ -147,9 +152,8 @@ else
 }
 
 
-$formUrl = dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 2);
 
-$formcore = new TFormCore($formUrl, '' );
+$formcore = new TFormCore();
 $formcore->Set_typeaff($mode);
 
 $form = new Form($db);
@@ -174,6 +178,7 @@ if(!empty($object->fk_categorie))
 
 if ($mode == 'edit') echo $formcore->begin_form($_SERVER['PHP_SELF'], 'form_productcomposer');
 
+$formUrl = dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 2);
 $linkback = '<a href="'.$formUrl .'">' . $langs->trans("BackToList") . '</a>';
 print $TBS->render('tpl/card_roadmapdet.tpl.php'
 	,array() // Block

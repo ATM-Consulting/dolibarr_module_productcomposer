@@ -43,13 +43,15 @@ if (empty($reshook))
 //			$object->date_other = dol_mktime(GETPOST('starthour'), GETPOST('startmin'), 0, GETPOST('startmonth'), GETPOST('startday'), GETPOST('startyear'));
 
 			// Check parameters
-//			if (empty($object->date_other))
-//			{
-//				$error++;
-//				setEventMessages($langs->trans('warning_date_must_be_fill'), array(), 'warnings');
-//			}
+			if(empty($object->label)){
+			    $error++;
+			    setEventMessage($langs->trans('LabelIsEmpty'), 'errors');
+			}
 			
-			// ... 
+			if(empty($object->fk_categorie) || $object->fk_categorie < 1){
+			    $error++;
+			    setEventMessage($langs->trans('CategoryIsEmpty'), 'errors');
+			}
 			
 			if ($error > 0)
 			{
