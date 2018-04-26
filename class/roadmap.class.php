@@ -219,9 +219,10 @@ class PCRoadMap extends SeedObject
 	static public function updateRankOfLine($rowid,$rank)
 	{
 	    global $db;
-	    $sql = 'UPDATE '.MAIN_DB_PREFIX.$tis->table_element.' SET rank = '.$rank;
+	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'pcroadmap SET rank = '.$rank;
 	    $sql.= ' WHERE rowid = '.$rowid;
 	    
+	    echo $sql;
 	    if (! $db->query($sql))
 	    {
 	        dol_print_error($db->db);
@@ -457,7 +458,7 @@ class PCRoadMapDet extends SeedObject
     }
     
     
-    public static function updateRankOfLine($rowid,$rank)
+    static public function updateRankOfLine($rowid,$rank)
     {
         global $db;
         $sql = 'UPDATE '.MAIN_DB_PREFIX.'pcroadmapdet SET rank = '.$rank;

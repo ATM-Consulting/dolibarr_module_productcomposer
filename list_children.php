@@ -6,21 +6,15 @@ if( empty($user->rights->productcomposer->read) && !$user->admin) accessforbidde
 $object->fetchObjectLinked();
 
 $sql = 'SELECT r.rowid id, r.rank , r.label, c.label category_label, c.color, r.fk_categorie';
-
 $sql.= ' FROM '.MAIN_DB_PREFIX.'pcroadmapdet r ';
 $sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'categorie c ON (c.rowid = r.fk_categorie) ';
-
 $sql.= ' WHERE fk_pcroadmap = '.$object->id;
-//$sql.= ' AND t.entity IN ('.getEntity('productcomposer', 1).')';
-//if ($type == 'mine') $sql.= ' AND t.fk_user = '.$user->id;
-
 $sql.= ' ORDER BY r.rank ASC ';
 
 $dbtool = new PCDbTool($db);
 $TchildrenList = $dbtool->executeS($sql);
 
-if(!empty($TchildrenList))
-{
+
 ?>
 <table width="100%" border="0" class="notopnoleftnoright" style="margin-bottom: 6px;">
     <tbody>
@@ -28,6 +22,9 @@ if(!empty($TchildrenList))
             <td class="nobordernopadding valignmiddle">
                 <img src="<?php echo dol_buildpath('theme/eldy/img/title_generic.png',2); ?>" alt="" class="hideonsmartphone valignmiddle" id="pictotitle">
                 <div class="titre inline-block"><?php  print $langs->trans('RoadmapStep'); ?></div>
+            </td>
+            <td style="text-align:right;" >
+            	<a class="butAction" href="<?php print dol_buildpath('/productcomposer/card_roadmapdet.php',2).'?action=create&amp;fk_pcroadmap='.$object->id ?>" ><i class="fa fa-plus"></i> <?php print $langs->trans('AddNewRoadMapStep'); ?></a>
             </td>
        </tr>
    </tbody>
@@ -45,6 +42,7 @@ if(!empty($TchildrenList))
             <th class="liste_titre" ></th>
         </tr>
     </thead>
+<?php if(!empty($TchildrenList)){ ?>
     <tbody>
     	<?php foreach($TchildrenList as $roadmapStep){ ?>
         <tr class="oddeven" data-lineid="<?php print $roadmapStep->id; ?>" >
@@ -55,10 +53,16 @@ if(!empty($TchildrenList))
             
         </tr>
         <?php } ?>
+<?php } ?>
     </tbody>
 </table>
+<?php if(!empty($TchildrenList)){ ?>
+
+<?php } ?>
+
 </div>
 
+<?php if(!empty($TchildrenList)){ ?>
 <script type="text/javascript">
 $(document).ready(function(){
     

@@ -13,15 +13,24 @@ $langs->load('productcomposer@productcomposer');
 $action = GETPOST('action');
 $id = GETPOST('id', 'int');
 $ref = GETPOST('ref');
+$fk_pcroadmap = GETPOST('fk_pcroadmap', 'int');
 
 $mode = 'view';
 if (empty($user->rights->productcomposer->write)) $mode = 'view'; // Force 'view' mode if can't edit object
 else if ($action == 'create' || $action == 'edit') $mode = 'edit';
 
-$object = new PCRoadMapStep($db);
+
+
+$object = new PCRoadMapDet($db);
 
 if (!empty($id)) $object->load($id);
 elseif (!empty($ref)) $object->loadBy($ref, 'ref');
+
+if ($action == 'create' && empty($fk_pcroadmap) )
+{
+    exit();
+}
+if(empty($object->fk_pcroadmap)) $object->fk_pcroadmap=$fk_pcroadmap;
 
 $hookmanager->initHooks(array('productcomposercard', 'globalcard'));
 
@@ -38,8 +47,13 @@ if (empty($reshook))
 {
 	$error = 0;
 	switch ($action) {
-		case 'save':
-			$object->setValues($_REQUEST);  // Set standard attributes
+	    case 'save':
+	        $object->setValues($_REQUEST);  // Set standard attributes
+	        //$object->fk_pcroadmap = $fk_pcroadmap;
+	        if(empty($object->fk_pcroadmap)) $object->fk_pcroadmap=$fk_pcroadmap;
+	        
+	        //var_dump($fk_pcroadmap);
+	        //var_dump($object);exit;
 //			$object->date_other = dol_mktime(GETPOST('starthour'), GETPOST('startmin'), 0, GETPOST('startmonth'), GETPOST('startday'), GETPOST('startyear'));
 
 			// Check parameters
@@ -59,7 +73,7 @@ if (empty($reshook))
 			
 			$object->save(empty($object->ref));
 			
-			header('Location: '.dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId());
+			header('Location: '.dol_buildpath('/productcomposer/card_roadmapdet.php', 1).'?id='.$object->getId());
 			exit;
 			
 			break;
@@ -95,11 +109,29 @@ llxHeader('',$title);
 
 if ($action == 'create' && $mode == 'edit')
 {
-	load_fiche_titre($langs->trans("Newproductcomposer"));
-	dol_fiche_head();
+	$pageName = $langs->trans("AddNewRoadMapStep");
+	load_fiche_titre($pageName);
+	print_fiche_titre($pageName);
+	
+	$head = productcomposerAdminPrepareHead();
+	$h = count($head) +1;
+	$head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->fk_pcroadmap;
+	$head[$h][1] = $langs->trans("productcomposerCard");
+	$head[$h][2] = 'card';
+	$h++;
+	$head[$h][0] = dol_buildpath('/productcomposer/card_roadmapdet.php', 1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("RoadMapStepCard");
+	$head[$h][2] = 'roadmapdetcard';
+	
+	dol_fiche_head($head, 'roadmapdetcard', $langs->trans("productcomposer"), 0, $picto);
 }
 else
 {
+    
+    $pageName = $langs->trans("RoadMapStepCard").' : '.$object->label;
+    load_fiche_titre($pageName);
+    print_fiche_titre($pageName);
+    
     $head = productcomposerAdminPrepareHead();
     $h = count($head) +1; 
     $head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->fk_pcroadmap;
@@ -114,7 +146,10 @@ else
 	dol_fiche_head($head, 'roadmapdetcard', $langs->trans("productcomposer"), 0, $picto);
 }
 
-$formcore = new TFormCore;
+
+$formUrl = dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 2);
+
+$formcore = new TFormCore($formUrl, '' );
 $formcore->Set_typeaff($mode);
 
 $form = new Form($db);
@@ -137,7 +172,6 @@ if(!empty($object->fk_categorie))
 }
 
 
-$formUrl = dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 2);
 if ($mode == 'edit') echo $formcore->begin_form($_SERVER['PHP_SELF'], 'form_productcomposer');
 
 $linkback = '<a href="'.$formUrl .'">' . $langs->trans("BackToList") . '</a>';
@@ -152,8 +186,9 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    ,'urllist' => dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 1)
 			//,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object->generic, 'ref', $linkback, 1, 'ref', 'ref', '')
 			,'showLabel' => $formcore->texte('', 'label', $object->label, 80, 255)
-//			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
+			//			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
 		    ,'showCat' => ($mode == 'edit')? $form->select_all_categories('product', $object->fk_categorie,"fk_categorie") : $categorieLabel
+		    ,'fk_pcroadmap' => $object->fk_pcroadmap
 		    
 		)
 		,'langs' => $langs

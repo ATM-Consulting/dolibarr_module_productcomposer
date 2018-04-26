@@ -105,10 +105,23 @@ llxHeader('',$title);
 if ($action == 'create' && $mode == 'edit')
 {
 	load_fiche_titre($langs->trans("Newproductcomposer"));
-	dol_fiche_head();
+	
+	print_fiche_titre($langs->trans('Newproductcomposer'));
+	$head = productcomposerAdminPrepareHead();
+	$h = count($head) +1;
+	$head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId();
+	$head[$h][1] = $langs->trans("productcomposerCard");
+	$head[$h][2] = 'card';
+	
+	$picto = 'generic';
+	dol_fiche_head($head, 'card', $langs->trans("productcomposer"), 0, $picto);
 }
 else
 {
+    $pageName = $object->label;
+    load_fiche_titre($pageName);
+    print_fiche_titre($pageName);
+    
     $head = productcomposerAdminPrepareHead();
     $h = count($head) +1; 
     $head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId();

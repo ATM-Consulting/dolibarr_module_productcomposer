@@ -134,7 +134,7 @@ function _postRoadmapRank($objectName)
 	
 	if(!$objectHaveRank){ exit; }
 	
-	if(is_array($TRowOrder) && !empty($TRowOrder) && !empty($objId))
+	if(is_array($TRowOrder) && !empty($TRowOrder) && ( !empty($objId) || $objectName == 'PCRoadMap' )  )
 	{
 		foreach($TRowOrder as $rang => $value)
 		{
@@ -144,6 +144,7 @@ function _postRoadmapRank($objectName)
 			if($rowid>0)
 			{
 			    $objectName::updateRankOfLine($rowid,$rang);
+			    echo $rowid.' '.$objectName;
 			}
 			
 		}

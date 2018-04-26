@@ -1,5 +1,7 @@
 <!-- Un début de <div> existe de par la fonction dol_fiche_head() -->
 	<input type="hidden" name="action" value="[view.action]" />
+	<input type="hidden" name="fk_pcroadmap" value="[view.fk_pcroadmap]" />
+	
 	<table width="100%" class="border">
 		<tbody>
 
@@ -24,14 +26,14 @@
 	<!-- '+-' est l'équivalent d'un signe '>' (TBS oblige) -->
 	[onshow;block=begin;when [object.getId()]+-0]
 	<input type='hidden' name='id' value='[object.getId()]' />
-	<input type="submit" value="[langs.transnoentities(Save)]" class="button" />
+	<input type="submit" value="[langs.transnoentities(Save)]" class="butAction" />
 	[onshow;block=end]
 	
 	[onshow;block=begin;when [object.getId()]=0]
-	<input type="submit" value="[langs.transnoentities(CreateDraft)]" class="button" />
+	<input type="submit" value="[langs.transnoentities(CreateDraft)]" class="butAction" />
 	[onshow;block=end]
 	
-	<input type="button" onclick="javascript:history.go(-1)" value="[langs.transnoentities(Cancel)]" class="button">
+	<input type="button" onclick="javascript:history.go(-1)" value="[langs.transnoentities(Cancel)]" class="butAction">
 	
 </div>
 [onshow;block=end]

@@ -36,6 +36,8 @@ if (empty($reshook))
 
 llxHeader('',$langs->trans('RoadmapList'),'','');
 
+print_fiche_titre($langs->trans('RoadmapList'));
+
 // Configuration header
 $head = productcomposerAdminPrepareHead();
 dol_fiche_head(
@@ -52,81 +54,132 @@ dol_fiche_head(
 //if (empty($user->rights->productcomposer->all->read)) $type = 'mine';
 
 // TODO ajouter les champs de son objet que l'on souhaite afficher
-$sql = 'SELECT r.rowid, r.label, r.date_creation, \'\' AS action';
-
+$sql = 'SELECT r.rowid id, r.label, r.date_creation, \'\' AS action';
 $sql.= ' FROM '.MAIN_DB_PREFIX.$object->table_element.' r ';
-
 $sql.= ' WHERE 1=1';
-//$sql.= ' AND t.entity IN ('.getEntity('productcomposer', 1).')';
-//if ($type == 'mine') $sql.= ' AND t.fk_user = '.$user->id;
+$sql.= ' ORDER BY r.rank ASC ';
 
 
 
 
+$dbtool = new PCDbTool($db);
+$Tlist = $dbtool->executeS($sql);
 
 
+    ?>
+<table width="100%" border="0" class="notopnoleftnoright" style="margin-bottom: 6px;">
+    <tbody>
+        <tr>
+            <td class="nobordernopadding valignmiddle">
+                <img src="<?php echo dol_buildpath('theme/eldy/img/title_generic.png',2); ?>" alt="" class="hideonsmartphone valignmiddle" id="pictotitle">
+                <div class="titre inline-block"><?php  print $langs->trans('RoadmapStep'); ?></div>
+            </td>
+            <td style="text-align:right;" >
+            	<a class="butAction" href="<?php print dol_buildpath('/productcomposer/card.php',2).'?action=create' ?>" ><i class="fa fa-plus"></i> <?php print $langs->trans('AddNewRoadMap'); ?></a>
+            </td>
+       </tr>
+   </tbody>
+</table>
+ 
 
+<div class="div-table-responsive">
+<table id="productcomposer" class="liste ui-sortable" width="100%">
+    <thead>
+        <tr class="liste_titre">
+            <th class="liste_titre" ><?php print $langs->trans('Label'); ?></th>
+            <th class="liste_titre" ><?php print $langs->trans('Category'); ?></th>
+            
+            <th class="liste_titre" ></th>
+            <th class="liste_titre" ></th>
+        </tr>
+    </thead>
+    <tbody>
+<?php if(!empty($Tlist)){ ?>
+    	<?php foreach($Tlist as $roadmap){ ?>
+        <tr class="oddeven" data-lineid="<?php print $roadmap->id; ?>" >
+            <td  ><a href="<?php print dol_buildpath('/productcomposer/card.php',2).'?id='.$roadmap->id; ?>" ><?php print $roadmap->label; ?></a></td>
+            <td  ><a href="<?php print dol_buildpath('/categories/viewcat.php?type=product',2).'&amp;id='.$roadmap->fk_categorie; ?>" ><?php print $roadmap->category_label; ?></a></td>
+            <td class="productcomposer_linecolmove" ></td>
+            <td ><a href="<?php print dol_buildpath('/productcomposer/card.php',2).'?action=edit&id='.$roadmap->id; ?>" ><?php print img_edit(); ?></a></td>
+            
+        </tr>
+        <?php } ?>
+<?php } ?>   
+    </tbody>
+</table>
+</div>
 
-
-
-
-
-
-
-$formcore = new TFormCore($_SERVER['PHP_SELF'], 'form_list_productcomposer', 'GET');
-
-$nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
-
-$r = new Listview($db, 'productcomposer');
-echo $r->render($sql, array(
-	'view_type' => 'list' // default = [list], [raw], [chart]
-	,'limit'=>array(
-		'nbLine' => $nbLine
-	)
-	,'subQuery' => array()
-	,'link' => array(
-	    'label' => '<a href="'.dol_buildpath('/productcomposer/card.php',2).'?id=@rowid@" >@val@</a>',
-	)
-	,'type' => array(
-		//'date_creation' => 'date' // [datetime], [hour], [money], [number], [integer]
-	)
-	,'search' => array(
-		//'date_creation' => array('recherche' => 'calendars', 'allow_is_null' => true)
-		//'label' => array(
-		    //'recherche' => true, 
-		    //'table' => array('r'), 
-		    //'field' => array('label')
-		//) // input text de recherche sur plusieurs champs
-	    //'status' => array('recherche' => PCRoadMap::$TStatus, 'to_translate' => true) // select html, la clé = le status de l'objet, 'to_translate' à true si nécessaire
-	)
-	,'translate' => array()
-	,'hide' => array(
-		'rowid'
-	)
-    ,'list' => array(
-        'title'=>$langs->trans('RoadmapList')
-		,'image' => 'title_generic.png'
-		,'picto_precedent' => '<'
-		,'picto_suivant' => '>'
-		,'noheader' => 0
-		,'messageNothing' => $langs->trans('Noproductcomposer')
-		,'picto_search' => img_picto('','search.png', '', 0)
-	)
+<?php if(!empty($Tlist)){ ?>
+<script type="text/javascript">
+$(document).ready(function(){
     
-	,'title'=>array(
-		'label' => $langs->trans('Label')
-		,'date_creation' => $langs->trans('DateCre')
-	)
-	,'eval'=>array(
-//		'fk_user' => '_getUserNomUrl(@val@)' // Si on a un fk_user dans notre requête
-	)
-));
+    // target some elements
+    var moveBlockCol= $('td.productcomposer_linecolmove');
+    
+    
+    moveBlockCol.disableSelection(); // prevent selection
+    
+    // apply some graphical stuff
+    moveBlockCol.css("background-image",'url(<?php echo dol_buildpath('theme/eldy/img/grip.png',2);  ?>)');
+    moveBlockCol.css("background-repeat","no-repeat");
+    moveBlockCol.css("background-position","center center");
+    moveBlockCol.css("cursor","move");
+    moveBlockCol.attr('title', '<?php echo html_entity_decode($langs->trans('MoveTitleBlock')); ?>');
+    
+    
+    $( "#productcomposer" ).sortable({
+        cursor: "move",
+        handle: ".productcomposer_linecolmove",
+        items: 'tr:not(.liste_titre)',
+        delay: 150, //Needed to prevent accidental drag when trying to select
+        opacity: 0.8,
+        axis: "y", // limit y axis
+        placeholder: "ui-state-highlight",
+        start: function( event, ui ) {
+            //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+            //console.log(ui.item);
+            var colCount = ui.item.children().length;
+            ui.placeholder.html('<td colspan="'+colCount+'">&nbsp;</td>');
+            
+        },
+        update: function (event, ui) {
 
-$parameters=array('sql'=>$sql);
-$reshook=$hookmanager->executeHooks('printFieldListFooter', $parameters, $object);    // Note that $action and $object may have been modified by hook
-print $hookmanager->resPrint;
+        	var TRowOrder = $(this).sortable('toArray', { attribute: 'data-lineid' });
+        				    	        
+	        // POST to server using $.post or $.ajax
+	        $.ajax({
+	            data: {
+    	            post: 'roadmapRank',
+					TRowOrder: TRowOrder
+				},
+	            type: 'POST',
+	            url: '<?php echo dol_buildpath('/productcomposer/script/interface.php', 1) ; ?>',
+	            success: function(data) {
+	                console.log(data);
+	            },
+	        });
+	    }
+    });
+		
+});
+</script>
+<style type="text/css" >
 
-$formcore->end_form();
+tr.ui-state-highlight td{
+	border: 1px solid #dad55e;
+	background: #fffa90;
+	color: #777620;
+}
+</style>
+<?php 
+}
+
+
+
+
+
+
+
 
 llxFooter('');
 

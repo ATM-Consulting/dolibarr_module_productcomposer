@@ -30,14 +30,14 @@
 	<!-- '+-' est l'équivalent d'un signe '>' (TBS oblige) -->
 	[onshow;block=begin;when [object.getId()]+-0]
 	<input type='hidden' name='id' value='[object.getId()]' />
-	<input type="submit" value="[langs.transnoentities(Save)]" class="button" />
+	<input type="submit" value="[langs.transnoentities(Save)]" class="butAction" />
 	[onshow;block=end]
 	
 	[onshow;block=begin;when [object.getId()]=0]
-	<input type="submit" value="[langs.transnoentities(CreateDraft)]" class="button" />
+	<input type="submit" value="[langs.transnoentities(CreateDraft)]" class="butAction" />
 	[onshow;block=end]
 	
-	<input type="button" onclick="javascript:history.go(-1)" value="[langs.transnoentities(Cancel)]" class="button">
+	<input type="button" onclick="javascript:history.go(-1)" value="[langs.transnoentities(Cancel)]" class="butAction">
 	
 </div>
 [onshow;block=end]
