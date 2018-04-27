@@ -152,6 +152,18 @@ $( document ).ready(function() {
 			loadInPopin(  dataTransmitToUrl(parametters , page)   );
 		}
 		
+		if(targetAction == "loadstep")
+		{		
+			var parametters = { 
+					roadmapid: $("#" + popinId).data('fk_pcroadmap'),
+					stepid: $( this ).data('fk_step'), 
+					fk_categorie: $( this ).data('fk_categorie'), 
+				};
+		
+			console.log( dataTransmitToUrl(parametters , page));
+			loadInPopin(  dataTransmitToUrl(parametters , page)   );
+		}
+		
 		
 	
 	});

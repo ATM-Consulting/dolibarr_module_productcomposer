@@ -21,9 +21,9 @@ class productcomposer
     public $Tcomposer = array();
     public $roadmap = null;
     
-    private $curentRoadMapIndex = 0;
+    public $curentRoadMapIndex = 0;
     
-    private $TcurentComposer = null;
+    public $TcurentComposer = null;
     
     
 
@@ -56,6 +56,8 @@ class productcomposer
 	public function save()
 	{
 	    global $user;
+	    
+	    
 	    $_SESSION['roadmap'][$this->object->element][$this->object->id] = array(
 	        'curentRoadMapIndex' => $this->curentRoadMapIndex,
 	        'Tcomposer' => $this->Tcomposer,
@@ -171,6 +173,9 @@ class productcomposer
 	    $loadRes = $curentStep->fetch($id);
 	    if($loadRes>0)
 	    {
+	        
+	        
+	        
 	        print '<div id="step-wrap-'.$curentStep->id.'" class="productcomposer-selector" >';
 	     
 	        $curentSelectedRoadMapLabel = '';
@@ -206,25 +211,60 @@ class productcomposer
 	        }
 	        elseif($curentStep->type == $curentStep::TYPE_SELECT_PRODUCT)
 	        {
-	            if($products = $curentStep->getProductList())
+	            // Gestion des options
+	            
+	            if(empty($param['fk_categorie'])){
+	                $param['fk_categorie'] = 0;
+	            }
+	            
+	            $elements = $curentStep->getCatList($param['fk_categorie']);
+	            
+	            if(!empty($elements))
 	            {
-	                
-	                $this->print_searchFilter(".productcomposer-catproduct");
-	                
-	                print '<div class="productcomposer-cat" style="border-color: '.$curentStep->categorie->color.';" >';
-	                foreach ($products as $productid)
+	                print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
+	                foreach ($elements as $catid)
 	                {
-	                    $product = new Product($this->db);
-	                    $product->fetch($productid);
+	                    $categorie = new Categorie($this->db);
+	                    $categorie->fetch($catid);
 	                    
-	                    $this->print_productForStep($curentStep,$product);
+	                    $data['target-action'] = 'loadstep';
+	                    $data['fk_nextstep'] = $nextStep->id;
+	                    $data['fk_categorie'] = $catid;
+	                    
+	                    
+	                    $this->print_catForStep($curentStep,$categorie,$data);
 	                    
 	                }
 	                print '</div>';
 	            }
-	            else{
-	                print hStyle::callout($this->langs->trans('Noproductcomposer'), 'error');
+	            else 
+	            {
+	                $products = $curentStep->getProductListInMultiCat(array($this->TcurentComposer['fk_categorie_selected'], $param['fk_categorie']) );
+	                
+	                
+	                if($products)
+	                {
+	                    
+	                    $this->print_searchFilter(".productcomposer-catproduct");
+	                    
+	                    print '<div class="productcomposer-cat" style="border-color: '.$curentStep->categorie->color.';" >';
+	                    foreach ($products as $productid)
+	                    {
+	                        $product = new Product($this->db);
+	                        $product->fetch($productid);
+	                        
+	                        $this->print_productForStep($curentStep,$product);
+	                        
+	                    }
+	                    print '</div>';
+	                }
+	                else{
+	                    print hStyle::callout($this->langs->trans('Noproductcomposer'), 'error');
+	                }
 	            }
+	            
+	            
+	            
 	        }
 	        
 	        print '</div>';
@@ -432,7 +472,7 @@ class productcomposer
 	                //print hStyle::callout($this->langs->trans('NoChildCat'), 'error');
 	                
 	                // if no child cat so $this->roadmap->fk_categorie is the selected cat (or param
-	                $this->TcurentComposer['fk_categorie_selected'] = !empty($param['fk_categorie'])?!$param['fk_categorie']:$this->roadmap->fk_categorie;
+	                $this->TcurentComposer['fk_categorie_selected'] = !empty($param['fk_categorie'])?$param['fk_categorie']:$this->roadmap->fk_categorie;
 	                $this->print_step($firstStepId);
 	            }
 	            $this->save();
@@ -453,7 +493,7 @@ class productcomposer
 	        if($res > 0)
 	        {
 	            $nextStep = $curentStep->getNext();
-	            $this->print_step($nextStep->id);
+	            $this->print_step($nextStep->id,$param);
 	        }
 	    }
 	}

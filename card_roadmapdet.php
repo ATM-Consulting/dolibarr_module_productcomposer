@@ -191,8 +191,9 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    ,'urllist' => dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 1)
 			//,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object->generic, 'ref', $linkback, 1, 'ref', 'ref', '')
 			,'showLabel' => $formcore->texte('', 'label', $object->label, 80, 255)
-			//			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
+		    //			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
 		    ,'showCat' => ($mode == 'edit')? $form->select_all_categories('product', $object->fk_categorie,"fk_categorie") : $categorieLabel
+		    ,'showType' => ($mode == 'edit')? $form->selectarray('type', $object->listType(),$object->type ) : $object->typeLabel()
 		    ,'fk_pcroadmap' => $object->fk_pcroadmap
 		    
 		)

@@ -5,7 +5,7 @@ if( empty($user->rights->productcomposer->read) && !$user->admin) accessforbidde
 
 $object->fetchObjectLinked();
 
-$sql = 'SELECT r.rowid id, r.rank , r.label, c.label category_label, c.color, r.fk_categorie';
+$sql = 'SELECT r.rowid id, r.rank , r.label, c.label category_label, c.color, r.fk_categorie, r.type';
 $sql.= ' FROM '.MAIN_DB_PREFIX.'pcroadmapdet r ';
 $sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.'categorie c ON (c.rowid = r.fk_categorie) ';
 $sql.= ' WHERE fk_pcroadmap = '.$object->id;
@@ -37,6 +37,7 @@ $TchildrenList = $dbtool->executeS($sql);
         <tr class="liste_titre">
             <th class="liste_titre" ><?php print $langs->trans('Label'); ?></th>
             <th class="liste_titre" ><?php print $langs->trans('Category'); ?></th>
+            <th class="liste_titre" ><?php print $langs->trans('Type'); ?></th>
             
             <th class="liste_titre" ></th>
             <th class="liste_titre" ></th>
@@ -48,6 +49,7 @@ $TchildrenList = $dbtool->executeS($sql);
         <tr class="oddeven" data-lineid="<?php print $roadmapStep->id; ?>" >
             <td  ><a href="<?php print dol_buildpath('/productcomposer/card_roadmapdet.php',2).'?id='.$roadmapStep->id; ?>" ><?php print $roadmapStep->label; ?></a></td>
             <td  ><a href="<?php print dol_buildpath('/categories/viewcat.php?type=product',2).'&amp;id='.$roadmapStep->fk_categorie; ?>" ><?php print $roadmapStep->category_label; ?></a></td>
+            <td  ><?php print PCRoadMapDet::translateTypeConst($roadmapStep->type); ?></td>
             <td class="productcomposer_linecolmove" ></td>
             <td ><a href="<?php print dol_buildpath('/productcomposer/card_roadmapdet.php',2).'?action=edit&id='.$roadmapStep->id; ?>" ><?php print img_edit(); ?></a></td>
             

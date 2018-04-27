@@ -361,6 +361,8 @@ class PCRoadMapDet extends SeedObject
     const TYPE_SELECT_PRODUCT  = 2;
     
     
+    
+    
     public function __construct($db)
     {
         global $conf,$langs;
@@ -410,6 +412,8 @@ class PCRoadMapDet extends SeedObject
         
         if (!$this->getId()) $this->fk_user_author = $user->id;
         
+        if(empty($this->id)){ $this->rank = $this->getMaxRank() + 1; }
+        
         $res = $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
         
         if ($addprov || !empty($this->is_clone))
@@ -424,6 +428,17 @@ class PCRoadMapDet extends SeedObject
         
         return $res;
     }
+    
+    public function getMaxRank()
+    {
+        global $db;
+        $sql = 'SELECT MAX(rank) FROM '.MAIN_DB_PREFIX.'pcroadmapdet ';
+        $sql.= ' WHERE fk_pcroadmap = '.$this->fk_pcroadmap;
+        
+        return $this->dbTool->getvalue($sql);
+
+    }
+    
     
     public function getId()
     {
@@ -499,13 +514,16 @@ class PCRoadMapDet extends SeedObject
         return $this->getClosest();
     }
     
-    public function getProductList(){
-    
+    public function getProductList($fk_category=0){
+        
+        if(empty($fk_category)){ $fk_category = $this->fk_categorie;}
+        
         $sql = "SELECT c.fk_product as id" ;
         $sql .= " FROM " . MAIN_DB_PREFIX . "categorie_product as c, " . MAIN_DB_PREFIX . "categorie o";
         $sql .= " WHERE o.entity IN (" . getEntity('category').")";
-        $sql .= " AND c.fk_categorie = ".$this->fk_categorie;
+        $sql .= " AND c.fk_categorie = ".intval($fk_category);
         $sql .= " AND c.fk_categorie = o.rowid";
+
         $products = $this->dbTool->executeS($sql);
         if($products)
         {
@@ -521,13 +539,46 @@ class PCRoadMapDet extends SeedObject
     }
     
     
+    public function getProductListInMultiCat($TCategory=array()){
+        
+        if(!is_array($TCategory) || empty($TCategory) ) return 0;
+        
+        // récupération des produits lié à la feuille de route
+        $Tall = array(); 
+        
+        $i=0;
+        foreach ($TCategory as $fk_category)
+        {
+            $list = $this->getProductList($fk_category);
+            if(!empty($list))
+            {
+                
+                if($i==0){
+                    $Tall = $list;
+                }
+                else {
+                    $Tall = array_intersect($Tall, $list);
+                }
+                
+                $i++;
+            }
+        }
+        
+        return array_unique ( $Tall);
+        
+    }
     
-    public function getCatList(){
+    
+    
+    
+    public function getCatList($fk_category=0){
+        
+        if(empty($fk_category)){ $fk_category = $this->fk_categorie;}
         
         $sql = "SELECT o.rowid as id" ;
         $sql .= " FROM " . MAIN_DB_PREFIX . "categorie o";
         $sql .= " WHERE o.entity IN (" . getEntity('category').")";
-        $sql .= " AND o.fk_parent = ".$this->fk_categorie;
+        $sql .= " AND o.fk_parent = ".intval($fk_category);
         
         $results = $this->dbTool->executeS($sql);
         if($results)
@@ -591,6 +642,31 @@ class PCRoadMapDet extends SeedObject
         $this->ref_next = $this->dbTool->getvalue($sql);
         
         return 1;
+    }
+    
+    // used for form
+    static function listType(){
+        return array(
+            self::TYPE_SELECT_CATEGORY => self::translateTypeConst(self::TYPE_SELECT_CATEGORY ),
+            self::TYPE_SELECT_PRODUCT => self::translateTypeConst(self::TYPE_SELECT_PRODUCT ),
+        );
+    }
+    
+    static function translateTypeConst($key){
+        global $langs;
+        switch ($key) {
+            case self::TYPE_SELECT_CATEGORY :
+                return $langs->trans('TYPE_SELECT_CATEGORY');
+                break;
+            case self::TYPE_SELECT_PRODUCT :
+                return $langs->trans('TYPE_SELECT_PRODUCT');
+                break;
+        }
+    }
+    
+    
+    public function typeLabel(){
+        return self::translateTypeConst($this->type);
     }
 }
 

@@ -18,6 +18,7 @@ $fromelementid = GETPOST('fromelementid','int');
 $roadmapid = GETPOST('roadmapid','int');
 $stepid = GETPOST('stepid','int');
 $nextstepid = GETPOST('nextstepid','int');
+$param=array();
 
 if( ($post=='roadmapRank' || $post=='roadmapRankDet') )
 {
@@ -84,12 +85,19 @@ if( $get == 'selectroadmapcategorie' )
     
     if(!empty($PComposer->roadmap) )
     {
-        $PComposer->print_nextstep(0, array('fk_categorie'=>GETPOST('fk_categorie')));
+        $PComposer->print_nextstep(0, array('fk_categorie'=>GETPOST('fk_categorie','int')));
     }
     else { print hStyle::callout($langs->trans('ErrorRoadMapNotLoaded'),'error'); }
 }
 
-
+if( $get == 'loadstep' )
+{
+    if(!empty($stepid))
+    {
+       $PComposer->print_step($stepid, array('fk_categorie'=>GETPOST('fk_categorie','int')) );
+    }
+    else { echo $langs->trans('paramMissed'); }
+}
 
 if( $get == 'loadnextstep' )
 {
@@ -155,3 +163,4 @@ function _postRoadmapRank($objectName)
 
 print '<div style="clear:both;" ></div>';
 //var_dump($_REQUEST);
+var_dump($PComposer->TcurentComposer);

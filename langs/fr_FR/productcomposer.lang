@@ -16,6 +16,10 @@ NoSelectedRoadmapCat=Oops, la selection de la catégorie de la feille de route e
 NoFirstStepFound=La première étape n'est pas trouvée.
 ErrorRoadMapNotLoaded=La feuille de route en cours n'a pas pu être chargée.
 
+#CONST
+TYPE_SELECT_PRODUCT=Sélection de produit
+TYPE_SELECT_CATEGORY=Sélection de catégorie
+
 # MENU
 TopMenuproductcomposer=productcomposer
 

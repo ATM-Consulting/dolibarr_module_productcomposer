@@ -15,6 +15,11 @@
 				<td>[view.showCat;strconv=no]</td>
 			</tr>
 			
+			<tr class="label">
+				<td width="25%">[langs.transnoentities(Type)]</td>
+				<td>[view.showType;strconv=no]</td>
+			</tr>
+			
 		</tbody>
 	</table>
 
@@ -30,7 +35,7 @@
 	[onshow;block=end]
 	
 	[onshow;block=begin;when [object.getId()]=0]
-	<input type="submit" value="[langs.transnoentities(CreateDraft)]" class="butAction" />
+	<input type="submit" value="[langs.transnoentities(Add)]" class="butAction" />
 	[onshow;block=end]
 	
 	<input type="button" onclick="javascript:history.go(-1)" value="[langs.transnoentities(Cancel)]" class="butAction">
