@@ -163,4 +163,4 @@ function _postRoadmapRank($objectName)
 
 print '<div style="clear:both;" ></div>';
 //var_dump($_REQUEST);
-var_dump($PComposer->TcurentComposer);
+//var_dump($PComposer->TcurentComposer);
