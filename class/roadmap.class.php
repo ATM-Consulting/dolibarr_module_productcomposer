@@ -542,7 +542,7 @@ class PCRoadMapDet extends SeedObject
     public function getProductListInMultiCat($TCategory=array()){
         
         if(!is_array($TCategory) || empty($TCategory) ) return 0;
-        
+        //var_dump($TCategory);
         // récupération des produits lié à la feuille de route
         $Tall = array(); 
         
@@ -550,6 +550,7 @@ class PCRoadMapDet extends SeedObject
         foreach ($TCategory as $fk_category)
         {
             $list = $this->getProductList($fk_category);
+            
             if(!empty($list))
             {
                 
@@ -561,6 +562,10 @@ class PCRoadMapDet extends SeedObject
                 }
                 
                 $i++;
+            }
+            else
+            {
+                $Tall = array();
             }
         }
         

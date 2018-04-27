@@ -187,7 +187,7 @@ class productcomposer
 	        }
 	        
 	        
-	        print '<h2><span class="rank" >'.$curentStep->rank.'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
+	        print '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
 	        
 	        if($curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
 	        {
@@ -240,14 +240,14 @@ class productcomposer
 	            else 
 	            {
 	                $products = $curentStep->getProductListInMultiCat(array($this->TcurentComposer['fk_categorie_selected'], $param['fk_categorie']) );
-	                
+	                var_dump($products);
 	                
 	                if($products)
 	                {
 	                    
 	                    $this->print_searchFilter(".productcomposer-catproduct");
 	                    
-	                    print '<div class="productcomposer-cat" style="border-color: '.$curentStep->categorie->color.';" >';
+	                    print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
 	                    foreach ($products as $productid)
 	                    {
 	                        $product = new Product($this->db);
