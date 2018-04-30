@@ -26,8 +26,8 @@ $( document ).ready(function() {
         
 		if( page != undefined && fromelement != undefined && fromelementid != undefined)
 		{
-	    	var windowWidth = $(window).width()*0.8; //retrieve current window width
-	    	var windowHeight = $(window).height()*0.8; //retrieve current window height
+	    	var windowWidth = $(window).width()*0.95; //retrieve current window width
+	    	var windowHeight = $(window).height()*0.95; //retrieve current window height
 			
 			page = page + "&fromelement=" + fromelement + "&fromelementid=" + fromelementid
 			
