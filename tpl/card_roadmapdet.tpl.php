@@ -20,6 +20,11 @@
 				<td>[view.showType;strconv=no]</td>
 			</tr>
 			
+			<tr class="label">
+				<td width="25%">[langs.transnoentities(Goto)]</td>
+				<td>[view.showGoto;strconv=no]</td>
+			</tr>
+			
 		</tbody>
 	</table>
 

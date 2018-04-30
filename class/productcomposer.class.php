@@ -266,6 +266,38 @@ class productcomposer
 	            
 	            
 	        }
+	        elseif($curentStep->type == $curentStep::TYPE_GOTO)
+	        {
+	            // goto 
+	            $goToData['target-action'] = 'loadstep';
+	            $goToData['fk_step'] = $curentStep->fk_pcroadmapdet;
+	            $gotoAttr = $this->inlineData($goToData);
+	            
+	            // next step
+	            $nextStep = $curentStep->getNext();
+	            if(!empty($nextStep))
+	            {
+	                $data['target-action'] = 'loadstep';
+	                $data['fk_step'] = $nextStep->id;
+	                $nextAttr = $this->inlineData($data);
+	            }
+	            
+	            print '<table >';
+	            print '    <td>';
+	            print '        <tr style="text-align:right;padding:10px;">';
+	            print '            <span class="butAction" '.$gotoAttr.' >'.$curentStep->getLabel($curentStep->fk_pcroadmapdet).'</span>';
+	            print '        </tr>';
+	            print '        <tr style="text-align:left;padding:10px;" >';
+	            
+	            if(!empty($nextStep))
+	            {
+	                print '<span class="butAction" '.$nextAttr.' >'.$curentStep->getLabel($nextStep->id).'</span>';
+	            }
+	            
+	            print '        </tr>';
+	            print '    </td>';
+                print '</table>';
+	        }
 	        
 	        print '</div>';
 	    }

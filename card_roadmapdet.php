@@ -57,6 +57,12 @@ if (empty($reshook))
 	            setEventMessage($langs->trans('LabelIsEmpty'), 'errors');
 	        }
 	        
+	        if($object->type === $object->TYPE_GOTO && $object->fk_pcroadmapdet < 1){
+	            $error++;
+	            setEventMessage($langs->trans('GotoIsEmpty'), 'errors');
+	        }
+	        
+	        
 	        //var_dump($fk_pcroadmap);
 	        //var_dump($object);exit;
 //			$object->date_other = dol_mktime(GETPOST('starthour'), GETPOST('startmin'), 0, GETPOST('startmonth'), GETPOST('startday'), GETPOST('startyear'));
@@ -180,6 +186,9 @@ if ($mode == 'edit') echo $formcore->begin_form($_SERVER['PHP_SELF'], 'form_prod
 
 $formUrl = dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 2);
 $linkback = '<a href="'.$formUrl .'">' . $langs->trans("BackToList") . '</a>';
+
+
+
 print $TBS->render('tpl/card_roadmapdet.tpl.php'
 	,array() // Block
 	,array(
@@ -195,6 +204,7 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    ,'showCat' => ($mode == 'edit')? $form->select_all_categories('product', $object->fk_categorie,"fk_categorie") : $categorieLabel
 		    ,'showType' => ($mode == 'edit')? $form->selectarray('type', $object->listType(),$object->type ) : $object->typeLabel()
 		    ,'fk_pcroadmap' => $object->fk_pcroadmap
+		    ,'showGoto' => ($mode == 'edit')? $form->selectarray('fk_pcroadmapdet', $object->listSteps(array($object->id)),$object->fk_pcroadmapdet,1 ) : $object->getLabel($object->fk_pcroadmapdet)
 		    
 		)
 		,'langs' => $langs

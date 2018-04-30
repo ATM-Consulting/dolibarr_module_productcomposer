@@ -353,12 +353,14 @@ class PCRoadMapDet extends SeedObject
     public $fk_categorie;
     public $rank;
     public $categorie;
+    public $fk_pcroadmapdet;
     
     /**
      * Type status
      */
-    const TYPE_SELECT_CATEGORY = 1;
+    const TYPE_SELECT_CATEGORY = 1; // n'est finalement pas utiliser
     const TYPE_SELECT_PRODUCT  = 2;
+    const TYPE_GOTO = 3; // permet de boucler sur une étape
     
     
     
@@ -376,6 +378,7 @@ class PCRoadMapDet extends SeedObject
             ,'label'=>array('type'=>'string')
             ,'type'=>array('type'=>'int')
             ,'fk_categorie'=>array('type'=>'int')
+            ,'fk_pcroadmapdet'=>array('type'=>'int')
             ,'rank'=>array('type'=>'int')
         );
         
@@ -490,11 +493,14 @@ class PCRoadMapDet extends SeedObject
     {
         
         $operateur =  !empty($next)?'>':'<';
+        $order =  !empty($next)?'ASC':'<';
         
         $sql = 'SELECT rowid as id FROM '.MAIN_DB_PREFIX.$this->table_element;
-        $sql.= ' WHERE fk_pcroadmap = '.$this->fk_pcroadmap . ' AND rank '.$operateur.' '.$this->rank.' LIMIT 1 ';
-        $TResult = array();
+        $sql.= ' WHERE fk_pcroadmap = '.$this->fk_pcroadmap . ' AND rank '.$operateur.' '.$this->rank;
+        $sql.= ' ORDER BY rank ASC';
+        $sql.= ' LIMIT 1 ';
         
+        $TResult = array();
         
         $res = $this->db->query($sql);
         if ($res)
@@ -652,9 +658,38 @@ class PCRoadMapDet extends SeedObject
     // used for form
     static function listType(){
         return array(
-            self::TYPE_SELECT_CATEGORY => self::translateTypeConst(self::TYPE_SELECT_CATEGORY ),
+            //self::TYPE_SELECT_CATEGORY => self::translateTypeConst(self::TYPE_SELECT_CATEGORY ),
             self::TYPE_SELECT_PRODUCT => self::translateTypeConst(self::TYPE_SELECT_PRODUCT ),
+            self::TYPE_GOTO => self::translateTypeConst(self::TYPE_GOTO ),
+            
         );
+    }
+    
+    // used for form
+    public function listSteps($notIn = array()){
+        
+        $TRet = array();
+        
+        $sql = 'SELECT s.rowid id, s.label label';
+        $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as s';
+        $sql.= ' WHERE 1 = 1 ';
+        
+        if(!empty($notIn) && is_array($notIn)){
+            $notIn = array_map('intval', $notIn);
+            $sql.= ' AND  s.rowid NOT IN('.implode(',', $notIn).')';
+        }
+        
+        $sql.= ' ORDER BY s.rank ASC';
+
+        $Tlist = $this->dbTool->executeS($sql);
+        
+        foreach ($Tlist as $step)
+        {
+            $TRet[$step->id] = $step->label;
+        }
+        
+        return $TRet;
+        
     }
     
     static function translateTypeConst($key){
@@ -666,6 +701,9 @@ class PCRoadMapDet extends SeedObject
             case self::TYPE_SELECT_PRODUCT :
                 return $langs->trans('TYPE_SELECT_PRODUCT');
                 break;
+            case self::TYPE_GOTO :
+                return $langs->trans('TYPE_GOTO');
+                break;
         }
     }
     
@@ -673,5 +711,19 @@ class PCRoadMapDet extends SeedObject
     public function typeLabel(){
         return self::translateTypeConst($this->type);
     }
+    
+    public function getLabel($id){
+        $gotoStep = new PCRoadMapDet($this->db);
+        $ret = $gotoStep->fetch($id);
+        if($ret>0){
+            return $gotoStep->label;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    
 }
 
