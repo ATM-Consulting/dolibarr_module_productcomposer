@@ -52,6 +52,12 @@ if (empty($reshook))
 	        //$object->fk_pcroadmap = $fk_pcroadmap;
 	        if(empty($object->fk_pcroadmap)) $object->fk_pcroadmap=$fk_pcroadmap;
 	        
+	        $optional = GETPOST('optional');
+	        $object->optional = 0;
+	        if($optional==='yes'){
+	            $object->optional = 1;
+	        }
+	        
 	        if(empty($object->label)){
 	            $error++;
 	            setEventMessage($langs->trans('LabelIsEmpty'), 'errors');
@@ -206,6 +212,7 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    ,'fk_pcroadmap' => $object->fk_pcroadmap
 		    ,'showGoto' => ($mode == 'edit')? $form->selectarray('fk_pcroadmapdet', $object->listSteps(array($object->id)),$object->fk_pcroadmapdet,1 ) : $object->getLabel($object->fk_pcroadmapdet)
 		    
+		    ,'showOptional' => ($mode == 'edit')? $form->selectyesno('optional',$object->optional) : (empty($object->optional)?$langs->trans('No'):$langs->trans('Yes')),
 		)
 		,'langs' => $langs
 		,'user' => $user

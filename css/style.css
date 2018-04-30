@@ -1,10 +1,43 @@
+
+
+
 tr.ui-state-highlight td{
 	border: 1px solid #dad55e;
 	background: #fffa90;
 	color: #777620;
 }
+
+.composer-cart table{
+	width: 100%;
+}
+.composer-cart .border td, .composer-cart .border th{
+	padding: 5px;
+}
+	
+.composer-cart .border td{
+	padding: 5px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.productcomposer-selector{
+	float:left;
+	width:70%;
+}
+
+.composer-cart{
+	float:right;
+	width:28%;
+	margin: -0.5em -1em -0.5em 0;
+}
+
+
             
-            
+.back-to-the-future{
+	margin: 10px 0;
+	padding: 10px 0;
+	cursor: pointer;
+	font-weight: bold;
+}
    
 
 .productcomposer-item{

@@ -127,7 +127,7 @@ class productcomposer
 	    $TRoadmaps = $PCRoadMap->getAll();
 	    if(!empty($TRoadmaps))
 	    {
-	        print '<div id="roadmap-selector" class="roadmap-selector productcomposer-selector" >';
+	        print '<div id="roadmap-selector" class="roadmap-selector" >';
 	        foreach ($TRoadmaps as $roadmap)
 	        {
 	            $data = array();
@@ -162,6 +162,8 @@ class productcomposer
 	
 	public function print_step($id,$param=false)
 	{
+	    global $langs;
+	    
 	    if(empty($id)){
 	        print hStyle::callout($this->langs->trans('StepNotFound').' : '.$id, 'error');
 	        return 0;
@@ -187,11 +189,25 @@ class productcomposer
 	        }
 	        
 	        
-	        print '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
+	        // Add history navigation
+	        $prev = $curentStep->getPrevious();
+	        // goto
+	        $backData['target-action'] = 'loadstep';
+	        if(!empty($prev) && $prev->id > 0){
+	            $backData['fk_step'] = $prev->id;
+	        }else{
+	            $backData['fk_step'] = $curentStep->id;
+	        }
+	        $backAttr = $this->inlineData($backData);
+	        print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-chevron-left"></i> '.$langs->trans('GoBack').' </span>';
+	        
+	        
+	        
+	        $stepTitle = '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
 	        
 	        if($curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
 	        {
-	            
+	            print $stepTitle;
 	            if($elements = $curentStep->getCatList())
 	            {
 	                print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
@@ -221,26 +237,59 @@ class productcomposer
 	            
 	            if(!empty($elements))
 	            {
-	                print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
+	                
+	                // Vérification 
+	                $TdisplayStatus = array();
 	                foreach ($elements as $catid)
 	                {
-	                    $categorie = new Categorie($this->db);
-	                    $categorie->fetch($catid);
+	                    $TCategory= array($this->TcurentComposer['fk_categorie_selected']);
 	                    
-	                    $data['target-action'] = 'loadstep';
-	                    $data['fk_nextstep'] = $nextStep->id;
-	                    $data['fk_categorie'] = $catid;
-	                    
-	                    
-	                    $this->print_catForStep($curentStep,$categorie,$data);
-	                    
+	                    if($curentStep->catHaveChild($catid,$TCategory) )
+	                    {
+	                        $TdisplayStatus[$catid] = true;
+	                    }
 	                }
-	                print '</div>';
+	                
+	                if(!empty($TdisplayStatus))
+	                {
+	                    
+	                    print $stepTitle;
+	                    
+	                    print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
+	                    foreach ($elements as $catid)
+	                    {
+	                        if(empty($TdisplayStatus[$catid])) continue;
+	                        
+	                        $categorie = new Categorie($this->db);
+	                        $categorie->fetch($catid);
+	                        
+	                        $data['target-action'] = 'loadstep';
+	                        $data['fk_nextstep'] = $nextStep->id;
+	                        $data['fk_categorie'] = $catid;
+	                        
+	                        
+	                        $this->print_catForStep($curentStep,$categorie,$data);
+	                    }
+	                    print '</div>';
+	                }
+	                elseif($curentStep->optional)
+	                {
+	                    print $this->print_nextstep($curentStep->id);
+	                }
+	                else 
+	                {
+	                    print $stepTitle;
+	                    
+	                    print hStyle::callout($this->langs->trans('NothingToView'), 'error');
+	                }
+	                
 	            }
 	            else 
 	            {
+	                print $stepTitle;
+	                
 	                $products = $curentStep->getProductListInMultiCat(array($this->TcurentComposer['fk_categorie_selected'], $param['fk_categorie']) );
-	                var_dump($products);
+	                
 	                
 	                if($products)
 	                {
@@ -616,15 +665,72 @@ class productcomposer
 	
 	public function addProduct($productid,$stepid,$qty=1)
 	{
+	    
+	    // Init currentCycle
+	    if(empty($this->TcurentComposer['currentCycle'])) $this->TcurentComposer['currentCycle'] = 0;
+	    
+	    $currentCycle = $this->TcurentComposer['currentCycle'];
+	    
 	    $curQty = 0;
-	    if(!empty($this->TcurentComposer['steps'][$stepid][$productid])){
-	        $curQty = $this->TcurentComposer['steps'][$stepid][$productid];
+	    if(!empty($this->TcurentComposer['products'][$currentCycle][$stepid][$productid])){
+	        $curQty = $this->TcurentComposer['products'][$currentCycle][$stepid][$productid];
 	    }
 	    
-	    $this->TcurentComposer['steps'][$stepid][$productid] =$curQty + $qty;
-	        
+	    $this->TcurentComposer['products'][$currentCycle][$stepid][$productid] = $curQty + $qty;
+	    $this->save();
 	}
 	
+	public function printCart()
+	{
+	    global $langs;
+	    print '<div class="composer-cart">';
+	    if(!empty($this->TcurentComposer['products']))
+	    {
+	        print '<table class="border" >';
+	        print '<thead>';
+	        print '<tr class="liste_titre" ><th>'.$langs->trans('Product').'</th><th>'.$langs->trans('Quantity').'</th></tr>';
+	        print '</thead>';
+	        
+	        
+	        print '<tbody>';
+	        $lastCycle = 0;
+	        foreach ( $this->TcurentComposer['products'] as $cycle => $steps )
+	        {
+	            if($cycle != $lastCycle)
+	            {
+	                print '<tr><td><td colspan="2" ><hr/></td></tr>';
+	                $lastCycle = $cycle;
+	            }
+	            
+	            foreach($steps as $stepId => $products)
+	            {
+	                $stepObj = new PCRoadMapDet($this->db);
+	                $stepObj->fetch($stepId);
+	                
+	                foreach ($products as $productId => $qty)
+	                {
+	                    $product = new Product($this->db);
+	                    if($product->fetch($productId) > 0)
+	                    {
+	                        print '<tr><td>';
+	                        print '<em>'.$stepObj->label.'</em><br/>';
+	                        print '<strong>'.$product->ref.'</strong> '.$product->desc.'</td><td >'.$qty.'</td></tr>';
+	                    }
+	                }
+	            }
+	        }
+	        print '</tbody>';
+	        
+	        
+	        print '<tfoot>';
+	        print '<tr><td colspan="2" style="text-align:right;" ><span class="butAction" > '.$langs->trans('Create').'</span></td></tr>';
+	        print '</tfoot>';
+	        
+	        print '</table>' ;
+	    }
+	    print '</div>';
+	    
+	}
 	
 	
 }

@@ -74,6 +74,7 @@ if( $get == 'addproductandnextstep' )
         
         // go to loadnextstep action
         $PComposer->print_nextstep($stepid);
+        $PComposer->printCart();
     }
     else { echo $langs->trans('paramMissed'); }
 }
@@ -86,6 +87,7 @@ if( $get == 'selectroadmapcategorie' )
     if(!empty($PComposer->roadmap) )
     {
         $PComposer->print_nextstep(0, array('fk_categorie'=>GETPOST('fk_categorie','int')));
+        $PComposer->printCart();
     }
     else { print hStyle::callout($langs->trans('ErrorRoadMapNotLoaded'),'error'); }
 }
@@ -94,7 +96,8 @@ if( $get == 'loadstep' )
 {
     if(!empty($stepid))
     {
-       $PComposer->print_step($stepid, array('fk_categorie'=>GETPOST('fk_categorie','int')) );
+        $PComposer->print_step($stepid, array('fk_categorie'=>GETPOST('fk_categorie','int')) );
+        $PComposer->printCart();
     }
     else { echo $langs->trans('paramMissed'); }
 }
@@ -104,6 +107,7 @@ if( $get == 'loadnextstep' )
     if(!empty($stepid))
     {
         $PComposer->print_nextstep($stepid);
+        $PComposer->printCart();
     }
     else { echo $langs->trans('paramMissed'); }
 }
@@ -120,6 +124,11 @@ if($get=='delete'  && !empty($fromelement) && !empty($fromelementid))
 if($get=='annuleCurent')
 {
     $PComposer->annuleCurent();
+}
+
+if($get=='loadcart')
+{
+    $PComposer->printCart();
 }
 
     

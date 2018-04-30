@@ -375,11 +375,19 @@ class PCRoadMapDet extends SeedObject
         $this->fields=array(
             
             'fk_pcroadmap'=>array('type'=>'int')
-            ,'label'=>array('type'=>'string')
-            ,'type'=>array('type'=>'int')
+            ,'label'=>array('type'=>'string') // le libelle
+            ,'type'=>array('type'=>'int') 
             ,'fk_categorie'=>array('type'=>'int')
-            ,'fk_pcroadmapdet'=>array('type'=>'int')
             ,'rank'=>array('type'=>'int')
+            
+            // type goto 
+            ,'fk_pcroadmapdet'=>array('type'=>'int')
+            
+            // type product
+            ,'optional' =>array('type'=>'int') // si l'étape est optionnelle
+            ,'needRoadmapCat' =>array('type'=>'int') // la liste des produits est filtrée aussi avec la catégorie de la feuille de route
+            
+            //,'needPreviusCat' =>array('type'=>'int')
         );
         
         
@@ -493,11 +501,11 @@ class PCRoadMapDet extends SeedObject
     {
         
         $operateur =  !empty($next)?'>':'<';
-        $order =  !empty($next)?'ASC':'<';
+        $order =  !empty($next)?'ASC':'DESC';
         
         $sql = 'SELECT rowid as id FROM '.MAIN_DB_PREFIX.$this->table_element;
         $sql.= ' WHERE fk_pcroadmap = '.$this->fk_pcroadmap . ' AND rank '.$operateur.' '.$this->rank;
-        $sql.= ' ORDER BY rank ASC';
+        $sql.= ' ORDER BY rank '.$order;
         $sql.= ' LIMIT 1 ';
         
         $TResult = array();
@@ -604,6 +612,27 @@ class PCRoadMapDet extends SeedObject
         
         return false;
     }
+    
+    public function catHaveChild($fk_category=0,$TCategory=array(), $type = 'all'){
+        
+        if(empty($fk_category)){ $fk_category = $this->fk_categorie;}
+        
+        $TCategory[] = $fk_category;
+        
+        if( ($type=='all' || $type=='category' ) && !empty($this->getCatList($fk_category)) )
+        {
+            return true;
+        }
+        
+        if( ($type=='all' || $type=='product' ) && !empty($this->getProductListInMultiCat($TCategory)) )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
     
     /**
      *      Load properties id_previous and id_next by rank

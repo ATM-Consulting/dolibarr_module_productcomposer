@@ -25,8 +25,15 @@
 				<td>[view.showGoto;strconv=no]</td>
 			</tr>
 			
+			<tr class="label">
+				<td width="25%">[langs.transnoentities(Optional)]</td>
+				<td>[view.showOptional;strconv=no]</td>
+			</tr>
+			
 		</tbody>
 	</table>
+
+
 
 </div> <!-- Fin div de la fonction dol_fiche_head() -->
 
