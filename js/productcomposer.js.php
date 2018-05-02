@@ -47,43 +47,40 @@ $( document ).ready(function() {
 	            height: windowHeight,
 	            width: windowWidth,
 	            title: "<?php echo $langs->trans('PopUpTitle_ProductComposer'); ?>",
-                buttons: {
-                      "<?php echo $langs->trans('Cancel')?>": function() {
-                          	if($("#" + popinId).data('fk_pcroadmap') != undefined)
-                          	{
-                          		loadInPopin(interfaceurl + "?get=annuleCurent") ;
-                          		$("#" + popinId).removeData('fk_pcroadmap');
-                          	}
-                            $( this ).dialog( "close" ).html(''); //.dialog('destroy');
-                      },
+                buttons:{
+                        
+                        'cancel' : {
+                            text: "<?php echo $langs->trans('Cancel')?>",
+                            "class": 'cancelButtonClass',
+                            click: function() {
+                              	if($("#" + popinId).data('fk_pcroadmap') != undefined)
+                              	{
+                              		loadInPopin(interfaceurl + "?get=annuleCurent") ;
+                              		$("#" + popinId).removeData('fk_pcroadmap');
+                              	}
+                                $( this ).dialog( "close" ).html(''); //.dialog('destroy');
+                            }
+                        }/*,
+                        'DeleteAllwork' : {
+                        // For testing
+                            text: "<?php echo $langs->trans('DeleteAllwork')?>",
+                            "class": 'saveButtonClass',
+                            click: function() {
                       
-                      "<?php echo $langs->trans('DeleteAllwork')?>": function() {
-                      
-                          	loadInPopin(interfaceurl + "?get=delete") ;
-                          	if($("#" + popinId).data('fk_pcroadmap') != undefined)
-                          	{
-                          		$("#" + popinId).removeData('fk_pcroadmap');
-                          	}
-                            $( this ).dialog( "close" ).html('');
-                      }
-                }
+                              	loadInPopin(interfaceurl + "?get=delete") ;
+                              	if($("#" + popinId).data('fk_pcroadmap') != undefined)
+                              	{
+                              		$("#" + popinId).removeData('fk_pcroadmap');
+                              	}
+                                $( this ).dialog( "close" ).html('');
+                            }
+                        }*/
+                    },
+               
+              
 	        });
 	        
 	        $composerDialog.dialog('open').parent().css('z-index', 3000);
-	        
-	        // add 
-	        if(readyToImport)
-	        {
-	        
-    	        var buttons = $composerDialog.dialog("option", "buttons"); // getter
-    			$.extend(buttons, { "<?php echo $langs->trans('ImportInDocument')?>": function () { 
-    			
-    			alert('foo'); 
-    			
-    			} });
-    			$composerDialog.dialog("option", "buttons", buttons); // setter
-    			
-	        }
 	        
 		}
 		else
@@ -95,6 +92,7 @@ $( document ).ready(function() {
 	});
 	
 	
+	
 	$( document ).on("click", "[data-target-action]", function(){
 		// store curent step
 		var targetAction = $( this ).data('target-action');
@@ -102,9 +100,15 @@ $( document ).ready(function() {
 		
 		var data = $( this ).data();
 		
-		if(targetAction == "loadnextstep" || targetAction == "import")
+		if(targetAction == "loadnextstep")
 		{
 			loadInPopin(page);
+		}
+		
+		if(targetAction == "import")
+		{
+			loadInPopin(page,true);
+			//readyToImport();
 		}
 		
 		if(targetAction == "newroadmap")
@@ -200,7 +204,7 @@ $( document ).ready(function() {
 	
 	
 	
-	function loadInPopin(target){
+	function loadInPopin(target,reloadAfter = 0){
 		
 		var dialogContent =  $("#" + popinId);
         dialogContent.fadeTo('fast',0,function() {
@@ -218,8 +222,37 @@ $( document ).ready(function() {
     			}
     		}
     		dialogContent.load( target , function() {
-              dialogContent.fadeTo('fast',100);
+    			
+    			// RELOAD PAGE
+    			if(reloadAfter){
+            		location.reload();
+            	}
+            	
+            	// DETECT IMPORT READY
+            	if ( dialogContent.find( "#productComposerIsReadyToImport" ).length ) {
+					
+            		var buttons = $composerDialog.dialog("option", "buttons"); // getter
+            		
+            		var importBtn = {'importbtn':{ 
+            		
+            				text: "<?php echo $langs->trans('ImportInDocument')?>",
+                            "class": 'butAction',
+                            click: function () { 
+                    			var page = interfaceurl + "?get=import";
+                    			loadInPopin(page,true);
+                    		}
+            		}};
+            		
+            		$.extend(buttons, importBtn);
+                			
+                	$composerDialog.dialog("option", "buttons", buttons); // setter
+				}
+              	
+              	// SHOW RESULT
+              	dialogContent.fadeTo('fast',100);
             });
+            
+            
         
   		});
         

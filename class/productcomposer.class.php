@@ -725,9 +725,9 @@ class productcomposer
 	            'target-action' => 'import'
 	        );
 	        
-	        print '<tfoot>';
-	        print '<tr><td colspan="2" style="text-align:right;" ><span class="butAction" '.$this->inlineData($data).'  > '.$langs->trans('Create').'</span></td></tr>';
-	        print '</tfoot>';
+	        /*print '<tfoot>';
+	        print '<tr><td colspan="2" style="text-align:right;" ><span class="butAction" '.$this->inlineData($data).'  > '.$langs->trans('ImportInDocument').'</span></td></tr>';
+	        print '</tfoot>';*/
 	        
 	        print '</table>' ;
 	    }
@@ -830,6 +830,7 @@ class productcomposer
 	        $curentRank++;
 	        $level=0;
 	        $this->subtotalAddTotal($subTotalLabel, $level, $curentRank);
+
 	    }
 	   
 	    

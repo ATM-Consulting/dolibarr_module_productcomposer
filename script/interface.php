@@ -125,7 +125,6 @@ if($get=='import')
 {
     if($PComposer->import())
     {
-        echo 'importé';
         
     }
 }
@@ -179,6 +178,11 @@ function _postRoadmapRank($objectName)
 	exit();
 }
 
+if(!empty($PComposer->TcurentComposer['products']))
+{
+    echo '<div id="productComposerIsReadyToImport" ></div>';
+}
+
 print '<div style="clear:both;" ></div>';
 //var_dump($_REQUEST);
-var_dump($PComposer->TcurentComposer);
+//var_dump($PComposer->TcurentComposer);
