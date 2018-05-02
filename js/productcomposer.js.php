@@ -69,7 +69,7 @@ $( document ).ready(function() {
                 }
 	        });
 	        
-	        $composerDialog.dialog('open');
+	        $composerDialog.dialog('open').parent().css('z-index', 3000);
 	        
 	        // add 
 	        if(readyToImport)
