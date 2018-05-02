@@ -721,9 +721,12 @@ class productcomposer
 	        }
 	        print '</tbody>';
 	        
+	        $data  = array(
+	            'target-action' => 'import'
+	        );
 	        
 	        print '<tfoot>';
-	        print '<tr><td colspan="2" style="text-align:right;" ><span class="butAction" > '.$langs->trans('Create').'</span></td></tr>';
+	        print '<tr><td colspan="2" style="text-align:right;" ><span class="butAction" '.$this->inlineData($data).'  > '.$langs->trans('Create').'</span></td></tr>';
 	        print '</tfoot>';
 	        
 	        print '</table>' ;
@@ -732,6 +735,153 @@ class productcomposer
 	    
 	}
 	
+	
+	public function import()
+	{
+	    global $langs;
+	    
+	    $errors = 0;
+	    $linesImported =0;
+	    
+	    $curentRank = count($this->object->lines) + 1;
+	    
+	    if(!empty($this->TcurentComposer['products']))
+	    {
+	        // Ajout du titre
+	        $roadmapCat = new Categorie($this->db);
+	        $roadmapCat->fetch($this->TcurentComposer['fk_categorie_selected']);
+	        
+	        $txtva = 0 ;
+	        $titleDesc =$roadmapCat->description;
+	        $titlelabel = $this->roadmap->label.' : '.$roadmapCat->label;
+	        $array_options = array();
+	        $this->subtotalAddTitle($titleDesc,0,-1,  $array_options, $txtva, $titlelabel );
+	        
+	        
+	        $lastCycle = 0;
+	        foreach ( $this->TcurentComposer['products'] as $cycle => $steps )
+	        {
+	            if($cycle != $lastCycle)
+	            {
+	                $lastCycle = $cycle;
+	            }
+	            
+	            
+	            
+	            foreach($steps as $stepId => $products)
+	            {
+	                $stepObj = new PCRoadMapDet($this->db);
+	                $stepObj->fetch($stepId);
+	                
+	                foreach ($products as $productId => $qty)
+	                {
+	                    $product = new Product($this->db);
+	                    if($product->fetch($productId) > 0)
+	                    {
+	                        //$this->object->
+	                        $curentRank++;
+	                        
+	                        $desc = '';
+	                        $pu_ht = $product->price;
+	                        //$qty; already set in foreach
+	                        $txtva = $product->tva_tx;
+	                        $txlocaltax1=0;
+	                        $txlocaltax2=0;
+	                        $fk_product = $product->id;
+	                        $remise_percent=0;
+	                        $info_bits=0;
+	                        $fk_remise_except=0;
+	                        $price_base_type='HT';
+	                        $pu_ttc=0;
+	                        $date_start='';
+	                        $date_end='';
+	                        $type=0;
+	                        $rang=$curentRank;
+	                        $special_code=0;
+	                        $fk_parent_line=0; 
+	                        $fk_fournprice=null; 
+	                        $pa_ht=0;
+	                        $label='';
+	                        $array_options=0; 
+	                        $fk_unit=null;
+	                        $origin='';
+	                        $origin_id=0;
+	                        $pu_ht_devise = 0;
+	                        
+	                        
+	                        if($this->object->element == 'commande'){
+	                            $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $info_bits, $fk_remise_except, $price_base_type, $pu_ttc, $date_start, $date_end, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise);
+	                        }elseif($this->object->element == 'propal'){
+	                            $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
+	                        }
+	                        
+	                        if($res<1)
+	                        {
+	                            $errors++;
+	                        }
+	                        //print $stepObj->label;
+	                        //print $product->ref.$product->desc.$qty;
+	                    }
+	                }
+	            }
+	        }
+	        
+	        $subTotalLabel = $langs->trans('Subtotal');
+	        $curentRank++;
+	        $level=0;
+	        $this->subtotalAddTotal($subTotalLabel, $level, $curentRank);
+	    }
+	   
+	    
+	}
+	
+	
+	public function  subtotalAddTotal($label, $level, $rang=-1)
+	{
+	    if(!class_exists('TSubtotal')){
+	        dol_include_once('subtotal/class/subtotal.class.php');
+	    }
+	    
+	    if(class_exists('TSubtotal')){
+	        TSubtotal::addTotal($this->object, $label, $level, $rang);
+	    }
+	}
+	
+	// subtotal add title do not 
+	function subtotalAddTitle($desc ='', $level=0, $rang = -1, $array_options =0,$txtva =0,$label='')
+	{
+	    if(!class_exists('TSubtotal')){
+	        $subtotalModuleNumber = 104777;
+	        dol_include_once('subtotal/class/subtotal.class.php');
+	    }
+	    
+	    
+	    
+	    $qty = 1;
+	    if(!empty($level))
+	    {
+	        $qty = 99 - $level;
+	    }
+	    
+	    if(class_exists('TSubtotal')){
+	       $subtotalModuleNumber = TSubtotal::$module_number;
+	    }
+	    
+	    /**
+	     * @var $object Facture
+	     */
+	    if($this->object->element=='facture') return  $this->object->addline($desc, 0,$qty,0,0,0,0,0,'','',0,0,'','HT',0,9,$rang, $subtotalModuleNumber, '', 0, 0, null, 0, $label,$array_options);
+	    /**
+	     * @var $object Propal
+	     */
+	    else if($this->object->element=='propal') return $this->object->addline($desc, 0,$qty,0,0,0,0,0,'HT',0,0,9,$rang, $subtotalModuleNumber, 0, 0, 0, $label,'', '',$array_options);
+	    /**
+	     * @var $object Commande
+	     */
+	    else if($this->object->element=='commande') return $this->object->addline($desc, 0,$qty, $txtva,0,0,0,0,0,0,0,0,0,0,9,$rang, $subtotalModuleNumber, 0, 0, 0, $label,$array_options);
+	    
+	 
+	}
 	
 }
 

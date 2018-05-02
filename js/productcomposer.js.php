@@ -102,7 +102,7 @@ $( document ).ready(function() {
 		
 		var data = $( this ).data();
 		
-		if(targetAction == "loadnextstep")
+		if(targetAction == "loadnextstep" || targetAction == "import")
 		{
 			loadInPopin(page);
 		}

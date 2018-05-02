@@ -121,6 +121,15 @@ if($get=='delete'  && !empty($fromelement) && !empty($fromelementid))
 }
 
 
+if($get=='import')
+{
+    if($PComposer->import())
+    {
+        echo 'importé';
+        
+    }
+}
+
 if($get=='annuleCurent')
 {
     $PComposer->annuleCurent();
@@ -172,4 +181,4 @@ function _postRoadmapRank($objectName)
 
 print '<div style="clear:both;" ></div>';
 //var_dump($_REQUEST);
-//var_dump($PComposer->TcurentComposer);
+var_dump($PComposer->TcurentComposer);
