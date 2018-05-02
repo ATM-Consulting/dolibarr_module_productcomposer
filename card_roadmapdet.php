@@ -58,6 +58,17 @@ if (empty($reshook))
 	            $object->optional = 1;
 	        }
 	        
+	        
+	        $linked = GETPOST('linked');
+	        $object->linked = 1;
+	        if($linked==='yes'){
+	            $object->linked = 1;
+	        }
+	        elseif($linked==='no'){
+	            $object->linked = 0;
+	        }
+	        
+	        
 	        if(empty($object->label)){
 	            $error++;
 	            setEventMessage($langs->trans('LabelIsEmpty'), 'errors');
@@ -212,7 +223,8 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    ,'fk_pcroadmap' => $object->fk_pcroadmap
 		    ,'showGoto' => ($mode == 'edit')? $form->selectarray('fk_pcroadmapdet', $object->listSteps(array($object->id)),$object->fk_pcroadmapdet,1 ) : $object->getLabel($object->fk_pcroadmapdet)
 		    
-		    ,'showOptional' => ($mode == 'edit')? $form->selectyesno('optional',$object->optional) : (empty($object->optional)?$langs->trans('No'):$langs->trans('Yes')),
+		    ,'showOptional' => ($mode == 'edit')? $form->selectyesno('optional',$object->optional) : (empty($object->optional)?$langs->trans('No'):$langs->trans('Yes'))
+		    ,'showLinkToRoadmapCat' => ($mode == 'edit')? $form->selectyesno('linked',$object->linked) : (empty($object->linked)?$langs->trans('No'):$langs->trans('Yes'))
 		)
 		,'langs' => $langs
 		,'user' => $user

@@ -160,7 +160,7 @@ class productcomposer
 	
 	
 	
-	public function print_step($id,$param=false)
+	public function print_step($id,$param=false, $disableBackBtn=false)
 	{
 	    global $langs;
 	    
@@ -199,8 +199,12 @@ class productcomposer
 	            $backData['fk_step'] = $curentStep->id;
 	        }
 	        $backAttr = $this->inlineData($backData);
-	        print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-chevron-left"></i> '.$langs->trans('GoBack').' </span>';
 	        
+	        if(!$disableBackBtn)
+	        {
+	           print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-chevron-left"></i> '.$langs->trans('GoBack').' </span>';
+	           print '<div style="clear:both;" ></div>';
+	        }
 	        
 	        
 	        $stepTitle = '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
@@ -242,7 +246,10 @@ class productcomposer
 	                $TdisplayStatus = array();
 	                foreach ($elements as $catid)
 	                {
-	                    $TCategory= array($this->TcurentComposer['fk_categorie_selected']);
+	                    $TCategory=array();
+	                    if($curentStep->linked){
+	                       $TCategory= array($this->TcurentComposer['fk_categorie_selected']);
+	                    }
 	                    
 	                    if($curentStep->catHaveChild($catid,$TCategory) )
 	                    {
@@ -274,7 +281,7 @@ class productcomposer
 	                }
 	                elseif($curentStep->optional)
 	                {
-	                    print $this->print_nextstep($curentStep->id);
+	                    print $this->print_nextstep($curentStep->id,false,true);
 	                }
 	                else 
 	                {
@@ -286,9 +293,18 @@ class productcomposer
 	            }
 	            else 
 	            {
-	                print $stepTitle;
 	                
-	                $products = $curentStep->getProductListInMultiCat(array($this->TcurentComposer['fk_categorie_selected'], $param['fk_categorie']) );
+	                if($curentStep->linked){
+	                    print $stepTitle;
+	                    $Tcat = array($this->TcurentComposer['fk_categorie_selected'], $param['fk_categorie']);
+	                    $products = $curentStep->getProductListInMultiCat( $Tcat );
+	                }
+	                else {
+	                    print '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).'</h2>';
+	                    
+	                    $products = $curentStep->getProductList($param['fk_categorie']);
+	                }
+	                
 	                
 	                
 	                if($products)
@@ -320,6 +336,10 @@ class productcomposer
 	            // goto 
 	            $goToData['target-action'] = 'loadstep';
 	            $goToData['fk_step'] = $curentStep->fk_pcroadmapdet;
+	            $goToData['goto'] = 1;
+	            
+	            
+	            
 	            $gotoAttr = $this->inlineData($goToData);
 	            
 	            // next step
@@ -330,17 +350,17 @@ class productcomposer
 	                $data['fk_step'] = $nextStep->id;
 	                $nextAttr = $this->inlineData($data);
 	            }
-	            
+	            print '<div style="clear:both; margin-top:20px;" ></div>';
 	            print '<table >';
 	            print '    <td>';
 	            print '        <tr style="text-align:right;padding:10px;">';
-	            print '            <span class="butAction" '.$gotoAttr.' >'.$curentStep->getLabel($curentStep->fk_pcroadmapdet).'</span>';
+	            print '            <span class="butAction" '.$gotoAttr.' ><i class="fa fa-chevron-left"></i> '.$curentStep->getLabel($curentStep->fk_pcroadmapdet).'</span>';
 	            print '        </tr>';
 	            print '        <tr style="text-align:left;padding:10px;" >';
 	            
 	            if(!empty($nextStep))
 	            {
-	                print '<span class="butAction" '.$nextAttr.' >'.$curentStep->getLabel($nextStep->id).'</span>';
+	                print '<span class="butAction" '.$nextAttr.' >'.$curentStep->getLabel($nextStep->id).' <i class="fa fa-chevron-right"></i></span>';
 	            }
 	            
 	            print '        </tr>';
@@ -513,7 +533,7 @@ class productcomposer
 	}
 	
 	
-	public function print_nextstep($curentStepId, $param = false)
+	public function print_nextstep($curentStepId, $param = false, $disableBackBtn = false)
 	{
 	    if(empty($curentStepId))
 	    { 
@@ -554,7 +574,7 @@ class productcomposer
 	                
 	                // if no child cat so $this->roadmap->fk_categorie is the selected cat (or param
 	                $this->TcurentComposer['fk_categorie_selected'] = !empty($param['fk_categorie'])?$param['fk_categorie']:$this->roadmap->fk_categorie;
-	                $this->print_step($firstStepId);
+	                $this->print_step($firstStepId, false, $disableBackBtn);
 	            }
 	            $this->save();
 	        }
@@ -574,7 +594,7 @@ class productcomposer
 	        if($res > 0)
 	        {
 	            $nextStep = $curentStep->getNext();
-	            $this->print_step($nextStep->id,$param);
+	            $this->print_step($nextStep->id,$param, $disableBackBtn);
 	        }
 	    }
 	}
@@ -698,7 +718,7 @@ class productcomposer
 	        {
 	            if($cycle != $lastCycle)
 	            {
-	                print '<tr><td><td colspan="2" ><hr/></td></tr>';
+	                print '<tr><td colspan="2" ><hr/></td></tr>';
 	                $lastCycle = $cycle;
 	            }
 	            

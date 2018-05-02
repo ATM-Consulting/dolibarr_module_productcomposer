@@ -16,6 +16,11 @@
 			</tr>
 			
 			<tr class="label">
+				<td width="25%">[langs.transnoentities(CatIslinked)]</td>
+				<td>[view.showLinkToRoadmapCat;strconv=no]</td>
+			</tr>
+			
+			<tr class="label">
 				<td width="25%">[langs.transnoentities(Type)]</td>
 				<td>[view.showType;strconv=no]</td>
 			</tr>

@@ -96,6 +96,15 @@ if( $get == 'loadstep' )
 {
     if(!empty($stepid))
     {
+        
+        
+        $goTo = GETPOST('goto','int');
+        if($goTo){
+            $PComposer->TcurentComposer['currentCycle']++;
+            $PComposer->save();
+        }
+        
+        
         $PComposer->print_step($stepid, array('fk_categorie'=>GETPOST('fk_categorie','int')) );
         $PComposer->printCart();
     }

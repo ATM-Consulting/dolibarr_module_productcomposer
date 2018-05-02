@@ -379,12 +379,14 @@ class PCRoadMapDet extends SeedObject
             ,'type'=>array('type'=>'int') 
             ,'fk_categorie'=>array('type'=>'int')
             ,'rank'=>array('type'=>'int')
+            ,'linked' =>array('type'=>'int') // si les elements liés à la catégorie doivent aussi êtres liés à la catégorie de la feuille de route
             
             // type goto 
             ,'fk_pcroadmapdet'=>array('type'=>'int')
             
             // type product
             ,'optional' =>array('type'=>'int') // si l'étape est optionnelle
+            
             ,'needRoadmapCat' =>array('type'=>'int') // la liste des produits est filtrée aussi avec la catégorie de la feuille de route
             
             //,'needPreviusCat' =>array('type'=>'int')

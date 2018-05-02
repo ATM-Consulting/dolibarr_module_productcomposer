@@ -47,7 +47,7 @@ RoadmapDetDeleteError=Une erreur est survenue lors de la suppression
 AddNewRoadMap=Nouvelle feuille de route
 AddNewRoadMapStep=Nouvelle étape pour la feuille de route
 LabelIsEmpty=Le champ libellé est vide.
-
+CatIslinked=Liée à la catégorie de la feuille de route
 
 # CARD TPL
 Save=Enregistrer

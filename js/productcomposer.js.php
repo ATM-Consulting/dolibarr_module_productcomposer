@@ -162,6 +162,7 @@ $( document ).ready(function() {
 					roadmapid: $("#" + popinId).data('fk_pcroadmap'),
 					stepid: $( this ).data('fk_step'), 
 					fk_categorie: $( this ).data('fk_categorie'), 
+					goto : $( this ).data('goto')
 				};
 		
 			console.log( dataTransmitToUrl(parametters , page));
