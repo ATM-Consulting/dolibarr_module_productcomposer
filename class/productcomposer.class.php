@@ -716,7 +716,11 @@ class productcomposer
 	public function deleteProduct($cycle,$step,$product,$allAfter=true)
 	{
 	    global $conf;
-        
+	    
+	    $cycle= intval($cycle);
+	    $step= intval($step);
+	    $product= intval($product);
+	    
         if(!$allAfter){
             unset($this->TcurentComposer['products'][$cycle][$step][$product]);
         }
@@ -748,18 +752,21 @@ class productcomposer
 	                        unset($this->TcurentComposer['products'][$Kcycle][$Kstep][$Kproduct]);
 	                        continue;
 	                    }
-	                    
+	                    /*var_dump(array(
+	                        array($cycle,$Kcycle , $step , $Kstep , $product ,$Kproduct),
+	                        $cycle == $Kcycle , $step == $Kstep , $product == $Kproduct
+	                    ));*/
 	                    if($cycle === $Kcycle && $step === $Kstep && $product === $Kproduct)
 	                    {
 	                        unset($this->TcurentComposer['products'][$Kcycle][$Kstep][$Kproduct]);
 	                        $deleteAllRightNow = true;
+	                       // echo 'rrr';
 	                    }
 	                }
 	            }
 	        }
 	    }
             
-        
 	    
 	    $this->save();
 	}
@@ -767,7 +774,6 @@ class productcomposer
 	public function printCart()
 	{
 	    global $langs;
-	    print '<div id="composer-cart" class="composer-cart">';
 	    if(!empty($this->TcurentComposer['products']))
 	    {
 	        print '<table class="border" >';
@@ -829,7 +835,6 @@ class productcomposer
 	        
 	        print '</table>' ;
 	    }
-	    print '</div>';
 	    
 	}
 	

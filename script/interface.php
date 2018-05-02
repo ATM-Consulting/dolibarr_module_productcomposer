@@ -75,7 +75,10 @@ if( $get == 'addproductandnextstep' )
         
         // go to loadnextstep action
         $PComposer->print_nextstep($stepid);
+        
+        print '<div id="composer-cart" class="composer-cart">';
         $PComposer->printCart();
+        print '</div>';
     }
     else { echo $langs->trans('paramMissed'); }
 }
@@ -88,7 +91,10 @@ if( $get == 'selectroadmapcategorie' )
     if(!empty($PComposer->roadmap) )
     {
         $PComposer->print_nextstep(0, array('fk_categorie'=>GETPOST('fk_categorie','int')));
+        
+        print '<div id="composer-cart" class="composer-cart">';
         $PComposer->printCart();
+        print '</div>';
     }
     else { print hStyle::callout($langs->trans('ErrorRoadMapNotLoaded'),'error'); }
 }
@@ -107,7 +113,10 @@ if( $get == 'loadstep' )
         
         
         $PComposer->print_step($stepid, array('fk_categorie'=>GETPOST('fk_categorie','int')) );
+        
+        print '<div id="composer-cart" class="composer-cart">';
         $PComposer->printCart();
+        print '</div>';
     }
     else { echo $langs->trans('paramMissed'); }
 }
@@ -117,7 +126,10 @@ if( $get == 'loadnextstep' )
     if(!empty($stepid))
     {
         $PComposer->print_nextstep($stepid);
+        
+        print '<div id="composer-cart" class="composer-cart">';
         $PComposer->printCart();
+        print '</div>';
     }
     else { echo $langs->trans('paramMissed'); }
 }
@@ -146,7 +158,10 @@ if($get=='annuleCurent')
 
 if($get=='loadcart')
 {
+    
+    print '<div id="composer-cart" class="composer-cart">';
     $PComposer->printCart();
+    print '</div>';
 }
 
 
@@ -158,6 +173,7 @@ if($get=='delete-product')
     $product = GETPOST('product','int');
     $allAfter = 1;
     $PComposer->deleteProduct($cycle,$step,$product,$allAfter);
+    $PComposer->printCart();
 }
     
 
