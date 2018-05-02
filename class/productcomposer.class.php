@@ -381,7 +381,7 @@ class productcomposer
 	    global $conf;
 	   
 	   $maxvisiblephotos = 1;
-	   $width=150;
+	   $width=300;
 	   $photo = $product->show_photos($conf->product->multidir_output[$product->entity],'small',$maxvisiblephotos,0,0,0,$width,$width,1);
 	  
 	   $data=array();
@@ -430,7 +430,7 @@ class productcomposer
 	    global $conf;
 	    
 	    $maxvisiblephotos = 1;
-	    $maxWidth=$maxHeight=150;
+	    $maxWidth=$maxHeight=300;
 	    
 	    
 	    $upload_dir = $conf->categorie->multidir_output[$object->entity];
@@ -775,7 +775,7 @@ class productcomposer
 	        $titleDesc =$roadmapCat->description;
 	        $titlelabel = $this->roadmap->label.' : '.$roadmapCat->label;
 	        $array_options = array();
-	        $this->subtotalAddTitle($titleDesc,0,-1,  $array_options, $txtva, $titlelabel );
+	        $this->subtotalAddTitle($titleDesc,1,-1,  $array_options, $txtva, $titlelabel );
 	        
 	        
 	        $lastCycle = 0;
@@ -848,7 +848,7 @@ class productcomposer
 	        
 	        $subTotalLabel = $langs->trans('Subtotal');
 	        $curentRank++;
-	        $level=0;
+	        $level=1;
 	        $this->subtotalAddTotal($subTotalLabel, $level, $curentRank);
 
 	    }
@@ -857,7 +857,7 @@ class productcomposer
 	}
 	
 	
-	public function  subtotalAddTotal($label, $level, $rang=-1)
+	public function  subtotalAddTotal($label, $level=0, $rang=-1)
 	{
 	    if(!class_exists('TSubtotal')){
 	        dol_include_once('subtotal/class/subtotal.class.php');
@@ -868,7 +868,7 @@ class productcomposer
 	    }
 	}
 	
-	// subtotal add title do not 
+	// subtotal add title 
 	function subtotalAddTitle($desc ='', $level=0, $rang = -1, $array_options =0,$txtva =0,$label='')
 	{
 	    if(!class_exists('TSubtotal')){
@@ -878,10 +878,11 @@ class productcomposer
 	    
 	    
 	    
-	    $qty = 1;
+	    $qty = $level;
+	    
 	    if(!empty($level))
 	    {
-	        $qty = 99 - $level;
+	        $qty = $level;
 	    }
 	    
 	    if(class_exists('TSubtotal')){

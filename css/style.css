@@ -56,7 +56,7 @@ tr.ui-state-highlight td{
 	display:block;
 	float:left;
 	margin:5px;
-	width: 150px;
+	width: 300px;
 	
 	
 }
@@ -93,8 +93,8 @@ tr.ui-state-highlight td{
 	background-position: center, center;
 }    
 .productcomposer-product-item-photo , .productcomposer-cat-item-photo {
-	height: 150px;
-    width: 150px;
+	height: 300px;
+    width: 300px;
     position:relative;
 }
 .productcomposer-product-item-photo img.photo.photowithmargin, .productcomposer-cat-item-photo img, .no-img-placeholder {
