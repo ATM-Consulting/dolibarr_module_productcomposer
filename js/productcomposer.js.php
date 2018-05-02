@@ -156,6 +156,15 @@ $( document ).ready(function() {
 			loadInPopin(  dataTransmitToUrl(parametters , page)   );
 		}
 		
+		
+		if(targetAction == "delete-product")
+		{		
+			var parametters = $( this ).data();
+			console.log( dataTransmitToUrl(parametters , page));
+			loadInPopin(dataTransmitToUrl(parametters , page) ,0, $( this ).data('load-in'));
+		}
+		
+		
 		if(targetAction == "loadstep")
 		{		
 			var parametters = { 
@@ -205,13 +214,25 @@ $( document ).ready(function() {
 	
 	
 	
-	function loadInPopin(target,reloadAfter = 0){
+	function loadInPopin(target,reloadAfter = 0, htmltarget=false){
 		
-		var dialogContent =  $("#" + popinId);
+		
+		var dialogWrap =  $("#" + popinId);
+		
+		if(htmltarget && $(htmltarget) != undefined)
+		{
+			var dialogContent =  $(htmltarget);
+		}
+		else{
+			var dialogContent =  dialogWrap;
+		}
+		
+		
+		
         dialogContent.fadeTo('fast',0,function() {
     		// Animation complete.
-            var fromelement = dialogContent.data("element");
-            var fromelementid = dialogContent.data("id");
+            var fromelement = dialogWrap.data("element");
+            var fromelementid = dialogWrap.data("id");
             
     		if( fromelement != undefined && fromelementid != undefined)
     		{

@@ -96,43 +96,95 @@ dol_fiche_head(
 );
 
 // Setup page goes here
-$form=new Form($db);
 $var=false;
 print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("Parameters").'</td>'."\n";
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-print '</tr>';
 
-// Example with a yes / no select
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("ParamLabel").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="right" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_CONSTNAME">';
-print $form->selectyesno("CONSTNAME",$conf->global->CONSTNAME,1);
-print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-print '</form>';
-print '</td></tr>';
 
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("ParamLabel").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_CONSTNAME">';
-print ajax_constantonoff('CONSTNAME');
-print '</form>';
-print '</td></tr>';
+_print_title("GeneralOptions");
+_print_on_off('PC_SHOW_QUANTITY');
+_print_on_off('PC_DO_NOT_CLEAR_ON_ADD_PRODUCT');
 
 print '</table>';
 
 llxFooter();
+
+
+function _print_title($title="")
+{
+    global $langs;
+    print '<tr class="liste_titre">';
+    print '<td>'.$langs->trans($title).'</td>'."\n";
+    print '<td align="center" width="20">&nbsp;</td>';
+    print '<td align="center" ></td>'."\n";
+    print '</tr>';
+}
+
+function _print_on_off($confkey, $title = false, $desc ='')
+{
+    global $var, $bc, $langs, $conf;
+    $var=!$var;
+    
+    print '<tr '.$bc[$var].'>';
+    print '<td>'.$langs->trans($title?$title:$confkey);
+    if(!empty($desc))
+    {
+        print '<br><small>'.$langs->trans($desc).'</small>';
+    }
+    print '</td>';
+    print '<td align="center" width="20">&nbsp;</td>';
+    print '<td align="center" width="300">';
+    print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+    print ajax_constantonoff($confkey);
+    print '</form>';
+    print '</td></tr>';
+}
+
+function _print_input_form_part($confkey, $title = false, $desc ='', $metas = array(), $type='input')
+{
+    global $var, $bc, $langs, $conf;
+    $var=!$var;
+    
+    $defaultMetas = array(
+        'name' => $confkey
+    );
+    
+    if($type!='textarea'){
+        $defaultMetas['type']   = 'text';
+        $defaultMetas['value']  = $conf->global->{$confkey};
+    }
+    
+    
+    $metas = array_merge ($defaultMetas, $metas);
+    $metascompil = '';
+    foreach ($metas as $key => $values)
+    {
+        $metascompil .= ' '.$key.'="'.$values.'" ';
+    }
+    
+    print '<tr '.$bc[$var].'>';
+    print '<td>'.$langs->trans($title?$title:$confkey);
+    if(!empty($desc))
+    {
+        print '<br><small>'.$langs->trans($desc).'</small>';
+    }
+    print '</td>';
+    print '<td align="center" width="20">&nbsp;</td>';
+    print '<td align="right" width="300">';
+    print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+    if($type=='textarea'){
+        print '<textarea '.$metascompil.'  >'.dol_htmlentities($conf->global->{$confkey}).'</textarea>';
+    }
+    else {
+        print '<input '.$metascompil.'  />';
+    }
+    
+    print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+    print '</form>';
+    print '</td></tr>';
+}
 
 $db->close();

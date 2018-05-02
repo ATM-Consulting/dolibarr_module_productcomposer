@@ -685,6 +685,7 @@ class productcomposer
 	
 	public function addProduct($productid,$stepid,$qty=1)
 	{
+	    global $conf;
 	    
 	    // Init currentCycle
 	    if(empty($this->TcurentComposer['currentCycle'])) $this->TcurentComposer['currentCycle'] = 0;
@@ -692,23 +693,86 @@ class productcomposer
 	    $currentCycle = $this->TcurentComposer['currentCycle'];
 	    
 	    $curQty = 0;
-	    if(!empty($this->TcurentComposer['products'][$currentCycle][$stepid][$productid])){
-	        $curQty = $this->TcurentComposer['products'][$currentCycle][$stepid][$productid];
+	    
+	    if(!empty($conf->global->PC_DO_NOT_CLEAR_ON_ADD_PRODUCT))
+	    {
+	        if(!empty($this->TcurentComposer['products'][$currentCycle][$stepid][$productid])){
+	            $curQty = $this->TcurentComposer['products'][$currentCycle][$stepid][$productid];
+	        }
+	        
+	        $this->TcurentComposer['products'][$currentCycle][$stepid][$productid] = $curQty + $qty;
+	    }
+	    else 
+	    {
+	        
+	        $this->TcurentComposer['products'][$currentCycle][$stepid] = array($productid => $qty );
 	    }
 	    
-	    $this->TcurentComposer['products'][$currentCycle][$stepid][$productid] = $curQty + $qty;
+	    
+	    $this->save();
+	}
+	
+	
+	public function deleteProduct($cycle,$step,$product,$allAfter=true)
+	{
+	    global $conf;
+        
+        if(!$allAfter){
+            unset($this->TcurentComposer['products'][$cycle][$step][$product]);
+        }
+	    else
+	    {
+	        $deleteAllRightNow=false;
+	        
+	        foreach ( $this->TcurentComposer['products'] as $Kcycle => $Tstep )
+	        {
+	            // DELETE All After
+	            if($deleteAllRightNow){
+	                unset($this->TcurentComposer['products'][$Kcycle]);
+	                continue;
+	            }
+	            
+	            foreach($Tstep as $Kstep => $Tproduct)
+	            {
+	                // DELETE All After
+	                if($deleteAllRightNow){
+	                    unset($this->TcurentComposer['products'][$Kcycle][$Kstep]);
+	                    continue;
+	                }
+	                
+	                foreach ($Tproduct as $Kproduct => $qty)
+	                {
+	                    // DELETE All After
+	                    if($deleteAllRightNow)
+	                    {
+	                        unset($this->TcurentComposer['products'][$Kcycle][$Kstep][$Kproduct]);
+	                        continue;
+	                    }
+	                    
+	                    if($cycle === $Kcycle && $step === $Kstep && $product === $Kproduct)
+	                    {
+	                        unset($this->TcurentComposer['products'][$Kcycle][$Kstep][$Kproduct]);
+	                        $deleteAllRightNow = true;
+	                    }
+	                }
+	            }
+	        }
+	    }
+            
+        
+	    
 	    $this->save();
 	}
 	
 	public function printCart()
 	{
 	    global $langs;
-	    print '<div class="composer-cart">';
+	    print '<div id="composer-cart" class="composer-cart">';
 	    if(!empty($this->TcurentComposer['products']))
 	    {
 	        print '<table class="border" >';
 	        print '<thead>';
-	        print '<tr class="liste_titre" ><th>'.$langs->trans('Product').'</th><th>'.$langs->trans('Quantity').'</th></tr>';
+	        print '<tr class="liste_titre" ><th>'.$langs->trans('Product').'</th><th>'.$langs->trans('Quantity').'</th><th></th></tr>';
 	        print '</thead>';
 	        
 	        
@@ -718,7 +782,7 @@ class productcomposer
 	        {
 	            if($cycle != $lastCycle)
 	            {
-	                print '<tr><td colspan="2" ><hr/></td></tr>';
+	                print '<tr><td colspan="3" ><hr/></td></tr>';
 	                $lastCycle = $cycle;
 	            }
 	            
@@ -734,7 +798,21 @@ class productcomposer
 	                    {
 	                        print '<tr><td>';
 	                        print '<em>'.$stepObj->label.'</em><br/>';
-	                        print '<strong>'.$product->ref.'</strong> '.$product->desc.'</td><td >'.$qty.'</td></tr>';
+	                        print '<strong>'.$product->ref.'</strong> '.$product->desc.'</td>';
+	                        print '<td >'.$qty.'</td>';
+	                        
+	                        
+	                        $data = array(
+	                            'target-action' => 'delete-product',
+	                            'cycle' => $cycle,
+	                            'step' => $stepId,
+	                            'product' => $productId,
+	                            'load-in' => '#composer-cart',
+	                        );
+	                        $attr = !empty($data)?$this->inlineData($data):'';
+	                        print '<td ><span class="pcbtn delete" title="'.$langs->trans('Delete').'" '.$attr.' ><i class="fa fa-trash"></i></span></td>';
+
+                            print '</tr>';
 	                    }
 	                }
 	            }
@@ -746,7 +824,7 @@ class productcomposer
 	        );
 	        
 	        /*print '<tfoot>';
-	        print '<tr><td colspan="2" style="text-align:right;" ><span class="butAction" '.$this->inlineData($data).'  > '.$langs->trans('ImportInDocument').'</span></td></tr>';
+	        print '<tr><td colspan="3" style="text-align:right;" ><span class="butAction" '.$this->inlineData($data).'  > '.$langs->trans('ImportInDocument').'</span></td></tr>';
 	        print '</tfoot>';*/
 	        
 	        print '</table>' ;

@@ -20,6 +20,11 @@ ErrorRoadMapNotLoaded=La feuille de route en cours n'a pas pu être chargée.
 TYPE_SELECT_PRODUCT=Sélection de produit
 TYPE_SELECT_CATEGORY=Sélection de catégorie
 
+# CONF
+GeneralOptions=Options générales
+PC_SHOW_QUANTITY=Afficher les quantitées dans le "panier"
+PC_DO_NOT_CLEAR_ON_ADD_PRODUCT=Lors d'un retour arrière, ne pas remplacer par la nouvelle valeur choisie pour l'étape.
+
 # MENU
 TopMenuproductcomposer=productcomposer
 

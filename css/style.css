@@ -1,4 +1,7 @@
-
+.pcbtn{
+	
+	cursor: pointer;
+}
 
 
 tr.ui-state-highlight td{

@@ -38,6 +38,7 @@ if(!empty($fromelement) && !empty($fromelementid) )
 }
 else{
     print hStyle::callout($langs->trans('ErrorLoadingProductcomposer'),'error');
+    exit();
 }
 
 
@@ -148,6 +149,16 @@ if($get=='loadcart')
     $PComposer->printCart();
 }
 
+
+
+if($get=='delete-product')
+{
+    $cycle   = GETPOST('cycle','int');
+    $step    = GETPOST('step','int');
+    $product = GETPOST('product','int');
+    $allAfter = 1;
+    $PComposer->deleteProduct($cycle,$step,$product,$allAfter);
+}
     
 
 function _postRoadmapRank($objectName)
