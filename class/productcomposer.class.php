@@ -849,7 +849,7 @@ class productcomposer
 	
 	public function import()
 	{
-	    global $langs;
+	    global $langs, $hookmanager;;
 	    
 	    $errors = 0;
 	    $linesImported =0;
