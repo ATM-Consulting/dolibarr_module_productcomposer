@@ -20,7 +20,7 @@ $( document ).ready(function() {
        
 	    $composerDialog = $("#" + popinId);
         var page = interfaceurl + "?get=selectRoadmap";
-        console.log($composerDialog.data());
+        //console.log($composerDialog.data());
         var fromelement = $composerDialog.data("element");
         var fromelementid = $composerDialog.data("id");
         
@@ -125,7 +125,7 @@ $( document ).ready(function() {
 		
 		if(targetAction == "addproductandnextstep")
 		{
-			console.log($( this ).data());
+			//console.log($( this ).data());
 		
 			var fk_pcroadmap = $("#" + popinId).data('fk_pcroadmap');
 			page =  page + "&roadmapid=" + fk_pcroadmap;
@@ -152,7 +152,7 @@ $( document ).ready(function() {
 					fk_categorie: $( this ).data('id'), 
 				};
 		
-			console.log( dataTransmitToUrl(parametters , page));
+			//console.log( dataTransmitToUrl(parametters , page));
 			loadInPopin(  dataTransmitToUrl(parametters , page)   );
 		}
 		
@@ -160,7 +160,7 @@ $( document ).ready(function() {
 		if(targetAction == "delete-product")
 		{		
 			var parametters = $( this ).data();
-			console.log( dataTransmitToUrl(parametters , page));
+			//console.log( dataTransmitToUrl(parametters , page));
 			loadInPopin(dataTransmitToUrl(parametters , page) ,0, $( this ).data('load-in'));
 		}
 		
@@ -174,7 +174,7 @@ $( document ).ready(function() {
 					goto : $( this ).data('goto')
 				};
 		
-			console.log( dataTransmitToUrl(parametters , page));
+			//console.log( dataTransmitToUrl(parametters , page));
 			loadInPopin(  dataTransmitToUrl(parametters , page)   );
 		}
 		
@@ -271,7 +271,7 @@ $( document ).ready(function() {
 				}
               	
               	// SHOW RESULT
-              	dialogContent.fadeTo('fast',100);
+              	dialogContent.fadeTo('fast',100).find("#item-filter").focus();
             });
             
             

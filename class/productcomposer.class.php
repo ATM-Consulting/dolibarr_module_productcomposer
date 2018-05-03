@@ -773,12 +773,18 @@ class productcomposer
 	
 	public function printCart()
 	{
-	    global $langs;
+	    global $langs,$conf;
 	    if(!empty($this->TcurentComposer['products']))
 	    {
+	        $columns = 2;
 	        print '<table class="border" >';
 	        print '<thead>';
-	        print '<tr class="liste_titre" ><th>'.$langs->trans('Product').'</th><th>'.$langs->trans('Quantity').'</th><th></th></tr>';
+	        print '<tr class="liste_titre" ><th>'.$langs->trans('Product').'</th>';
+	        if(!empty($conf->global->PC_SHOW_QUANTITY)){
+	           print '<th>'.$langs->trans('Quantity').'</th>';
+	           $columns++;
+	        }
+	        print '<th></th></tr>';
 	        print '</thead>';
 	        
 	        
@@ -788,7 +794,7 @@ class productcomposer
 	        {
 	            if($cycle != $lastCycle)
 	            {
-	                print '<tr><td colspan="3" ><hr/></td></tr>';
+	                print '<tr><td colspan="'.$columns.'" ><hr/></td></tr>';
 	                $lastCycle = $cycle;
 	            }
 	            
@@ -805,8 +811,10 @@ class productcomposer
 	                        print '<tr><td>';
 	                        print '<em>'.$stepObj->label.'</em><br/>';
 	                        print '<strong>'.$product->ref.'</strong> '.$product->desc.'</td>';
-	                        print '<td >'.$qty.'</td>';
 	                        
+	                        if(!empty($conf->global->PC_SHOW_QUANTITY)){
+	                            print '<td >'.$qty.'</td>';
+	                        }
 	                        
 	                        $data = array(
 	                            'target-action' => 'delete-product',
@@ -830,7 +838,7 @@ class productcomposer
 	        );
 	        
 	        /*print '<tfoot>';
-	        print '<tr><td colspan="3" style="text-align:right;" ><span class="butAction" '.$this->inlineData($data).'  > '.$langs->trans('ImportInDocument').'</span></td></tr>';
+	        print '<tr><td colspan="'.$columns.'" style="text-align:right;" ><span class="butAction" '.$this->inlineData($data).'  > '.$langs->trans('ImportInDocument').'</span></td></tr>';
 	        print '</tfoot>';*/
 	        
 	        print '</table>' ;
@@ -870,7 +878,6 @@ class productcomposer
 	            }
 	            
 	            
-	            
 	            foreach($steps as $stepId => $products)
 	            {
 	                $stepObj = new PCRoadMapDet($this->db);
@@ -884,46 +891,63 @@ class productcomposer
 	                        //$this->object->
 	                        $curentRank++;
 	                        
-	                        $desc = '';
-	                        $pu_ht = $product->price;
-	                        //$qty; already set in foreach
-	                        $txtva = $product->tva_tx;
-	                        $txlocaltax1=0;
-	                        $txlocaltax2=0;
-	                        $fk_product = $product->id;
-	                        $remise_percent=0;
-	                        $info_bits=0;
-	                        $fk_remise_except=0;
-	                        $price_base_type='HT';
-	                        $pu_ttc=0;
-	                        $date_start='';
-	                        $date_end='';
-	                        $type=0;
-	                        $rang=$curentRank;
-	                        $special_code=0;
-	                        $fk_parent_line=0; 
-	                        $fk_fournprice=null; 
-	                        $pa_ht=0;
-	                        $label='';
-	                        $array_options=0; 
-	                        $fk_unit=null;
-	                        $origin='';
-	                        $origin_id=0;
-	                        $pu_ht_devise = 0;
+	                     
+	                        $parameters=array(
+	                            'curentRank' => $curentRank,
+	                            'lastCycle' => $lastCycle,
+	                            'cycle' => $cycle,
+	                            'stepId' => $stepId,
+	                            'product' => $product
+	                        );
+
+	                            
+                            $reshook=$hookmanager->executeHooks('pcImportProductInDocument',$parameters,$this);    // Note that $action and $object may have been modified by hook
+                            if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
+                            if (!$reshook)
+                            {
+                                $desc = '';
+                                $pu_ht = $product->price;
+                                //$qty; already set in foreach
+                                $txtva = $product->tva_tx;
+                                $txlocaltax1=0;
+                                $txlocaltax2=0;
+                                $fk_product = $product->id;
+                                $remise_percent=0;
+                                $info_bits=0;
+                                $fk_remise_except=0;
+                                $price_base_type='HT';
+                                $pu_ttc=0;
+                                $date_start='';
+                                $date_end='';
+                                $type=0;
+                                $rang=$curentRank;
+                                $special_code=0;
+                                $fk_parent_line=0;
+                                $fk_fournprice=null;
+                                $pa_ht=0;
+                                $label='';
+                                $array_options=0;
+                                $fk_unit=null;
+                                $origin='';
+                                $origin_id=0;
+                                $pu_ht_devise = 0;
+                                
+                                
+                                if($this->object->element == 'commande'){
+                                    $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $info_bits, $fk_remise_except, $price_base_type, $pu_ttc, $date_start, $date_end, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise);
+                                }elseif($this->object->element == 'propal'){
+                                    $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
+                                }
+                                
+                                if($res<1)
+                                {
+                                    $errors++;
+                                }
+                                //print $stepObj->label;
+                                //print $product->ref.$product->desc.$qty;
+                            }
 	                        
 	                        
-	                        if($this->object->element == 'commande'){
-	                            $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $info_bits, $fk_remise_except, $price_base_type, $pu_ttc, $date_start, $date_end, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise);
-	                        }elseif($this->object->element == 'propal'){
-	                            $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
-	                        }
-	                        
-	                        if($res<1)
-	                        {
-	                            $errors++;
-	                        }
-	                        //print $stepObj->label;
-	                        //print $product->ref.$product->desc.$qty;
 	                    }
 	                }
 	            }

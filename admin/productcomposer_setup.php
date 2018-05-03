@@ -103,6 +103,7 @@ print '<table class="noborder" width="100%">';
 _print_title("GeneralOptions");
 _print_on_off('PC_SHOW_QUANTITY');
 _print_on_off('PC_DO_NOT_CLEAR_ON_ADD_PRODUCT');
+_print_on_off('PC_FORCE_DEL_FOLLOWING_PRODUCT');
 
 print '</table>';
 

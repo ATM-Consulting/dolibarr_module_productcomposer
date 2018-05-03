@@ -171,7 +171,13 @@ if($get=='delete-product')
     $cycle   = GETPOST('cycle','int');
     $step    = GETPOST('step','int');
     $product = GETPOST('product','int');
-    $allAfter = 1;
+    
+    $allAfter = 0;
+    if(!empty($conf->global->PC_FORCE_DEL_FOLLOWING_PRODUCT))
+    {
+        $allAfter = 1;
+    }
+    
     $PComposer->deleteProduct($cycle,$step,$product,$allAfter);
     $PComposer->printCart();
 }
