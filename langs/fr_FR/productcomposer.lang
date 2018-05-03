@@ -15,10 +15,15 @@ NoStepFound=Etape suivante non trouvée
 NoSelectedRoadmapCat=Oops, la selection de la catégorie de la feille de route est manquante.
 NoFirstStepFound=La première étape n'est pas trouvée.
 ErrorRoadMapNotLoaded=La feuille de route en cours n'a pas pu être chargée.
+help_LinkToRoadmapCat=Si lié à la catégorie de la feuille de route, alors la liste des produits listera seulement les produits à la fois dans la catégorie de l'étape ET dans la catégorie de la feuille de route
+help_Goto=<b>Utilisé seulement si l'étape est de type GOTO</b><br/>Séléctionnez l'étape sur laquelle démarrer un nouveau cycle.
+Goto=Etape cible
+
 
 #CONST
 TYPE_SELECT_PRODUCT=Sélection de produit
 TYPE_SELECT_CATEGORY=Sélection de catégorie
+TYPE_GOTO=Retour vers une étape précédente 
 
 # CONF
 GeneralOptions=Options générales

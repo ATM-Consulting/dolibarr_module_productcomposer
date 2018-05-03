@@ -226,6 +226,10 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    ,'showOptional' => ($mode == 'edit')? $form->selectyesno('optional',$object->optional) : (empty($object->optional)?$langs->trans('No'):$langs->trans('Yes'))
 		    ,'showLinkToRoadmapCat' => ($mode == 'edit')? $form->selectyesno('linked',$object->linked) : (empty($object->linked)?$langs->trans('No'):$langs->trans('Yes'))
 		)
+	    ,'help' => array(
+	        'help_LinkToRoadmapCat' => $form->textwithtooltip($langs->trans('CatIslinked'), $langs->trans('help_LinkToRoadmapCat'),2,1,img_help(1,'')),
+	        'help_Goto' => $form->textwithtooltip($langs->trans('Goto'), $langs->trans('help_Goto'),2,1,img_help(1,'')),
+	    )
 		,'langs' => $langs
 		,'user' => $user
 		,'conf' => $conf

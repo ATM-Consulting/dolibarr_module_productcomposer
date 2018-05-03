@@ -16,7 +16,7 @@
 			</tr>
 			
 			<tr class="label">
-				<td width="25%">[langs.transnoentities(CatIslinked)]</td>
+				<td width="25%">[help.help_LinkToRoadmapCat;strconv=no]</td>
 				<td>[view.showLinkToRoadmapCat;strconv=no]</td>
 			</tr>
 			
@@ -26,7 +26,7 @@
 			</tr>
 			
 			<tr class="label">
-				<td width="25%">[langs.transnoentities(Goto)]</td>
+				<td width="25%">[help.help_Goto;strconv=no]</td>
 				<td>[view.showGoto;strconv=no]</td>
 			</tr>
 			

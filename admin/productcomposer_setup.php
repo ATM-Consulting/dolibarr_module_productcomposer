@@ -126,10 +126,14 @@ function _print_on_off($confkey, $title = false, $desc ='')
     $var=!$var;
     
     print '<tr '.$bc[$var].'>';
-    print '<td>'.$langs->trans($title?$title:$confkey);
+    print '<td>';
     if(!empty($desc))
     {
-        print '<br><small>'.$langs->trans($desc).'</small>';
+        print $form->textwithtooltip($langs->trans($title?$title:$confkey), $langs->trans($desc),2,1,img_help(1,''));
+    }
+    else
+    {
+        print $langs->trans($title?$title:$confkey);
     }
     print '</td>';
     print '<td align="center" width="20">&nbsp;</td>';
