@@ -27,8 +27,8 @@ TYPE_GOTO=Retour vers une étape précédente
 
 # CONF
 GeneralOptions=Options générales
-PC_SHOW_QUANTITY=Afficher les quantitées dans le "panier"
-PC_DO_NOT_CLEAR_ON_ADD_PRODUCT=Lors d'un retour arrière, ne pas remplacer le produit de l'étape mais ajouter le nouveau ou les quantités si c'est le même produit.
+PC_SHOW_QUANTITY=Afficher les quantités dans le "panier"
+PC_DO_NOT_CLEAR_ON_ADD_PRODUCT=Lors d'un retour arrière, ne pas remplacer le produit de l'étape mais ajouter le nouveau ou les quantités (si c'est le même produit).
 PC_FORCE_DEL_FOLLOWING_PRODUCT=Lors de la suppression d'un produit dans le "panier", supprimer aussi tout les produits suivants.
 
 # MENU
