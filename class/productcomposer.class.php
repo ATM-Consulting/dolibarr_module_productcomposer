@@ -294,12 +294,11 @@ class productcomposer
 	            {
 	                
 	                if($curentStep->linked){
-	                    print $stepTitle;
 	                    $Tcat = array($this->TcurentComposer['fk_categorie_selected'], $param['fk_categorie']);
 	                    $products = $curentStep->getProductListInMultiCat( $Tcat );
 	                }
 	                else {
-	                    print '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).'</h2>';
+	                    $stepTitle = '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).'</h2>';
 	                    
 	                    $products = $curentStep->getProductList($param['fk_categorie']);
 	                }
@@ -309,6 +308,7 @@ class productcomposer
 	                if($products)
 	                {
 	                    
+	                    print $stepTitle;
 	                    $this->print_searchFilter(".productcomposer-catproduct");
 	                    
 	                    print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
@@ -322,7 +322,13 @@ class productcomposer
 	                    }
 	                    print '</div>';
 	                }
+	                elseif($curentStep->optional)
+	                {
+	                    print $this->print_nextstep($curentStep->id,false,true);
+	                }
 	                else{
+	                    
+	                    print $stepTitle;
 	                    print hStyle::callout($this->langs->trans('Noproductcomposer'), 'error');
 	                }
 	            }
