@@ -25,7 +25,6 @@ class productcomposer
     
     public $TcurentComposer = null;
     
-    
 
     
     
@@ -897,7 +896,8 @@ class productcomposer
 	                            'lastCycle' => $lastCycle,
 	                            'cycle' => $cycle,
 	                            'stepId' => $stepId,
-	                            'product' => $product
+	                            'product' =>& $product,
+	                            'qty' =>& $qty
 	                        );
 
 	                            
@@ -927,7 +927,7 @@ class productcomposer
                                 $pa_ht=0;
                                 $label='';
                                 $array_options=0;
-                                $fk_unit=null;
+                                $fk_unit=$product->fk_unit;
                                 $origin='';
                                 $origin_id=0;
                                 $pu_ht_devise = 0;
@@ -960,7 +960,7 @@ class productcomposer
 
 	    }
 	   
-	    
+	    $this->annuleCurent();
 	}
 	
 	

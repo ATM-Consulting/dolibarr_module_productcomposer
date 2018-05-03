@@ -6,6 +6,9 @@ dol_include_once( '/productcomposer/lib/productcomposer.lib.php');
 dol_include_once('/productcomposer/class/productcomposer.class.php');
 
 
+// Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
+$hookmanager->initHooks(array('productcomposerinterface'));
+
 // Translations
 $langs->load("productcomposer@productcomposer");
 
