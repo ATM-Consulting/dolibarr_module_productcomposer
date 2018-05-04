@@ -36,18 +36,6 @@ if (empty($reshook))
 
 llxHeader('',$langs->trans('RoadmapList'),'','');
 
-print_fiche_titre($langs->trans('RoadmapList'));
-
-// Configuration header
-$head = roadmap_prepare_head();
-dol_fiche_head(
-    $head,
-    'roadmaps',
-    $langs->trans("Module103998Name"),
-    0,
-    "productcomposer@productcomposer"
-    );
-
 
 
 //$type = GETPOST('type');
@@ -72,7 +60,7 @@ $Tlist = $dbtool->executeS($sql);
         <tr>
             <td class="nobordernopadding valignmiddle">
                 <img src="<?php echo dol_buildpath('theme/eldy/img/title_generic.png',2); ?>" alt="" class="hideonsmartphone valignmiddle" id="pictotitle">
-                <div class="titre inline-block"><?php  print $langs->trans('RoadmapStep'); ?></div>
+                <div class="titre inline-block"><?php  print $langs->trans('RoadmapList'); ?></div>
             </td>
             <td style="text-align:right;" >
             	<a class="butAction" href="<?php print dol_buildpath('/productcomposer/card.php',2).'?action=create' ?>" ><i class="fa fa-plus"></i> <?php print $langs->trans('AddNewRoadMap'); ?></a>
