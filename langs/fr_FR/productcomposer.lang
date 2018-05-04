@@ -19,6 +19,7 @@ help_LinkToRoadmapCat=Si lié à la catégorie de la feuille de route, alors la 
 help_Goto=<b>Utilisé seulement si l'étape est de type GOTO</b><br/>Séléctionnez l'étape sur laquelle démarrer un nouveau cycle.
 Goto=Etape cible
 Product=Produit
+ForcePriceToZero=Forcer le prix du produit séléctionné sur cette étape à 0 lors de l'import
 
 #CONST
 TYPE_SELECT_PRODUCT=Sélection de produit

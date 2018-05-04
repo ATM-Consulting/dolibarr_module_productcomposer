@@ -26,6 +26,11 @@
 			</tr>
 			
 			<tr class="label">
+				<td width="25%">[langs.transnoentities(ForcePriceToZero)]</td>
+				<td>[view.showNoPrice;strconv=no]</td>
+			</tr>
+			
+			<tr class="label">
 				<td width="25%">[help.help_Goto;strconv=no]</td>
 				<td>[view.showGoto;strconv=no]</td>
 			</tr>

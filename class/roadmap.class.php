@@ -354,6 +354,7 @@ class PCRoadMapDet extends SeedObject
     public $rank;
     public $categorie;
     public $fk_pcroadmapdet;
+    public $noPrice;
     
     /**
      * Type status
@@ -386,6 +387,7 @@ class PCRoadMapDet extends SeedObject
             
             // type product
             ,'optional' =>array('type'=>'int') // si l'étape est optionnelle
+            ,'noPrice' =>array('type'=>'int') // lors de l'import force le prix à zero
             
             ,'needRoadmapCat' =>array('type'=>'int') // la liste des produits est filtrée aussi avec la catégorie de la feuille de route
             

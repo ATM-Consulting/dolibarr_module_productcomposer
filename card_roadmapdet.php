@@ -223,7 +223,11 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    ,'fk_pcroadmap' => $object->fk_pcroadmap
 		    ,'showGoto' => ($mode == 'edit')? $form->selectarray('fk_pcroadmapdet', $object->listSteps(array($object->id)),$object->fk_pcroadmapdet,1 ) : $object->getLabel($object->fk_pcroadmapdet)
 		    
+		    
 		    ,'showOptional' => ($mode == 'edit')? $form->selectyesno('optional',$object->optional) : (empty($object->optional)?$langs->trans('No'):$langs->trans('Yes'))
+		    ,'showNoPrice' => ($mode == 'edit')? $form->selectyesno('noPrice',$object->noPrice) : (empty($object->noPrice)?$langs->trans('No'):$langs->trans('Yes'))
+		    
+		    
 		    ,'showLinkToRoadmapCat' => ($mode == 'edit')? $form->selectyesno('linked',$object->linked) : (empty($object->linked)?$langs->trans('No'):$langs->trans('Yes'))
 		)
 	    ,'help' => array(

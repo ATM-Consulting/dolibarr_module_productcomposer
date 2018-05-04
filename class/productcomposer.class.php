@@ -902,6 +902,7 @@ class productcomposer
 	                            'lastCycle' => $lastCycle,
 	                            'cycle' => $cycle,
 	                            'stepId' => $stepId,
+	                            'step'=>&$stepObj,
 	                            'product' =>& $product,
 	                            'qty' =>& $qty
 	                        );
@@ -912,7 +913,7 @@ class productcomposer
                             if (!$reshook)
                             {
                                 $desc = '';
-                                $pu_ht = $product->price;
+                                $pu_ht = empty($stepObj->noPrice)? $product->price : 0;
                                 //$qty; already set in foreach
                                 $txtva = $product->tva_tx;
                                 $txlocaltax1=0;
