@@ -703,7 +703,7 @@ class PCRoadMapDet extends SeedObject
         
         $sql = 'SELECT s.rowid id, s.label label';
         $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as s';
-        $sql.= ' WHERE 1 = 1 ';
+        $sql.= ' WHERE  s.fk_pcroadmapdet = ' . $this->fk_pcroadmapdet;
         
         if(!empty($notIn) && is_array($notIn)){
             $notIn = array_map('intval', $notIn);
