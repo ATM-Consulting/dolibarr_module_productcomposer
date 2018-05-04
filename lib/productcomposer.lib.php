@@ -64,23 +64,32 @@ function productcomposerAdminPrepareHead()
  * @param 	Tproductcomposer	$object		Object company shown
  * @return 	array				Array of tabs
  */
-function roadmap_prepare_head(PCRoadMap $object)
+function roadmap_prepare_head()
 {
-    global $db, $langs, $conf, $user;
+    global $langs, $conf;
+    
+    $langs->load("productcomposer@productcomposer");
+    
     $h = 0;
     $head = array();
-    $head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId();
-    $head[$h][1] = $langs->trans("productcomposerCard");
-    $head[$h][2] = 'card';
-    $h++;
-	
-	// Show more tabs from modules
+    
+/*
+    $head[$h][0] = dol_buildpath("/productcomposer/list.php", 1);
+    $head[$h][1] = $langs->trans("Roadmaps");
+    $head[$h][2] = 'roadmaps';
+    $h++;*/
+    
+    // Show more tabs from modules
     // Entries must be declared in modules descriptor with line
-    // $this->tabs = array('entity:+tabname:Title:@productcomposer:/productcomposer/mypage.php?id=__ID__');   to add new tab
-    // $this->tabs = array('entity:-tabname:Title:@productcomposer:/productcomposer/mypage.php?id=__ID__');   to remove a tab
-    complete_head_from_modules($conf,$langs,$object,$head,$h,'productcomposer');
-	
-	return $head;
+    //$this->tabs = array(
+    //	'entity:+tabname:Title:@productcomposer:/productcomposer/mypage.php?id=__ID__'
+    //); // to add new tab
+    //$this->tabs = array(
+    //	'entity:-tabname:Title:@productcomposer:/productcomposer/mypage.php?id=__ID__'
+    //); // to remove a tab
+    complete_head_from_modules($conf, $langs, $object, $head, $h, 'productcomposer');
+    
+    return $head;
 }
 
 function getFormConfirmproductcomposer(&$PDOdb, &$form, &$object, $action)

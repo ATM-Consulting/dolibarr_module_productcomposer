@@ -67,6 +67,10 @@
 
 [onshow;block=begin;when [view.mode]!='edit']
 <div class="tabsAction">
+
+   <div class="inline-block divButAction" style="text-align:left; float: left;" ><a href="[view.urllist]" class="butAction"><i class="fa fa-arrow-left"></i> [langs.transnoentities(Back)]</a></div>
+	
+
 	[onshow;block=begin;when [user.rights.productcomposer.write;noerr]=1]
 	
 	<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=edit" class="butAction">[langs.transnoentities(Modify)]</a></div>

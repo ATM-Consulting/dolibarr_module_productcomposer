@@ -238,23 +238,55 @@ class modproductcomposer extends DolibarrModules
 		//							'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		// $r++;
 		
-/*
-		$this->menu[$r]=array(	
-			'fk_menu'=>0,			                // Put 0 if this is a top menu
-			'type'=>'top',			                // This is a Top menu entry
-			'titre'=>$langs->trans('TopMenuproductcomposer'),
-			'mainmenu'=>'productcomposer',
-			'leftmenu'=>'',
-			'url'=>'/productcomposer/list.php',
-			'langs'=>'productcomposer@productcomposer',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position'=>100+$r,
-			'enabled'=>'$conf->productcomposer->enabled',	// Define condition to show or hide menu entry. Use '$conf->missionorder->enabled' if entry must be visible if module is enabled.
-			'perms'=>'$user->rights->productcomposer->read',			                // Use 'perms'=>'$user->rights->missionorder->level1->level2' if you want your menu with a permission rules
-			'target'=>'',
-			'user'=>2
+		
+		$this->menu[$r]=array(
+		    'fk_menu'=>'fk_mainmenu=products',			                // Put 0 if this is a top menu
+		    'type'=>'left',			                // This is a Top menu entry
+		    'titre'=>$langs->trans('Menuproductcomposer'),
+		    'mainmenu'=>'products',
+		    'leftmenu'=>'productcomposer',
+		    'url'=>'/productcomposer/list.php',
+		    'langs'=>'productcomposer@productcomposer',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+		    'position'=>100+$r,
+		    'enabled'=>'$conf->productcomposer->enabled',	// Define condition to show or hide menu entry. Use '$conf->missionorder->enabled' if entry must be visible if module is enabled.
+		    'perms'=>'$user->rights->productcomposer->read',			                // Use 'perms'=>'$user->rights->missionorder->level1->level2' if you want your menu with a permission rules
+		    'target'=>'',
+		    'user'=>2
 		);
 		$r++;
-
+		
+		$this->menu[$r]=array(
+		    'fk_menu'=>'fk_mainmenu=products,fk_leftmenu=productcomposer',			                // Put 0 if this is a top menu
+		    'type'=>'left',			                // This is a Top menu entry
+		    'titre'=>$langs->trans('Newproductcomposer'),
+		    'mainmenu'=>'products',
+		    'leftmenu'=>'productcomposer_add',
+		    'url'=>'/productcomposer/card.php?action=create',
+		    'langs'=>'productcomposer@productcomposer',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+		    'position'=>100+$r,
+		    'enabled'=>'$conf->productcomposer->enabled',	// Define condition to show or hide menu entry. Use '$conf->missionorder->enabled' if entry must be visible if module is enabled.
+		    'perms'=>'$user->rights->productcomposer->write',			                // Use 'perms'=>'$user->rights->missionorder->level1->level2' if you want your menu with a permission rules
+		    'target'=>'',
+		    'user'=>2
+		);
+		$r++;
+		
+		$this->menu[$r]=array(
+		    'fk_menu'=>'fk_mainmenu=products,fk_leftmenu=productcomposer',			                // Put 0 if this is a top menu
+		    'type'=>'left',			                // This is a Top menu entry
+		    'titre'=>$langs->trans('List'),
+		    'mainmenu'=>'products',
+		    'leftmenu'=>'productcomposer_add',
+		    'url'=>'/productcomposer/list.php',
+		    'langs'=>'productcomposer@productcomposer',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+		    'position'=>100+$r,
+		    'enabled'=>'$conf->productcomposer->enabled',	// Define condition to show or hide menu entry. Use '$conf->missionorder->enabled' if entry must be visible if module is enabled.
+		    'perms'=>'$user->rights->productcomposer->read',			                // Use 'perms'=>'$user->rights->missionorder->level1->level2' if you want your menu with a permission rules
+		    'target'=>'',
+		    'user'=>2
+		);
+		$r++;
+/*
 		$this->menu[$r]=array(
 			'fk_menu'=>'fk_mainmenu=productcomposer',			                // Put 0 if this is a top menu
 			'type'=>'left',			                // This is a Top menu entry

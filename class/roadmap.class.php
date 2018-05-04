@@ -353,6 +353,7 @@ class PCRoadMapDet extends SeedObject
     public $fk_categorie;
     public $rank;
     public $categorie;
+    public $fk_pcroadmap;
     public $fk_pcroadmapdet;
     public $noPrice;
     

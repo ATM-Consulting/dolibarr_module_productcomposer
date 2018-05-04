@@ -201,7 +201,7 @@ class productcomposer
 	        
 	        if(!$disableBackBtn)
 	        {
-	           print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-chevron-left"></i> '.$langs->trans('GoBack').' </span>';
+	           print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-arrow-left"></i> '.$langs->trans('GoBack').' </span>';
 	           print '<div style="clear:both;" ></div>';
 	        }
 	        
@@ -359,13 +359,13 @@ class productcomposer
 	            print '<table >';
 	            print '    <td>';
 	            print '        <tr style="text-align:right;padding:10px;">';
-	            print '            <span class="butAction" '.$gotoAttr.' ><i class="fa fa-chevron-left"></i> '.$curentStep->getLabel($curentStep->fk_pcroadmapdet).'</span>';
+	            print '            <span class="butAction" '.$gotoAttr.' ><i class="fa fa-arrow-left"></i> '.$curentStep->getLabel($curentStep->fk_pcroadmapdet).'</span>';
 	            print '        </tr>';
 	            print '        <tr style="text-align:left;padding:10px;" >';
 	            
 	            if(!empty($nextStep))
 	            {
-	                print '<span class="butAction" '.$nextAttr.' >'.$curentStep->getLabel($nextStep->id).' <i class="fa fa-chevron-right"></i></span>';
+	                print '<span class="butAction" '.$nextAttr.' >'.$curentStep->getLabel($nextStep->id).' <i class="fa fa-arrow-right"></i></span>';
 	            }
 	            
 	            print '        </tr>';

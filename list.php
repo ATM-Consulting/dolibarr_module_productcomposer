@@ -39,7 +39,7 @@ llxHeader('',$langs->trans('RoadmapList'),'','');
 print_fiche_titre($langs->trans('RoadmapList'));
 
 // Configuration header
-$head = productcomposerAdminPrepareHead();
+$head = roadmap_prepare_head();
 dol_fiche_head(
     $head,
     'roadmaps',

@@ -109,7 +109,7 @@ if ($action == 'create' && $mode == 'edit')
 	load_fiche_titre($langs->trans("Newproductcomposer"));
 	
 	print_fiche_titre($langs->trans('Newproductcomposer'));
-	$head = productcomposerAdminPrepareHead();
+	$head = roadmap_prepare_head();
 	$h = count($head) +1;
 	$head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId();
 	$head[$h][1] = $langs->trans("productcomposerCard");
@@ -124,7 +124,7 @@ else
     load_fiche_titre($pageName);
     print_fiche_titre($pageName);
     
-    $head = productcomposerAdminPrepareHead();
+    $head = roadmap_prepare_head();
     $h = count($head) +1; 
     $head[$h][0] = dol_buildpath('/productcomposer/card.php', 1).'?id='.$object->getId();
     $head[$h][1] = $langs->trans("productcomposerCard");
