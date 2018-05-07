@@ -208,27 +208,7 @@ class productcomposer
 	        
 	        $stepTitle = '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
 	        
-	        if($curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
-	        {
-	            print $stepTitle;
-	            if($elements = $curentStep->getCatList())
-	            {
-	                print '<div class="productcomposer-catproduct" style="border-color: '.$curentStep->categorie->color.';" >';
-	                foreach ($elements as $catid)
-	                {
-	                    $categorie = new Categorie($this->db);
-	                    $categorie->fetch($catid);
-	                    
-	                    $this->print_catForStep($curentStep,$categorie);
-	                    
-	                }
-	                print '</div>';
-	            }
-	            else{
-	                print hStyle::callout($this->langs->trans('Noproductcomposer'), 'error');
-	            }
-	        }
-	        elseif($curentStep->type == $curentStep::TYPE_SELECT_PRODUCT)
+	        if($curentStep->type == $curentStep::TYPE_SELECT_PRODUCT || $curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
 	        {
 	            // Gestion des options
 	            
@@ -250,7 +230,19 @@ class productcomposer
 	                       $TCategory= array($this->TcurentComposer['fk_categorie_selected']);
 	                    }
 	                    
-	                    if($curentStep->catHaveChild($catid,$TCategory) )
+	                    
+	                    if($curentStep->step_cat_linked){
+	                        $prevStepCat = $this->getPrevStepCat($curentStep);
+	                        if(!empty($prevStepCat)){
+	                            $TCategory[] = $prevStepCat;
+	                        }
+	                    }
+	                    
+	                    
+	                    if($curentStep->type == $curentStep::TYPE_SELECT_CATEGORY){
+	                        $TdisplayStatus[$catid] = true; // in category mode we display all children
+	                    }
+	                    elseif($curentStep->catHaveChild($catid,$TCategory) )
 	                    {
 	                        $TdisplayStatus[$catid] = true;
 	                    }
@@ -282,7 +274,7 @@ class productcomposer
 	                {
 	                    print $this->print_nextstep($curentStep->id,false,true);
 	                }
-	                else 
+	                else
 	                {
 	                    print $stepTitle;
 	                    
@@ -290,11 +282,31 @@ class productcomposer
 	                }
 	                
 	            }
+	            elseif($curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
+	            {
+	                if(empty($param['fk_categorie'])){ $param['fk_categorie'] = $this->fk_categorie;}
+	                $this->addStepCat($param['fk_categorie'],$curentStep->id);
+	                
+	                print $this->print_nextstep($curentStep->id,false,true);
+	            }
 	            else 
 	            {
 	                
-	                if($curentStep->linked){
-	                    $Tcat = array($this->TcurentComposer['fk_categorie_selected'], $param['fk_categorie']);
+	                if($curentStep->linked || $curentStep->step_cat_linked){
+	                    
+	                    $Tcat = array($param['fk_categorie']);
+	                    
+	                    if($curentStep->linked){
+	                        $Tcat[] = $this->TcurentComposer['fk_categorie_selected'];
+	                    }
+	                    
+	                    if($curentStep->step_cat_linked){
+	                        $prevStepCat = $this->getPrevStepCat($curentStep);
+	                        if(!empty($prevStepCat)){
+	                            $Tcat[] = $prevStepCat;
+	                        }
+	                    }
+	                    
 	                    $products = $curentStep->getProductListInMultiCat( $Tcat );
 	                }
 	                else {
@@ -707,7 +719,7 @@ class productcomposer
 	        
 	        $this->TcurentComposer['products'][$currentCycle][$stepid][$productid] = $curQty + $qty;
 	    }
-	    else 
+	    else
 	    {
 	        
 	        $this->TcurentComposer['products'][$currentCycle][$stepid] = array($productid => $qty );
@@ -715,6 +727,37 @@ class productcomposer
 	    
 	    
 	    $this->save();
+	}
+	
+	public function addStepCat($catid,$stepid)
+	{
+	    global $conf;
+	    
+	    // Init currentCycle
+	    if(empty($this->TcurentComposer['currentCycle'])) $this->TcurentComposer['currentCycle'] = 0;
+	    
+	    $currentCycle = $this->TcurentComposer['currentCycle'];
+	    
+	    $this->TcurentComposer['steps'][$currentCycle][$stepid] = $catid ;
+
+	    
+	    $this->save();
+	}
+	
+	public function getPrevStepCat($curentStep)
+	{
+	    if(empty($this->TcurentComposer['currentCycle'])) return false;
+	    
+	    $previus  = $curentStep->getPrevious();
+	    if($previus)
+	    {
+	        if(!empty($this->TcurentComposer['steps'][$this->TcurentComposer['currentCycle']][$previus->id])){
+	            return $this->TcurentComposer['steps'][$this->TcurentComposer['currentCycle']][$previus->id] ;
+	        }
+	        else{
+	            return false;
+	        }
+	    }
 	}
 	
 	

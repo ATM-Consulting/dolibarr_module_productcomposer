@@ -179,6 +179,19 @@ $( document ).ready(function() {
 		}
 		
 		
+		if(targetAction == "selectcatandnextstep")
+		{		
+			var parametters = { 
+					roadmapid: $("#" + popinId).data('fk_pcroadmap'),
+					stepid: $( this ).data('fk_step'), 
+					fk_categorie: $( this ).data('id')
+				};
+		
+			loadInPopin(  dataTransmitToUrl(parametters , page)   );
+		}
+		
+		
+		
 	
 	});
 	

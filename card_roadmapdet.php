@@ -68,6 +68,15 @@ if (empty($reshook))
 	            $object->linked = 0;
 	        }
 	        
+	        $linked = GETPOST('step_cat_linked');
+	        $object->step_cat_linked = 0;
+	        if($linked==='yes'){
+	            $object->step_cat_linked = 1;
+	        }
+	        elseif($linked==='no'){
+	            $object->step_cat_linked = 0;
+	        }
+	        
 	        
 	        if(empty($object->label)){
 	            $error++;
@@ -229,10 +238,12 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    
 		    
 		    ,'showLinkToRoadmapCat' => ($mode == 'edit')? $form->selectyesno('linked',$object->linked) : (empty($object->linked)?$langs->trans('No'):$langs->trans('Yes'))
+		    ,'showLinkToPrevCat' => ($mode == 'edit')? $form->selectyesno('step_cat_linked',$object->step_cat_linked) : (empty($object->step_cat_linked)?$langs->trans('No'):$langs->trans('Yes'))
 		)
 	    ,'help' => array(
 	        'help_LinkToRoadmapCat' => $form->textwithtooltip($langs->trans('CatIslinked'), $langs->trans('help_LinkToRoadmapCat'),2,1,img_help(1,'')),
 	        'help_Goto' => $form->textwithtooltip($langs->trans('Goto'), $langs->trans('help_Goto'),2,1,img_help(1,'')),
+	        'help_LinkToPrevCat' => $form->textwithtooltip($langs->trans('CatIslinkedToPrevius'), $langs->trans('help_LinkToPrevCat'),2,1,img_help(1,'')),
 	    )
 		,'langs' => $langs
 		,'user' => $user

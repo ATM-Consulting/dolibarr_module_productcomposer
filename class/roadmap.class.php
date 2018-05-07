@@ -382,6 +382,7 @@ class PCRoadMapDet extends SeedObject
             ,'fk_categorie'=>array('type'=>'int')
             ,'rank'=>array('type'=>'int')
             ,'linked' =>array('type'=>'int') // si les elements liés à la catégorie doivent aussi êtres liés à la catégorie de la feuille de route
+            ,'step_cat_linked' =>array('type'=>'int') // si les elements liés à la catégorie doivent aussi êtres liés à la catégorie de l'étape précédante
             
             // type goto 
             ,'fk_pcroadmapdet'=>array('type'=>'int')
@@ -692,7 +693,7 @@ class PCRoadMapDet extends SeedObject
     // used for form
     static function listType(){
         return array(
-            //self::TYPE_SELECT_CATEGORY => self::translateTypeConst(self::TYPE_SELECT_CATEGORY ),
+            self::TYPE_SELECT_CATEGORY => self::translateTypeConst(self::TYPE_SELECT_CATEGORY ),
             self::TYPE_SELECT_PRODUCT => self::translateTypeConst(self::TYPE_SELECT_PRODUCT ),
             self::TYPE_GOTO => self::translateTypeConst(self::TYPE_GOTO ),
             

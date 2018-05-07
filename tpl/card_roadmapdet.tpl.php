@@ -21,6 +21,11 @@
 			</tr>
 			
 			<tr class="label">
+				<td width="25%">[help.help_LinkToPrevCat;strconv=no]</td>
+				<td>[view.showLinkToPrevCat;strconv=no]</td>
+			</tr>
+			
+			<tr class="label">
 				<td width="25%">[langs.transnoentities(Type)]</td>
 				<td>[view.showType;strconv=no]</td>
 			</tr>
