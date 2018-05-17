@@ -76,12 +76,28 @@ if( $get == 'addproductandnextstep' )
         $PComposer->addProduct($productid,$stepid);
         
         
-        // go to loadnextstep action
-        $PComposer->print_nextstep($stepid);
+        $isLastStep = 0;
+        $curentStep = new PCRoadMapDet($db);
+        $res = $curentStep->fetch($stepid);
+        if($res > 0)
+        {
+            $nextStep = $curentStep->getNext();
+            if(empty($nextStep))
+            {
+                $isLastStep = 1;
+            }
+            else 
+            {
+                // go to loadnextstep action
+                $PComposer->print_nextstep($stepid);
+            }
+        }
         
-        print '<div id="composer-cart" class="composer-cart">';
+        
+        
+        if(!$isLastStep) print '<div id="composer-cart" class="composer-cart">';
         $PComposer->printCart();
-        print '</div>';
+        if(!$isLastStep) print '</div>';
     }
     else { echo $langs->trans('paramMissed'); }
 }

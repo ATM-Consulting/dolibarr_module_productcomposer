@@ -414,7 +414,11 @@ class productcomposer
 	       $data['fk_nextstep'] = $nextStep->id;
 	       
 	   }
-	   
+	   else
+	   {
+	       $data['target-action'] = 'addproductandnextstep';
+	       $data['fk_nextstep'] = 0;
+	   }
 	   
 	   
 	   
@@ -825,7 +829,7 @@ class productcomposer
 	    if(!empty($this->TcurentComposer['products']))
 	    {
 	        $columns = 2;
-	        print '<table class="border" >';
+	        print '<table class="border" width="100%" >';
 	        print '<thead>';
 	        print '<tr class="liste_titre" ><th>'.$langs->trans('Product').'</th>';
 	        if(!empty($conf->global->PC_SHOW_QUANTITY)){
