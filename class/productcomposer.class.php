@@ -907,6 +907,7 @@ class productcomposer
 	    $linesImported =0;
 	    
 	    $curentRank = count($this->object->lines) + 1;
+	    $this->importStartRank=$curentRank;
 	    
 	    if(!empty($this->TcurentComposer['products']))
 	    {
@@ -914,14 +915,22 @@ class productcomposer
 	        $roadmapCat = new Categorie($this->db);
 	        $roadmapCat->fetch($this->TcurentComposer['fk_categorie_selected']);
 	        
-	        $txtva = 0 ;
-	        $titleDesc =$roadmapCat->description;
-	        $titlelabel = $this->roadmap->label.' : '.$roadmapCat->label;
-	        $array_options = array();
-	        $this->subtotalAddTitle($titleDesc,1,-1,  $array_options, $txtva, $titlelabel );
+	        $parameters = array('curentRank' =>& $curentRank);
+	        $reshook=$hookmanager->executeHooks('pcBeforeImport',$parameters,$this);    // Note that $action and $object may have been modified by hook
+	        if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
+	        if (!$reshook)
+	        {
+	            // Add subtotal title
+	            $txtva = 0 ;
+	            $titleDesc =$roadmapCat->description;
+	            $titlelabel = $this->roadmap->label.' : '.$roadmapCat->label;
+	            $array_options = array();
+	            $this->subtotalAddTitle($titleDesc,1,$curentRank,  $array_options, $txtva, $titlelabel );
+	        }
 	        
-	        
+    	        
 	        $lastCycle = 0;
+	        $i=0;
 	        foreach ( $this->TcurentComposer['products'] as $cycle => $steps )
 	        {
 	            if($cycle != $lastCycle)
@@ -937,6 +946,7 @@ class productcomposer
 	                
 	                foreach ($products as $productId => $qty)
 	                {
+	                    $i++;
 	                    $product = new Product($this->db);
 	                    if($product->fetch($productId) > 0)
 	                    {
@@ -970,14 +980,15 @@ class productcomposer
 	                        $pu_ht_devise = 0;
 	                     
 	                        $parameters=array(
-	                            'curentRank' => $curentRank,
+	                            'curentRank' =>& $curentRank,
 	                            'lastCycle' => $lastCycle,
 	                            'cycle' => $cycle,
 	                            'stepId' => $stepId,
 	                            'step'=>&$stepObj,
 	                            'product' =>& $product,
 	                            'qty' =>& $qty,
-	                            'array_options' =>& $array_options
+	                            'array_options' =>& $array_options,
+	                            'i' => $i
 	                        );
 
 	                            
@@ -1007,10 +1018,18 @@ class productcomposer
 	            }
 	        }
 	        
-	        $subTotalLabel = $langs->trans('Subtotal');
-	        $curentRank++;
-	        $level=1;
-	        $this->subtotalAddTotal($subTotalLabel, $level, $curentRank);
+	        
+	        $parameters = array('curentRank' =>& $curentRank);
+	        $reshook=$hookmanager->executeHooks('pcAfterImport',$parameters,$this);    // Note that $action and $object may have been modified by hook
+	        if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
+	        if (!$reshook)
+	        {
+	            // Add subtotal
+    	        $subTotalLabel = $langs->trans('Subtotal');
+    	        $curentRank++;
+    	        $level=1;
+    	        $this->subtotalAddTotal($subTotalLabel, $level, $curentRank);
+	        }
 
 	    }
 	   
