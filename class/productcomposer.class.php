@@ -943,6 +943,31 @@ class productcomposer
 	                        //$this->object->
 	                        $curentRank++;
 	                        
+	                        $desc = '';
+	                        $pu_ht = empty($stepObj->noPrice)? $product->price : 0;
+	                        $txtva = $product->tva_tx;
+	                        $txlocaltax1=0;
+	                        $txlocaltax2=0;
+	                        $fk_product = $product->id;
+	                        $remise_percent=0;
+	                        $info_bits=0;
+	                        $fk_remise_except=0;
+	                        $price_base_type='HT';
+	                        $pu_ttc=0;
+	                        $date_start='';
+	                        $date_end='';
+	                        $type=0;
+	                        $rang=$curentRank;
+	                        $special_code=0;
+	                        $fk_parent_line=0;
+	                        $fk_fournprice=null;
+	                        $pa_ht=0;
+	                        $label='';
+	                        $array_options=0;
+	                        $fk_unit=$product->fk_unit;
+	                        $origin='';
+	                        $origin_id=0;
+	                        $pu_ht_devise = 0;
 	                     
 	                        $parameters=array(
 	                            'curentRank' => $curentRank,
@@ -951,7 +976,8 @@ class productcomposer
 	                            'stepId' => $stepId,
 	                            'step'=>&$stepObj,
 	                            'product' =>& $product,
-	                            'qty' =>& $qty
+	                            'qty' =>& $qty,
+	                            'array_options' =>& $array_options
 	                        );
 
 	                            
@@ -959,32 +985,6 @@ class productcomposer
                             if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
                             if (!$reshook)
                             {
-                                $desc = '';
-                                $pu_ht = empty($stepObj->noPrice)? $product->price : 0;
-                                //$qty; already set in foreach
-                                $txtva = $product->tva_tx;
-                                $txlocaltax1=0;
-                                $txlocaltax2=0;
-                                $fk_product = $product->id;
-                                $remise_percent=0;
-                                $info_bits=0;
-                                $fk_remise_except=0;
-                                $price_base_type='HT';
-                                $pu_ttc=0;
-                                $date_start='';
-                                $date_end='';
-                                $type=0;
-                                $rang=$curentRank;
-                                $special_code=0;
-                                $fk_parent_line=0;
-                                $fk_fournprice=null;
-                                $pa_ht=0;
-                                $label='';
-                                $array_options=0;
-                                $fk_unit=$product->fk_unit;
-                                $origin='';
-                                $origin_id=0;
-                                $pu_ht_devise = 0;
                                 
                                 
                                 if($this->object->element == 'commande'){
