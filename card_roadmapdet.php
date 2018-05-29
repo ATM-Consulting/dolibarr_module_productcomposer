@@ -77,6 +77,16 @@ if (empty($reshook))
 	            $object->step_cat_linked = 0;
 	        }
 	        
+	        $flag_desc = GETPOST('flag_desc');
+	        $object->flag_desc = 0;
+	        if($flag_desc==='yes'){
+	            $object->flag_desc = 1;
+	        }
+	        elseif($flag_desc==='no'){
+	            $object->flag_desc = 0;
+	        }
+	        
+	        
 	        
 	        if(empty($object->label)){
 	            $error++;
@@ -235,6 +245,9 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    
 		    ,'showOptional' => ($mode == 'edit')? $form->selectyesno('optional',$object->optional) : (empty($object->optional)?$langs->trans('No'):$langs->trans('Yes'))
 		    ,'showNoPrice' => ($mode == 'edit')? $form->selectyesno('noPrice',$object->noPrice) : (empty($object->noPrice)?$langs->trans('No'):$langs->trans('Yes'))
+		    
+		    ,'showFlagDesc' => ($mode == 'edit')? $form->selectyesno('flag_desc',$object->flag_desc) : (empty($object->flag_desc)?$langs->trans('No'):$langs->trans('Yes'))
+		    
 		    
 		    
 		    ,'showLinkToRoadmapCat' => ($mode == 'edit')? $form->selectyesno('linked',$object->linked) : (empty($object->linked)?$langs->trans('No'):$langs->trans('Yes'))
