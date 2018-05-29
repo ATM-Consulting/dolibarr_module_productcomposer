@@ -553,7 +553,7 @@ class productcomposer
 	    print '</form>';
 	    
 	    print '</td></tr>';
-	    print '<table >';
+	    print '</table>';
 	}
 	
 	public function print_productFormForStep($curentStep,$product,$wrapData = false)

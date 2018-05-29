@@ -275,7 +275,7 @@ $( document ).ready(function() {
     			
     			// RELOAD PAGE
     			if(reloadAfter){
-            		//location.reload();
+            		location.reload();
             	}
             	
             	// DETECT IMPORT READY
