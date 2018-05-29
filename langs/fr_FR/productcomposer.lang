@@ -1,5 +1,5 @@
-Module103998Name = productcomposer
-Module103998Desc = productcomposer Description
+Module103998Name = Product Composer
+Module103998Desc = Aide à la saisie et ajout de produits dans les devis et commandes à l'aide de feuilles de routes.
 
 ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.fr" target="_blank">ATM Consulting</a><br>Vous pouvez retrouver la documentation sur notre <a href="http://wiki.atm-consulting.fr/index.php/Accueil" target="_blank">wiki</a><br><br>Pour toute question technique ou retour, contactez-nous sur <a href="mailto:support@atm-consulting.fr">support@atm-consulting.fr</a><br><br>Pour toute question commerciale, contactez-nous sur <a href="mailto:contact@atm-consulting.fr">contact@atm-consulting.fr</a> ou au +33 9 77 19 50 70<br><br>Retrouvez nos autres modules sur <a href="http://www.dolistore.com/search.php?orderby=position&orderway=desc&search_query=atm&submit_search=Rechercher" target="_blank">Dolistore</a>
 
@@ -22,6 +22,8 @@ CatIslinkedToPrevius=Liée à la catégorie de l'étape précédante
 Goto=Etape cible
 Product=Produit
 ForcePriceToZero=Forcer le prix du produit séléctionné sur cette étape à 0 lors de l'import
+AddProduct=Ajouter le produit
+AddDescription=Ajouter une description
 
 #MENU
 Menuproductcomposer=Feuilles de route
@@ -78,6 +80,7 @@ ToClone=Cloner
 Delete=Supprimer
 ProductGenerator=Générateur de produit
 Subtotal=Sous total
+AddDesc=Permettre d'ajouter une description lors de l'ajout d'un produit au panier
 
 #Right
 productcomposer_write=Droit d'écriture sur les feuilles de route

@@ -356,6 +356,7 @@ class PCRoadMapDet extends SeedObject
     public $fk_pcroadmap;
     public $fk_pcroadmapdet;
     public $noPrice;
+    public $flag_desc;
     
     /**
      * Type status
@@ -392,6 +393,8 @@ class PCRoadMapDet extends SeedObject
             ,'noPrice' =>array('type'=>'int') // lors de l'import force le prix à zero
             
             ,'needRoadmapCat' =>array('type'=>'int') // la liste des produits est filtrée aussi avec la catégorie de la feuille de route
+            
+            ,'flag_desc' =>array('type'=>'int') // Permet la modification de la description du produit
             
             //,'needPreviusCat' =>array('type'=>'int')
         );
@@ -707,7 +710,7 @@ class PCRoadMapDet extends SeedObject
         
         $sql = 'SELECT s.rowid id, s.label label';
         $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as s';
-        $sql.= ' WHERE  s.fk_pcroadmapdet = ' . $this->fk_pcroadmapdet;
+        $sql.= ' WHERE  s.fk_pcroadmap = ' . $this->fk_pcroadmap;
         
         if(!empty($notIn) && is_array($notIn)){
             $notIn = array_map('intval', $notIn);
@@ -715,7 +718,7 @@ class PCRoadMapDet extends SeedObject
         }
         
         $sql.= ' ORDER BY s.rank ASC';
-
+        
         $Tlist = $this->dbTool->executeS($sql);
         
         foreach ($Tlist as $step)

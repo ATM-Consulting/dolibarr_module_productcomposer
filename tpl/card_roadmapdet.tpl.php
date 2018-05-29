@@ -36,6 +36,11 @@
 			</tr>
 			
 			<tr class="label">
+				<td width="25%">[langs.transnoentities(AddDesc)]</td>
+				<td>[view.showFlagDesc;strconv=no]</td>
+			</tr>
+			
+			<tr class="label">
 				<td width="25%">[help.help_Goto;strconv=no]</td>
 				<td>[view.showGoto;strconv=no]</td>
 			</tr>

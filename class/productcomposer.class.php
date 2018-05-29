@@ -176,7 +176,6 @@ class productcomposer
 	    {
 	        
 	        
-	        
 	        print '<div id="step-wrap-'.$curentStep->id.'" class="productcomposer-selector" >';
 	     
 	        $curentSelectedRoadMapLabel = '';
@@ -208,7 +207,16 @@ class productcomposer
 	        
 	        $stepTitle = '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
 	        
-	        if($curentStep->type == $curentStep::TYPE_SELECT_PRODUCT || $curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
+	        if(!empty($param['productFormDisplay'])){
+	           // Dans le cas d'une etape avec formulaire sur le produit
+	            print $stepTitle;
+	            $product = new Product($this->db);
+	            $product->fetch($param['productFormDisplay']);
+	            print $this->print_productForm($curentStep,$product);
+	            
+	            
+	        }
+	        elseif($curentStep->type == $curentStep::TYPE_SELECT_PRODUCT || $curentStep->type == $curentStep::TYPE_SELECT_CATEGORY)
 	        {
 	            // Gestion des options
 	            
@@ -216,12 +224,12 @@ class productcomposer
 	                $param['fk_categorie'] = 0;
 	            }
 	            
+	            // Récupération des catégories
 	            $elements = $curentStep->getCatList($param['fk_categorie']);
 	            
 	            if(!empty($elements))
 	            {
-	                
-	                // Vérification 
+	                // Vérification de l'existance de sous catégories
 	                $TdisplayStatus = array();
 	                foreach ($elements as $catid)
 	                {
@@ -248,6 +256,7 @@ class productcomposer
 	                    }
 	                }
 	                
+	                // AFFICHAGE de l'étape
 	                if(!empty($TdisplayStatus))
 	                {
 	                    
@@ -272,10 +281,12 @@ class productcomposer
 	                }
 	                elseif($curentStep->optional)
 	                {
+	                    // Si optionnel, on saute l'étape
 	                    print $this->print_nextstep($curentStep->id,false,true);
 	                }
 	                else
 	                {
+	                    // gestion de l'erreur
 	                    print $stepTitle;
 	                    
 	                    print hStyle::callout($this->langs->trans('NothingToView'), 'error');
@@ -291,6 +302,7 @@ class productcomposer
 	            }
 	            else 
 	            {
+	                // AFFICHAGE DE LA LISTE DES PRODUITS
 	                
 	                if($curentStep->linked || $curentStep->step_cat_linked){
 	                    
@@ -420,7 +432,10 @@ class productcomposer
 	       $data['fk_nextstep'] = 0;
 	   }
 	   
-	   
+	   if(!empty($curentStep->flag_desc))
+	   {
+	       $data['target-action'] = 'showProductForm';
+	   }
 	   
 	   
 	   
@@ -444,6 +459,157 @@ class productcomposer
 	   print '</div>';
 	   
 	   print '</div>';
+	}
+	
+	public function print_productForm($curentStep, $product, $wrapData = false){
+	    global $conf,$langs,$hookmanager;
+	    
+	    $maxvisiblephotos = 1;
+	    $width=300;
+	    $photo = $product->show_photos($conf->product->multidir_output[$product->entity],'small',$maxvisiblephotos,0,0,0,$width,$width,1);
+	    
+	    $data=array();
+	    $data['id'] = $product->id;
+	    $data['element'] = $product->element;
+	    $data['fk_step'] = $curentStep->id;
+	    
+	    $data['target-action'] = 'validproductformandnextstep';
+	    
+	    $nextStep = $curentStep->getNext();
+	    if(!empty($nextStep))
+	    {
+	        $data['fk_nextstep'] = $nextStep->id;
+	    }
+	    else
+	    {
+	        $data['fk_nextstep'] = 0;
+	    }
+	    
+	    if(!empty($wrapData) && is_array($wrapData))
+	    {
+	        $data = array_replace($data, $wrapData);
+	    }
+	    
+	    $attr = !empty($data)?$this->inlineData($data):'';
+	    
+	    print '<table >';
+	    print '<tr><td valign="top" >';
+	    
+	    print '<div class="productcomposer-product-item searchitem"  >';
+	    print '<div class="productcomposer-product-item-photo" >';
+	    print $photo;
+	    print '</div>';
+	    print '<div class="productcomposer-product-item-info" >';
+	    print '<span class="label" >'.$product->label.'</span>';
+	    print '<span class="ref" >#'.$product->ref.'</span>';
+	    print '</div>';
+	    print '</div>';
+	    
+	    
+	    print '</td><td valign="top" >';
+	    
+	    
+	    print '<form action="#" class="pc-form"  id="pc-product-form"  method="post" enctype="text/plain"  >';
+	    print '<table >';
+	    
+	    $parameters = array('curentStep' => $curentStep, 'product' => $product, 'data' =>& $data);
+	    $reshook=$hookmanager->executeHooks('pcProductForm',$parameters,$this);    // Note that $action and $object may have been modified by hook
+	    if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
+	    if (!$reshook)
+	    {
+	        dol_include_once('core/class/doleditor.class.php');
+	        
+	        /*print '<tr><td class="label">';
+	        print $langs->trans('label').' :';
+	        print '</td><td class="input">';
+	        print '<input />';
+	        print '</td></tr>';*/
+	        
+	        
+	        $content = '';
+	        if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['description']))
+	        {
+	            // get default value or allready set value
+	            $content = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['description'];
+	        }
+	        
+	        print '<tr><td colspan="2" class="input">';
+	        print '<strong>'.$langs->trans('AddDescription').' :</strong></br>';
+	        //$textarea = new DolEditor('description', $content, '', 200, 'dolibarr_notes');
+	        //$textarea->Create();
+	        print '<textarea id="description" name="description" rows="10" cols="80"  >'.dol_htmlentities($content).'</textarea>';
+	        print '</td></tr>';
+	    }
+	    else
+	    {
+	        print $hookmanager->resprints;
+	    }
+	    
+	    print '<tr><td class="label"></td><td style="text-align:left;" >';
+	    print '<button class="butAction" id="product-form-add-btn" '.$attr.' >'.$langs->trans('AddProduct').'</button>';
+	    print '</td></tr>';
+	    
+	    print '</table >';
+	    print '</form>';
+	    
+	    print '</td></tr>';
+	    print '<table >';
+	}
+	
+	public function print_productFormForStep($curentStep,$product,$wrapData = false)
+	{
+	    global $conf;
+	    
+	    $maxvisiblephotos = 1;
+	    $width=300;
+	    $photo = $product->show_photos($conf->product->multidir_output[$product->entity],'small',$maxvisiblephotos,0,0,0,$width,$width,1);
+	    
+	    $data=array();
+	    $data['id'] = $product->id;
+	    $data['element'] = $product->element;
+	    $data['fk_step'] = $curentStep->id;
+	    
+	    
+	    $nextStep = $curentStep->getNext();
+	    if(!empty($nextStep))
+	    {
+	        $data['target-action'] = 'addproductandnextstep';
+	        $data['fk_nextstep'] = $nextStep->id;
+	        
+	    }
+	    else
+	    {
+	        $data['target-action'] = 'addproductandnextstep';
+	        $data['fk_nextstep'] = 0;
+	    }
+	    
+	    if(!empty($curentStep->flag_desc))
+	    {
+	        $data['target-action'] = 'showProductForm';
+	    }
+	    
+	    
+	    
+	    if(!empty($wrapData) && is_array($wrapData))
+	    {
+	        $data = array_replace($data, $wrapData);
+	    }
+	    
+	    $attr = !empty($data)?$this->inlineData($data):'';
+	    
+	    print '<div class="productcomposer-product-item searchitem" '.$attr.' >';
+	    
+	    print '<div class="productcomposer-product-item-photo" >';
+	    print $photo;
+	    print '</div>';
+	    
+	    print '<div class="productcomposer-product-item-info" >';
+	    
+	    print '<span class="label" >'.$product->label.'</span>';
+	    print '<span class="ref" >#'.$product->ref.'</span>';
+	    print '</div>';
+	    
+	    print '</div>';
 	}
 	
 	public function print_cat($object,$wrapData = false)
@@ -704,14 +870,11 @@ class productcomposer
 	
 	
 	
-	public function addProduct($productid,$stepid,$qty=1)
+	public function addProduct($productid,$stepid,$qty=1,$data = array())
 	{
 	    global $conf;
 	    
-	    // Init currentCycle
-	    if(empty($this->TcurentComposer['currentCycle'])) $this->TcurentComposer['currentCycle'] = 0;
-	    
-	    $currentCycle = $this->TcurentComposer['currentCycle'];
+	    $currentCycle = $this->getCurentCycle();
 	    
 	    $curQty = 0;
 	    
@@ -720,13 +883,20 @@ class productcomposer
 	        if(!empty($this->TcurentComposer['products'][$currentCycle][$stepid][$productid])){
 	            $curQty = $this->TcurentComposer['products'][$currentCycle][$stepid][$productid];
 	        }
-	        
+	        //
 	        $this->TcurentComposer['products'][$currentCycle][$stepid][$productid] = $curQty + $qty;
+	        
+	        // Récupération des détails précédants
+	        if(!empty($this->TcurentComposer['productsDetails'][$currentCycle][$stepid][$productid])){
+	            $data = array_replace($this->TcurentComposer['productsDetails'][$currentCycle][$stepid][$productid], $data);
+	            $this->TcurentComposer['productsDetails'][$currentCycle][$stepid][$productid] = $data ;
+	        }
 	    }
 	    else
 	    {
 	        
 	        $this->TcurentComposer['products'][$currentCycle][$stepid] = array($productid => $qty );
+	        $this->TcurentComposer['productsDetails'][$currentCycle][$stepid][$productid] = $data ;
 	    }
 	    
 	    
@@ -737,10 +907,7 @@ class productcomposer
 	{
 	    global $conf;
 	    
-	    // Init currentCycle
-	    if(empty($this->TcurentComposer['currentCycle'])) $this->TcurentComposer['currentCycle'] = 0;
-	    
-	    $currentCycle = $this->TcurentComposer['currentCycle'];
+	    $currentCycle = $this->getCurentCycle();
 	    
 	    $this->TcurentComposer['steps'][$currentCycle][$stepid] = $catid ;
 
@@ -750,7 +917,7 @@ class productcomposer
 	
 	public function getPrevStepCat($curentStep)
 	{
-	    if(empty($this->TcurentComposer['currentCycle'])) return false;
+	    if(empty($this->getCurentCycle())) return false;
 	    
 	    $previus  = $curentStep->getPrevious();
 	    if($previus)
@@ -950,10 +1117,17 @@ class productcomposer
 	                    $product = new Product($this->db);
 	                    if($product->fetch($productId) > 0)
 	                    {
-	                        //$this->object->
+	                        // get product details : get by product form
+	                        $productDetails = array();
+	                        if(!empty($this->TcurentComposer['productsDetails'][$cycle][$stepId][$productId]))
+	                        {
+	                            $productDetails = $this->TcurentComposer['productsDetails'][$cycle][$stepId][$productId];
+	                        }
+	                        
+
 	                        $curentRank++;
 	                        
-	                        $desc = '';
+	                        $desc = !empty($productDetails['description'])?$productDetails['description']:'';
 	                        $pu_ht = empty($stepObj->noPrice)? $product->price : 0;
 	                        $txtva = $product->tva_tx;
 	                        $txlocaltax1=0;
@@ -988,7 +1162,8 @@ class productcomposer
 	                            'product' =>& $product,
 	                            'qty' =>& $qty,
 	                            'array_options' =>& $array_options,
-	                            'i' => $i
+	                            'i' => $i,
+	                            'productDetails' => $productDetails
 	                        );
 
 	                            
@@ -1083,6 +1258,13 @@ class productcomposer
 	    else if($this->object->element=='commande') return $this->object->addline($desc, 0,$qty, $txtva,0,0,0,0,0,0,0,0,0,0,9,$rang, $subtotalModuleNumber, 0, 0, 0, $label,$array_options);
 	    
 	 
+	}
+	
+	public function getCurentCycle()
+	{
+	    // Init currentCycle
+	    if(empty($this->TcurentComposer['currentCycle'])) $this->TcurentComposer['currentCycle'] = 0;
+	    return $this->TcurentComposer['currentCycle'];
 	}
 	
 }

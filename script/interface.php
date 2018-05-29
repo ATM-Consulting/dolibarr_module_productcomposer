@@ -68,6 +68,42 @@ if($get=='newroadmap' )
     else { echo $langs->trans('paramMissed'); }
 }
 
+
+
+if( $get == 'validproductformandnextstep' )
+{
+    $productid = GETPOST('productid');
+    if(!empty($stepid) && !empty($productid) )
+    {
+        $PComposer->addProduct($productid,$stepid,1,$_POST);
+        
+        
+        $isLastStep = 0;
+        $curentStep = new PCRoadMapDet($db);
+        $res = $curentStep->fetch($stepid);
+        if($res > 0)
+        {
+            $nextStep = $curentStep->getNext();
+            if(empty($nextStep))
+            {
+                $isLastStep = 1;
+            }
+            else
+            {
+                // go to loadnextstep action
+                $PComposer->print_nextstep($stepid);
+            }
+        }
+        
+        
+        
+        if(!$isLastStep) print '<div id="composer-cart" class="composer-cart">';
+        $PComposer->printCart();
+        if(!$isLastStep) print '</div>';
+    }
+    else { echo $langs->trans('paramMissed'); }
+}
+
 if( $get == 'addproductandnextstep' )
 {
     $productid = GETPOST('productid');
@@ -102,7 +138,28 @@ if( $get == 'addproductandnextstep' )
     else { echo $langs->trans('paramMissed'); }
 }
 
-
+if( $get == 'showProductForm' )
+{
+    $productid = GETPOST('productid');
+    if(!empty($stepid) && !empty($productid) )
+    {
+        
+        $isLastStep = 0;
+        $curentStep = new PCRoadMapDet($db);
+        $res = $curentStep->fetch($stepid);
+        if($res > 0)
+        {
+            $param = array('productFormDisplay' => $productid);
+            $PComposer->print_step($stepid,$param);
+        }
+        
+        
+        if(!$isLastStep) print '<div id="composer-cart" class="composer-cart">';
+        $PComposer->printCart();
+        if(!$isLastStep) print '</div>';
+    }
+    else { echo $langs->trans('paramMissed'); }
+}
 
 if( $get == 'selectroadmapcategorie' )
 {

@@ -123,8 +123,10 @@ $( document ).ready(function() {
 		}
 		
 		
-		if(targetAction == "addproductandnextstep")
+		if(targetAction == "addproductandnextstep" || targetAction == "showProductForm" || targetAction == "validproductformandnextstep")
 		{
+		 	event.preventDefault();
+		 	
 			//console.log($( this ).data());
 		
 			var fk_pcroadmap = $("#" + popinId).data('fk_pcroadmap');
@@ -139,9 +141,18 @@ $( document ).ready(function() {
 			var stepid = $( this ).data('fk_step');
 			page =  page + "&stepid=" + stepid;
 			
+			var postfields;
+			if(targetAction == "validproductformandnextstep")
+			{
+				postfields = $( '#pc-product-form' ).serialize();
+			}
 			
-			loadInPopin(page);
+			loadInPopin(page, 0, false, postfields);
 		}
+		
+		
+		
+		
 		
 		if(targetAction == "selectroadmapcategorie")
 		{		
@@ -190,6 +201,8 @@ $( document ).ready(function() {
 			loadInPopin(  dataTransmitToUrl(parametters , page)   );
 		}
 		
+	
+		
 		
 		
 	
@@ -227,7 +240,7 @@ $( document ).ready(function() {
 	
 	
 	
-	function loadInPopin(target,reloadAfter = 0, htmltarget=false){
+	function loadInPopin(target,reloadAfter = 0, htmltarget=false, postfields=false){
 		
 		
 		var dialogWrap =  $("#" + popinId);
@@ -256,11 +269,13 @@ $( document ).ready(function() {
     				target = target + '?' + appendUrl;
     			}
     		}
-    		dialogContent.load( target , function() {
+    		
+    		$.post( target , postfields,function(data) {
+    			dialogContent.html( data );
     			
     			// RELOAD PAGE
     			if(reloadAfter){
-            		location.reload();
+            		//location.reload();
             	}
             	
             	// DETECT IMPORT READY
