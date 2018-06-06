@@ -93,7 +93,7 @@ $( document ).ready(function() {
 	
 	
 	
-	$( document ).on("click", "[data-target-action]", function(){
+	$( document ).on("click", "[data-target-action]", function(e){
 		// store curent step
 		var targetAction = $( this ).data('target-action');
 		var page = interfaceurl + "?get=" + targetAction;
@@ -125,7 +125,7 @@ $( document ).ready(function() {
 		
 		if(targetAction == "addproductandnextstep" || targetAction == "showProductForm" || targetAction == "validproductformandnextstep")
 		{
-		 	event.preventDefault();
+		 	e.preventDefault();
 		 	
 			//console.log($( this ).data());
 		
