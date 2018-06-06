@@ -163,6 +163,8 @@ class productcomposer
 	{
 	    global $langs;
 	    
+	    $disableBackBtnStep=false;
+	    
 	    if(empty($id)){
 	        print hStyle::callout($this->langs->trans('StepNotFound').' : '.$id, 'error');
 	        return 0;
@@ -194,14 +196,24 @@ class productcomposer
 	        if(!empty($prev) && $prev->id > 0){
 	            $backData['fk_step'] = $prev->id;
 	        }else{
-	            $backData['fk_step'] = $curentStep->id;
+	            //$backData['fk_step'] = $curentStep->id;
+	            $disableBackBtnStep=true;
 	        }
 	        $backAttr = $this->inlineData($backData);
 	        
+	        if(!$disableBackBtn && !$disableBackBtnStep)
+	        {
+	           print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-arrow-left"></i> '.$langs->trans('GoBackStep').' </span>';
+	           
+	        }
+	        
 	        if(!$disableBackBtn)
 	        {
-	           print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-arrow-left"></i> '.$langs->trans('GoBack').' </span>';
-	           print '<div style="clear:both;" ></div>';
+	            $backData['target-action'] = 'loadstep';
+	            $backData['fk_step'] = $curentStep->id;
+	            $backAttr = $this->inlineData($backData);
+	            print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-refresh"></i> '.$langs->trans('GoStartStep').' </span>';
+	            print '<div style="clear:both;" ></div>';
 	        }
 	        
 	        

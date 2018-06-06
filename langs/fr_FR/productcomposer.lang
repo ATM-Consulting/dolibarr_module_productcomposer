@@ -24,6 +24,8 @@ Product=Produit
 ForcePriceToZero=Forcer le prix du produit séléctionné sur cette étape à 0 lors de l'import
 AddProduct=Ajouter le produit
 AddDescription=Ajouter une description
+GoBackStep=Etape précédente
+GoStartStep=Redémarrer l'étape
 
 #MENU
 Menuproductcomposer=Feuilles de route
