@@ -47,6 +47,21 @@ $( document ).ready(function() {
 	            height: windowHeight,
 	            width: windowWidth,
 	            title: "<?php echo $langs->trans('PopUpTitle_ProductComposer'); ?>",
+	            close: function( event, ui ) {
+	            	
+	            	var removeOnClose = <?php print empty($conf->global->PC_DO_NOT_REMOVE_DIAL_ON_CLOSE)?1:0; ?>
+	            	
+	            	if(removeOnClose)
+	            	{
+    	            	if($("#" + popinId).data('fk_pcroadmap') != undefined)
+                      	{
+                      		loadInPopin(interfaceurl + "?get=annuleCurent") ;
+                      		$("#" + popinId).removeData('fk_pcroadmap');
+                      	}
+                        $( this ).html(''); 
+	            	}
+                    
+	            },
                 buttons:{
                         
                         'cancel' : {
