@@ -1087,6 +1087,7 @@ class productcomposer
 	    
 	    $curentRank = count($this->object->lines) + 1;
 	    $this->importStartRank=$curentRank;
+	    $this->totalHt = 0;
 	    
 	    if(!empty($this->TcurentComposer['products']))
 	    {
@@ -1136,7 +1137,6 @@ class productcomposer
 	                            $productDetails = $this->TcurentComposer['productsDetails'][$cycle][$stepId][$productId];
 	                        }
 	                        
-
 	                        $curentRank++;
 	                        
 	                        $desc = !empty($productDetails['description'])?$productDetails['description']:'';
@@ -1183,17 +1183,20 @@ class productcomposer
                             if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
                             if (!$reshook)
                             {
-                                
+                                $this->totalHt += $pu_ht * $qty;
                                 
                                 if($this->object->element == 'commande'){
                                     $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $info_bits, $fk_remise_except, $price_base_type, $pu_ttc, $date_start, $date_end, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise);
                                 }elseif($this->object->element == 'propal'){
-                                    $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
+                                    $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
                                 }
                                 
                                 if($res<1)
                                 {
                                     $errors++;
+                                }
+                                elseif($res>0){
+                                    $this->TcurentComposer['productsDetails'][$cycle][$stepId][$productId]['addLineId']=$res;
                                 }
                                 //print $stepObj->label;
                                 //print $product->ref.$product->desc.$qty;
