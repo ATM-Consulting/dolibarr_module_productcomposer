@@ -25,6 +25,7 @@ ForcePriceToZero=Forcer le prix du produit séléctionné sur cette étape à 0 
 AddProduct=Ajouter le produit
 AddDescription=Ajouter une description
 GoBackStep=Etape précédente
+GoNextStep=Passer cette étape
 GoStartStep=Redémarrer l'étape
 
 #MENU
@@ -70,6 +71,7 @@ AddNewRoadMapStep=Nouvelle étape pour la feuille de route
 LabelIsEmpty=Le champ libellé est vide.
 CatIslinked=Liée à la catégorie de la feuille de route
 Back=Retour
+
 
 # CARD TPL
 Save=Enregistrer

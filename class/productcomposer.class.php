@@ -213,9 +213,20 @@ class productcomposer
 	            $backData['fk_step'] = $curentStep->id;
 	            $backAttr = $this->inlineData($backData);
 	            print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-refresh"></i> '.$langs->trans('GoStartStep').' </span>';
-	            print '<div style="clear:both;" ></div>';
+	            
 	        }
 	        
+	        if(!empty($curentStep->optional) && $curentStep->type != $curentStep::TYPE_GOTO){
+	            $next = $curentStep->getNext();
+	            if(!empty($next) && $next->id > 0){
+	                $nextData['fk_step'] = $next->id;
+	                $nextData['target-action'] = 'loadstep';
+	                $nextAttr = $this->inlineData($nextData);
+	                print '<span class="back-to-the-future" '.$nextAttr.' >'.$langs->trans('GoNextStep').' <i class="fa fa-arrow-right"></i></span>';
+	            }
+	        }
+	        
+	        print '<div style="clear:both;" ></div>';
 	        
 	        $stepTitle = '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
 	        
