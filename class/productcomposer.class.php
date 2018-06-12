@@ -1097,6 +1097,12 @@ class productcomposer
 	    $linesImported =0;
 	    
 	    $curentRank = count($this->object->lines) + 1;
+	    foreach ($this->object->lines as $line){
+	        $curentRank = max ( $curentRank, $line->rang );
+	    }
+	    $curentRank++;
+	    
+	    
 	    $this->importStartRank=$curentRank;
 	    $this->totalHt = 0;
 	    
