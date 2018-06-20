@@ -1109,8 +1109,8 @@ class productcomposer
 	    if(!empty($this->TcurentComposer['products']))
 	    {
 	        // Ajout du titre
-	        $roadmapCat = new Categorie($this->db);
-	        $roadmapCat->fetch($this->TcurentComposer['fk_categorie_selected']);
+	        $this->roadmapCat = new Categorie($this->db);
+	        $this->roadmapCat->fetch($this->TcurentComposer['fk_categorie_selected']);
 	        
 	        $parameters = array('curentRank' =>& $curentRank);
 	        $reshook=$hookmanager->executeHooks('pcBeforeImport',$parameters,$this);    // Note that $action and $object may have been modified by hook
@@ -1119,8 +1119,8 @@ class productcomposer
 	        {
 	            // Add subtotal title
 	            $txtva = 0 ;
-	            $titleDesc =$roadmapCat->description;
-	            $titlelabel = $this->roadmap->label.' : '.$roadmapCat->label;
+	            $titleDesc =$this->roadmapCat->description;
+	            $titlelabel = $this->roadmap->label.' : '.$this->roadmapCat->label;
 	            $array_options = array();
 	            $this->subtotalAddTitle($titleDesc,1,$curentRank,  $array_options, $txtva, $titlelabel );
 	        }
@@ -1233,9 +1233,9 @@ class productcomposer
 	        {
 	            // Add subtotal
     	        $subTotalLabel = $langs->trans('Subtotal');
-    	        $curentRank++;
     	        $level=1;
     	        $this->subtotalAddTotal($subTotalLabel, $level, $curentRank);
+    	        $curentRank++;
 	        }
 
 	    }
