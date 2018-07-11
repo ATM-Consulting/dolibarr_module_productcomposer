@@ -56,7 +56,7 @@ $head = productcomposerAdminPrepareHead();
 dol_fiche_head(
     $head,
     'about',
-    $langs->trans("Module103998Name"),
+    $langs->trans("Module104082Name"),
     0,
     'productcomposer@productcomposer'
 );
