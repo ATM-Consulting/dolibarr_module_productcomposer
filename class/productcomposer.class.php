@@ -163,6 +163,8 @@ class productcomposer
 	{
 	    global $langs;
 	    
+	    $disableBackBtnStep=false;
+	    
 	    if(empty($id)){
 	        print hStyle::callout($this->langs->trans('StepNotFound').' : '.$id, 'error');
 	        return 0;
@@ -194,16 +196,37 @@ class productcomposer
 	        if(!empty($prev) && $prev->id > 0){
 	            $backData['fk_step'] = $prev->id;
 	        }else{
-	            $backData['fk_step'] = $curentStep->id;
+	            //$backData['fk_step'] = $curentStep->id;
+	            $disableBackBtnStep=true;
 	        }
 	        $backAttr = $this->inlineData($backData);
 	        
-	        if(!$disableBackBtn)
+	        if(!$disableBackBtn && !$disableBackBtnStep)
 	        {
-	           print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-arrow-left"></i> '.$langs->trans('GoBack').' </span>';
-	           print '<div style="clear:both;" ></div>';
+	           print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-arrow-left"></i> '.$langs->trans('GoBackStep').' </span>';
+	           
 	        }
 	        
+	        if(!$disableBackBtn)
+	        {
+	            $backData['target-action'] = 'loadstep';
+	            $backData['fk_step'] = $curentStep->id;
+	            $backAttr = $this->inlineData($backData);
+	            print '<span class="back-to-the-future" '.$backAttr.' ><i class="fa fa-refresh"></i> '.$langs->trans('GoStartStep').' </span>';
+	            
+	        }
+	        
+	        if(!empty($curentStep->optional) && $curentStep->type != $curentStep::TYPE_GOTO){
+	            $next = $curentStep->getNext();
+	            if(!empty($next) && $next->id > 0){
+	                $nextData['fk_step'] = $next->id;
+	                $nextData['target-action'] = 'loadstep';
+	                $nextAttr = $this->inlineData($nextData);
+	                print '<span class="back-to-the-future" '.$nextAttr.' >'.$langs->trans('GoNextStep').' <i class="fa fa-arrow-right"></i></span>';
+	            }
+	        }
+	        
+	        print '<div style="clear:both;" ></div>';
 	        
 	        $stepTitle = '<h2><span class="rank" >'.($curentStep->rank + 1).'.</span> '.dol_htmlentities($curentStep->label).' '.$curentSelectedRoadMapLabel.'</h2>';
 	        
@@ -1074,13 +1097,20 @@ class productcomposer
 	    $linesImported =0;
 	    
 	    $curentRank = count($this->object->lines) + 1;
+	    foreach ($this->object->lines as $line){
+	        $curentRank = max ( $curentRank, $line->rang );
+	    }
+	    $curentRank++;
+	    
+	    
 	    $this->importStartRank=$curentRank;
+	    $this->totalHt = 0;
 	    
 	    if(!empty($this->TcurentComposer['products']))
 	    {
 	        // Ajout du titre
-	        $roadmapCat = new Categorie($this->db);
-	        $roadmapCat->fetch($this->TcurentComposer['fk_categorie_selected']);
+	        $this->roadmapCat = new Categorie($this->db);
+	        $this->roadmapCat->fetch($this->TcurentComposer['fk_categorie_selected']);
 	        
 	        $parameters = array('curentRank' =>& $curentRank);
 	        $reshook=$hookmanager->executeHooks('pcBeforeImport',$parameters,$this);    // Note that $action and $object may have been modified by hook
@@ -1089,8 +1119,8 @@ class productcomposer
 	        {
 	            // Add subtotal title
 	            $txtva = 0 ;
-	            $titleDesc =$roadmapCat->description;
-	            $titlelabel = $this->roadmap->label.' : '.$roadmapCat->label;
+	            $titleDesc =$this->roadmapCat->description;
+	            $titlelabel = $this->roadmap->label.' : '.$this->roadmapCat->label;
 	            $array_options = array();
 	            $this->subtotalAddTitle($titleDesc,1,$curentRank,  $array_options, $txtva, $titlelabel );
 	        }
@@ -1124,7 +1154,6 @@ class productcomposer
 	                            $productDetails = $this->TcurentComposer['productsDetails'][$cycle][$stepId][$productId];
 	                        }
 	                        
-
 	                        $curentRank++;
 	                        
 	                        $desc = !empty($productDetails['description'])?$productDetails['description']:'';
@@ -1171,17 +1200,20 @@ class productcomposer
                             if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
                             if (!$reshook)
                             {
-                                
+                                $this->totalHt += $pu_ht * $qty;
                                 
                                 if($this->object->element == 'commande'){
                                     $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $info_bits, $fk_remise_except, $price_base_type, $pu_ttc, $date_start, $date_end, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise);
                                 }elseif($this->object->element == 'propal'){
-                                    $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
+                                    $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
                                 }
                                 
                                 if($res<1)
                                 {
                                     $errors++;
+                                }
+                                elseif($res>0){
+                                    $this->TcurentComposer['productsDetails'][$cycle][$stepId][$productId]['addLineId']=$res;
                                 }
                                 //print $stepObj->label;
                                 //print $product->ref.$product->desc.$qty;
@@ -1201,9 +1233,9 @@ class productcomposer
 	        {
 	            // Add subtotal
     	        $subTotalLabel = $langs->trans('Subtotal');
-    	        $curentRank++;
     	        $level=1;
     	        $this->subtotalAddTotal($subTotalLabel, $level, $curentRank);
+    	        $curentRank++;
 	        }
 
 	    }

@@ -37,9 +37,10 @@ tr.ui-state-highlight td{
             
 .back-to-the-future{
 	margin: 10px 0;
-	padding: 10px 0;
+	padding: 10px 10px 10px 0;
 	cursor: pointer;
 	font-weight: bold;
+	
 }
    
 
