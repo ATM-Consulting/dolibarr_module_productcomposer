@@ -86,6 +86,14 @@ if (empty($reshook))
 	            $object->flag_desc = 0;
 	        }
 	        
+	        $noPrice = GETPOST('noPrice');
+	        $object->noPrice = 0;
+	        if($noPrice==='yes'){
+	            $object->noPrice = 1;
+	        }
+	        elseif($noPrice==='no'){
+	            $object->noPrice = 0;
+	        }
 	        
 	        
 	        if(empty($object->label)){
