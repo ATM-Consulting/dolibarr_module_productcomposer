@@ -926,6 +926,19 @@ class productcomposer
 	    $this->save();
 	}
 	
+	/**
+	 * @param int $productid
+	 * @param int $stepid
+	 * @param int $cycle
+	 * @param number $qty
+	 */
+	public function UpdateProductQty($productid, $stepid, $cycle, $qty)
+	{
+	        $this->TcurentComposer['products'][$cycle][$stepid][$productid] = $qty;
+	        return $this->save();
+	    
+	}
+	
 	public function addStepCat($catid,$stepid)
 	{
 	    global $conf;
@@ -1015,14 +1028,14 @@ class productcomposer
 	
 	public function printCart()
 	{
-	    global $langs,$conf;
+	    global $langs,$conf,$hookmanager;
 	    if(!empty($this->TcurentComposer['products']))
 	    {
 	        $columns = 2;
 	        print '<table class="border" width="100%" >';
 	        print '<thead>';
 	        print '<tr class="liste_titre" ><th>'.$langs->trans('Product').'</th>';
-	        if(!empty($conf->global->PC_SHOW_QUANTITY)){
+	        if(!empty($conf->global->PC_SHOW_QUANTITY) || !empty($conf->global->PC_SHOW_QUANTITY_FORM) ){
 	           print '<th>'.$langs->trans('Quantity').'</th>';
 	           $columns++;
 	        }
@@ -1032,21 +1045,31 @@ class productcomposer
 	        
 	        print '<tbody>';
 	        $lastCycle = 0;
+	        
+	        $iCycles = 0;
 	        foreach ( $this->TcurentComposer['products'] as $cycle => $steps )
 	        {
+	            $iCycles++;
+	            
 	            if($cycle != $lastCycle)
 	            {
 	                print '<tr><td colspan="'.$columns.'" ><hr/></td></tr>';
 	                $lastCycle = $cycle;
 	            }
 	            
+	            $iSteps = 0;
 	            foreach($steps as $stepId => $products)
 	            {
+	                $iSteps++;
+	                
 	                $stepObj = new PCRoadMapDet($this->db);
 	                $stepObj->fetch($stepId);
 	                
+	                $iProducts = 0;
 	                foreach ($products as $productId => $qty)
 	                {
+	                    $iProducts++;
+	                    
 	                    $product = new Product($this->db);
 	                    if($product->fetch($productId) > 0)
 	                    {
@@ -1054,8 +1077,32 @@ class productcomposer
 	                        print '<em>'.$stepObj->label.'</em><br/>';
 	                        print '<strong>'.$product->ref.'</strong> '.$product->desc.'</td>';
 	                        
-	                        if(!empty($conf->global->PC_SHOW_QUANTITY)){
-	                            print '<td >'.$qty.'</td>';
+	                        if(!empty($conf->global->PC_SHOW_QUANTITY) || !empty($conf->global->PC_SHOW_QUANTITY_FORM )){
+	                            
+	                            print '<td >';
+	                            
+	                            $parameters = array('productId' => $product, 'step' => $stepId, 'cycle' => $cycle);
+	                            $reshook=$hookmanager->executeHooks('pcPrintCartQty',$parameters,$this);    // Note that $action and $object may have been modified by hook
+	                            if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
+	                            if (!$reshook)
+	                            {
+    	                            if(!empty($conf->global->PC_SHOW_QUANTITY_FORM)){
+    	                                $data = array(
+    	                                    'onchange-target-action' => 'update-cart-product-qty',
+    	                                    'cycle' => $cycle,
+    	                                    'step' => $stepId,
+    	                                    'product' => $productId,
+    	                                    'fromelement' => $this->object->element,
+    	                                    'fromelementid' => $this->object->id,
+    	                                );
+    	                                $attr = !empty($data)?$this->inlineData($data):'';
+    	                                print '<input class="pcomposer-cart-qty" type="number" step="0.01" min="0" value="'.$qty.'"  '.$attr.' /> ';
+    	                            }
+    	                            else {
+    	                                print $qty;
+    	                            }
+	                            }
+	                            print '</td>';
 	                        }
 	                        
 	                        $data = array(

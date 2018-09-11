@@ -127,3 +127,7 @@ tr.ui-state-highlight td{
 .pc-form .label{
 	font-weight: bold;
 }
+
+.pcomposer-cart-qty{
+	    width: 45px;
+}

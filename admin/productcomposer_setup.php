@@ -102,6 +102,7 @@ print '<table class="noborder" width="100%">';
 
 _print_title("GeneralOptions");
 _print_on_off('PC_SHOW_QUANTITY');
+_print_on_off('PC_SHOW_QUANTITY_FORM',false,'PC_SHOW_QUANTITY_FORM_HELP');
 _print_on_off('PC_DO_NOT_CLEAR_ON_ADD_PRODUCT');
 _print_on_off('PC_FORCE_DEL_FOLLOWING_PRODUCT');
 
@@ -122,7 +123,7 @@ function _print_title($title="")
 
 function _print_on_off($confkey, $title = false, $desc ='')
 {
-    global $var, $bc, $langs, $conf;
+    global $var, $bc, $langs, $conf, $form;
     $var=!$var;
     
     print '<tr '.$bc[$var].'>';

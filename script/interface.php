@@ -259,6 +259,19 @@ if($get=='delete-product')
     $PComposer->deleteProduct($cycle,$step,$product,$allAfter);
     $PComposer->printCart();
 }
+
+if($get=='update-cart-product-qty')
+{
+    $cycle   = GETPOST('cycle','int');
+    $step    = GETPOST('step','int');
+    $product = GETPOST('product','int');
+    $qty     = GETPOST('qty','int');
+    
+    $PComposer->UpdateProductQty($product, $step, $cycle, $qty);
+    $json = array('result'=>1);
+    print json_encode($json);
+    exit;
+}
     
 
 function _postRoadmapRank($objectName)

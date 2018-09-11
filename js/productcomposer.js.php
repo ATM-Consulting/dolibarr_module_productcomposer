@@ -106,7 +106,28 @@ $( document ).ready(function() {
 	
 	});
 	
-	
+	$( document ).on("click", "[data-onchange-target-action]", function(e){
+		
+		var targetAction = $( this ).data('onchange-target-action');
+		var page = interfaceurl + "?get=" + targetAction;
+		
+		var data = $( this ).data();
+		
+		data.qty = $( this ).val();
+		
+		if(targetAction == "update-cart-product-qty")
+		{
+			var jqxhr = $.getJSON( page, data)
+          	.done(function() {
+            	console.log( "success" );
+          	})
+          	.fail(function() {
+            	console.log( "error" );
+          	});
+		}
+		
+	});
+		
 	
 	$( document ).on("click", "[data-target-action]", function(e){
 		// store curent step
