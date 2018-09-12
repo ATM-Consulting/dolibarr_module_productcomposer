@@ -542,10 +542,12 @@ class PCRoadMapDet extends SeedObject
         if(empty($fk_category)){ $fk_category = $this->fk_categorie;}
         
         $sql = "SELECT c.fk_product as id" ;
-        $sql .= " FROM " . MAIN_DB_PREFIX . "categorie_product as c, " . MAIN_DB_PREFIX . "categorie o";
+        $sql .= " FROM " . MAIN_DB_PREFIX . "categorie_product c ";
+        $sql .= " JOIN  " . MAIN_DB_PREFIX . "categorie o ON (c.fk_categorie = o.rowid) ";
+        $sql .= " JOIN " . MAIN_DB_PREFIX . "product p ON (p.rowid = c.fk_product) ";
         $sql .= " WHERE o.entity IN (" . getEntity('category').")";
         $sql .= " AND c.fk_categorie = ".intval($fk_category);
-        $sql .= " AND c.fk_categorie = o.rowid";
+        $sql .= " ORDER BY p.label ASC";
 
         $products = $this->dbTool->executeS($sql);
         if($products)
@@ -592,7 +594,28 @@ class PCRoadMapDet extends SeedObject
             }
         }
         
-        return array_unique ( $Tall);
+        $Tall = array_unique ( $Tall);
+        
+        if(!empty($Tall)){
+            $Tall = array_map('intval', $Tall);
+            // pour le tri des produits
+            $sql = "SELECT p.rowid as id" ;
+            $sql .= " FROM " . MAIN_DB_PREFIX . "product ";
+            $sql .= " WHERE p.rowid IN (" . implode(',', $Tall).")";
+            $sql .= " ORDER BY p.label ASC";
+            
+            $products = $this->dbTool->executeS($sql);
+            if($products)
+            {
+                $Tall = array();
+                foreach ($products as $obj)
+                {
+                    $Tall[] = $obj->id;
+                }
+            }
+        }
+        
+        return $Tall;
         
     }
     

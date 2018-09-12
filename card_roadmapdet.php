@@ -246,7 +246,7 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 			,'showLabel' => $formcore->texte('', 'label', $object->label, 80, 255)
 		    //			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
 		    ,'showCat' => ($mode == 'edit')? $form->select_all_categories('product', $object->fk_categorie,"fk_categorie") : $categorieLabel
-		    ,'showType' => ($mode == 'edit')? $form->selectarray('type', $object->listType(),$object->type ) : $object->typeLabel()
+		    ,'showType' => ($mode == 'edit')? $form->selectarray('type', $object->listType(), empty($object->type)?2:$object->type ) : $object->typeLabel()
 		    ,'fk_pcroadmap' => $object->fk_pcroadmap
 		    ,'showGoto' => ($mode == 'edit')? $form->selectarray('fk_pcroadmapdet', $object->listSteps(array($object->id)),$object->fk_pcroadmapdet,1 ) : $object->getLabel($object->fk_pcroadmapdet)
 		    
@@ -265,6 +265,7 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 	        'help_LinkToRoadmapCat' => $form->textwithtooltip($langs->trans('CatIslinked'), $langs->trans('help_LinkToRoadmapCat'),2,1,img_help(1,'')),
 	        'help_Goto' => $form->textwithtooltip($langs->trans('Goto'), $langs->trans('help_Goto'),2,1,img_help(1,'')),
 	        'help_LinkToPrevCat' => $form->textwithtooltip($langs->trans('CatIslinkedToPrevius'), $langs->trans('help_LinkToPrevCat'),2,1,img_help(1,'')),
+	        'help_optional' => $form->textwithtooltip($langs->trans('Optional'), $langs->trans('help_Optional'),2,1,img_help(1,'')),
 	    )
 		,'langs' => $langs
 		,'user' => $user

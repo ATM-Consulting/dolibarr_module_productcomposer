@@ -106,7 +106,7 @@ $( document ).ready(function() {
 	
 	});
 	
-	$( document ).on("click", "[data-onchange-target-action]", function(e){
+	$( document ).on("change", "[data-onchange-target-action]", function(e){
 		
 		var targetAction = $( this ).data('onchange-target-action');
 		var page = interfaceurl + "?get=" + targetAction;

@@ -16,9 +16,9 @@ NoSelectedRoadmapCat=Oops, la selection de la catégorie de la feille de route e
 NoFirstStepFound=La première étape n'est pas trouvée.
 ErrorRoadMapNotLoaded=La feuille de route en cours n'a pas pu être chargée.
 help_LinkToRoadmapCat=Si lié à la catégorie de la feuille de route, alors la liste des produits listera seulement les produits à la fois dans la catégorie de l'étape ET dans la catégorie de la feuille de route
-help_Goto=<b>Utilisé seulement si l'étape est de type GOTO</b><br/>Séléctionnez l'étape sur laquelle démarrer un nouveau cycle.
-help_LinkToPrevCat=<b>Utilisé seulement si l'étape est de type "Sélection de produit"</b></br>Si lié à la catégorie précédante, alors la liste des produits listera seulement les produits à la fois dans la catégorie de l'étape ET dans la catégorie de l'étape précédante de type "Sélection de catégorie"
-CatIslinkedToPrevius=Liée à la catégorie de l'étape précédante
+help_Goto=<b>Utilisé seulement si l'étape est de type "Retour vers une étape précédente"</b><br/>Séléctionnez l'étape sur laquelle démarrer un nouveau cycle.
+help_LinkToPrevCat=<b>Utilisé seulement si l'étape est de type "Sélection de produit"</b></br>Si lié à la catégorie précédente, alors la liste des produits listera seulement les produits à la fois dans la catégorie de l'étape ET dans la catégorie de l'étape précédente de type "Sélection de catégorie"
+CatIslinkedToPrevius=Liée à la catégorie de l'étape précédente
 Goto=Etape cible
 Product=Produit
 ForcePriceToZero=Forcer le prix du produit séléctionné sur cette étape à 0 lors de l'import
@@ -27,6 +27,8 @@ AddDescription=Ajouter une description
 GoBackStep=Etape précédente
 GoNextStep=Passer cette étape
 GoStartStep=Redémarrer l'étape
+Optional=Etape optionnelle
+help_Optional=Si cette étape est optionnelle, il est possible de passer cette étape sans selectionner de produit.
 
 #MENU
 Menuproductcomposer=Feuilles de route
