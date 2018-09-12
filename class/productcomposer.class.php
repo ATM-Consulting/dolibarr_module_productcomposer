@@ -1081,22 +1081,33 @@ class productcomposer
 	                            
 	                            print '<td >';
 	                            
-	                            $parameters = array('productId' => $product, 'step' => $stepId, 'cycle' => $cycle);
+	                            $data = array(
+	                                'onchange-target-action' => 'update-cart-product-qty',
+	                                'cycle' => $cycle,
+	                                'step' => $stepId,
+	                                'product' => $productId,
+	                                'fromelement' => $this->object->element,
+	                                'fromelementid' => $this->object->id,
+	                            );
+	                            
+	                            $attrParam = array(
+	                                'step'=>"0.01",
+	                                'min' =>"0",
+	                                'type'=>"number",
+	                                'class'=>"pcomposer-cart-qty",
+	                                'value'=>$qty
+	                            );
+	                            
+	                            $parameters = array('product' => $product, 'step' => $stepId, 'cycle' => $cycle,  'attrParam' => &$attrParam, 'data' =>& $data);
 	                            $reshook=$hookmanager->executeHooks('pcPrintCartQty',$parameters,$this);    // Note that $action and $object may have been modified by hook
 	                            if ($reshook < 0) setEventMessages($hookmanager->error,$hookmanager->errors,'errors');
 	                            if (!$reshook)
 	                            {
     	                            if(!empty($conf->global->PC_SHOW_QUANTITY_FORM)){
-    	                                $data = array(
-    	                                    'onchange-target-action' => 'update-cart-product-qty',
-    	                                    'cycle' => $cycle,
-    	                                    'step' => $stepId,
-    	                                    'product' => $productId,
-    	                                    'fromelement' => $this->object->element,
-    	                                    'fromelementid' => $this->object->id,
-    	                                );
+    	                                
     	                                $attr = !empty($data)?$this->inlineData($data):'';
-    	                                print '<input class="pcomposer-cart-qty" type="number" step="0.01" min="0" value="'.$qty.'"  '.$attr.' /> ';
+    	                                $attr.= !empty($attrParam)?$this->inlineData($attrParam, false):'';
+    	                                print '<input '.$attr.' /> ';
     	                            }
     	                            else {
     	                                print $qty;
