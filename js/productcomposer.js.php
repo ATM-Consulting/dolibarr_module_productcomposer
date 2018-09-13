@@ -336,6 +336,8 @@ $( document ).ready(function() {
               	
               	// SHOW RESULT
               	dialogContent.fadeTo('fast',100).find("#item-filter").focus();
+              	
+              	$("#" + popinId + ' .classfortooltip').tooltip();
             });
             
             
