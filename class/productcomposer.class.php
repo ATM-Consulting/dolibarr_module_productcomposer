@@ -1166,6 +1166,11 @@ class productcomposer
 	    
 	    if(!empty($this->TcurentComposer['products']))
 	    {
+	        if(empty($this->object->thirdparty)){
+	            $this->object->fetch_thirdparty();
+	        }
+	        
+	        
 	        // Ajout du titre
 	        $this->roadmapCat = new Categorie($this->db);
 	        $this->roadmapCat->fetch($this->TcurentComposer['fk_categorie_selected']);
@@ -1221,6 +1226,11 @@ class productcomposer
 	                        $txlocaltax2=0;
 	                        $fk_product = $product->id;
 	                        $remise_percent=0;
+	                        if(!empty($this->object->thirdparty->remise_percent)){
+	                            $remise_percent=$this->object->thirdparty->remise_percent;
+	                        }
+	                        
+	                        
 	                        $info_bits=0;
 	                        $fk_remise_except=0;
 	                        $price_base_type='HT';
