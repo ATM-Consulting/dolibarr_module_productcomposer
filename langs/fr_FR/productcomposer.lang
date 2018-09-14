@@ -29,6 +29,7 @@ GoNextStep=Passer cette étape
 GoStartStep=Redémarrer l'étape
 Optional=Etape optionnelle
 help_Optional=Si cette étape est optionnelle, il est possible de passer cette étape sans selectionner de produit.
+Processing=En cours
 
 #MENU
 Menuproductcomposer=Feuilles de route

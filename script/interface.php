@@ -223,6 +223,14 @@ if($get=='delete'  && !empty($fromelement) && !empty($fromelementid))
 
 if($get=='import')
 {
+    print '<div class="loading-wrap">
+          <div class="loader"></div>
+          <div class="loaderbefore"></div>
+          <div class="circular"></div>
+          <div class="circular another"></div>
+        <div class="text">'.$langs->trans('Processing').'</div>
+        </div>
+        ';
     if($PComposer->import())
     {
         
