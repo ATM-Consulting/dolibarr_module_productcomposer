@@ -36,12 +36,12 @@
 			</tr>
 			
 			<tr class="label  showOnType2" id="forcePriceToZero_line" >
-				<td width="25%">[langs.transnoentities(ForcePriceToZero)]</td>
+				<td width="25%">[help.help_forcePriceToZero;strconv=no]</td>
 				<td>[view.showNoPrice;strconv=no]</td>
 			</tr>
 			
 			<tr class="label  showOnType2" id="addDesc_line" >
-				<td width="25%">[langs.transnoentities(AddDesc)]</td>
+				<td width="25%">[help.help_AddDesc;strconv=no]</td>
 				<td>[view.showFlagDesc;strconv=no]</td>
 			</tr>
 			

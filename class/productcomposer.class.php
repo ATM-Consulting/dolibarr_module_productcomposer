@@ -934,7 +934,7 @@ class productcomposer
 	 */
 	public function UpdateProductQty($productid, $stepid, $cycle, $qty)
 	{
-	        $this->TcurentComposer['products'][$cycle][$stepid][$productid] = $qty;
+	        $this->TcurentComposer['products'][$cycle][$stepid][$productid] = floatval($qty);
 	        return $this->save();
 	    
 	}
@@ -1207,6 +1207,7 @@ class productcomposer
 	                foreach ($products as $productId => $qty)
 	                {
 	                    $i++;
+	                    $qty = floatval($qty); // fix Warning: A non-numeric value encountered
 	                    $product = new Product($this->db);
 	                    if($product->fetch($productId) > 0)
 	                    {
@@ -1271,9 +1272,9 @@ class productcomposer
                                 $this->totalHt += $pu_ht * $qty;
                                 
                                 if($this->object->element == 'commande'){
-                                    $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $info_bits, $fk_remise_except, $price_base_type, $pu_ttc, $date_start, $date_end, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise);
+                                    $res = $this->object->addline($desc, $pu_ht, floatval($qty), $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $info_bits, $fk_remise_except, $price_base_type, $pu_ttc, $date_start, $date_end, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise);
                                 }elseif($this->object->element == 'propal'){
-                                    $res = $this->object->addline($desc, $pu_ht, $qty, $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
+                                    $res = $this->object->addline($desc, $pu_ht, floatval($qty), $txtva, $txlocaltax1, $txlocaltax2, $fk_product, $remise_percent, $price_base_type, $pu_ttc, $info_bits, $type, $rang, $special_code, $fk_parent_line, $fk_fournprice, $pa_ht, $label,$date_start, $date_end,$array_options, $fk_unit, $origin, $origin_id, $pu_ht_devise, $fk_remise_except);
                                 }
                                 
                                 if($res<1)

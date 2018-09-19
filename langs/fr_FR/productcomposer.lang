@@ -21,7 +21,8 @@ help_LinkToPrevCat=<b>Utilisé seulement si l'étape est de type "Sélection de 
 CatIslinkedToPrevius=Liée à la catégorie de l'étape précédente
 Goto=Etape cible
 Product=Produit
-ForcePriceToZero=Forcer le prix du produit séléctionné sur cette étape à 0 lors de l'import
+ForcePriceToZero=Forcer le prix à 0
+help_ForcePriceToZero=Permet de forcer le prix du produit séléctionné sur cette étape à 0 lors de l'import
 AddProduct=Ajouter le produit
 AddDescription=Ajouter une description
 GoBackStep=Etape précédente
@@ -89,7 +90,8 @@ ToClone=Cloner
 Delete=Supprimer
 ProductGenerator=Générateur de produit
 Subtotal=Sous total
-AddDesc=Permettre d'ajouter une description lors de l'ajout d'un produit au panier
+AddDesc=Description
+help_AddDesc=Permet d'ajouter une description lors de l'ajout d'un produit au panier
 
 #Right
 productcomposer_write=Droit d'écriture sur les feuilles de route

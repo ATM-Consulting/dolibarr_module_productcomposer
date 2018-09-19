@@ -266,6 +266,9 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 	        'help_Goto' => $form->textwithtooltip($langs->trans('Goto'), $langs->trans('help_Goto'),2,1,img_help(1,'')),
 	        'help_LinkToPrevCat' => $form->textwithtooltip($langs->trans('CatIslinkedToPrevius'), $langs->trans('help_LinkToPrevCat'),2,1,img_help(1,'')),
 	        'help_optional' => $form->textwithtooltip($langs->trans('Optional'), $langs->trans('help_Optional'),2,1,img_help(1,'')),
+	        'help_forcePriceToZero' => $form->textwithtooltip($langs->trans('ForcePriceToZero'), $langs->trans('help_ForcePriceToZero'),2,1,img_help(1,'')),
+	        'help_forcePriceToZero' => $form->textwithtooltip($langs->trans('ForcePriceToZero'), $langs->trans('help_ForcePriceToZero'),2,1,img_help(1,'')),
+	        'help_AddDesc' => $form->textwithtooltip($langs->trans('AddDesc'), $langs->trans('help_AddDesc'),2,1,img_help(1,'')),
 	    )
 		,'langs' => $langs
 		,'user' => $user
