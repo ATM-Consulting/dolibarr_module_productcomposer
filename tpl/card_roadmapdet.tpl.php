@@ -70,6 +70,16 @@ $(document).ready(function() {
 
 </div> <!-- Fin div de la fonction dol_fiche_head() -->
 
+<!-- Permet de load correctement le choix par défaut en cas de création -->
+[onshow;block=begin;when [view.realaction]='create']
+<script type="text/javascript" language="javascript">
+$(document).ready(function() {
+        $('#type').val(2).change();
+});
+</script>
+[onshow;block=end]
+
+
 [onshow;block=begin;when [view.mode]='edit']
 <div class="center">
 	

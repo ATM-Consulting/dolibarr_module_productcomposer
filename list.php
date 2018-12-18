@@ -76,19 +76,28 @@ $Tlist = $dbtool->executeS($sql);
         <tr class="liste_titre">
             <th class="liste_titre" ><?php print $langs->trans('Label'); ?></th>
             <th class="liste_titre" ><?php print $langs->trans('Category'); ?></th>
+            <th class="liste_titre" ><?php print $langs->trans('Status'); ?></th>
             
             <th class="liste_titre" ></th>
             <th class="liste_titre" ></th>
         </tr>
     </thead>
     <tbody>
-<?php if(!empty($Tlist)){ ?>
-    	<?php foreach($Tlist as $roadmap){ ?>
+<?php if(!empty($Tlist)){
+	$roadmap = new PCRoadMap($db);
+	$categ = new Categorie($db);
+	foreach($Tlist as $item){
+		$roadmap->load($item->id);
+		$categ->fetch($roadmap->fk_categorie);
+?>
         <tr class="oddeven" data-lineid="<?php print $roadmap->id; ?>" >
-            <td  ><a href="<?php print dol_buildpath('/productcomposer/card.php',2).'?id='.$roadmap->id; ?>" ><?php print $roadmap->label; ?></a></td>
-            <td  ><a href="<?php print dol_buildpath('/categories/viewcat.php?type=product',2).'&amp;id='.$roadmap->fk_categorie; ?>" ><?php print $roadmap->category_label; ?></a></td>
+            <td width="60%" ><a href="<?php print dol_buildpath('/productcomposer/card.php',2).'?id='.$roadmap->id; ?>" ><?php print $roadmap->label; ?></a></td>
+            <td  ><a href="<?php print dol_buildpath('/categories/viewcat.php?type=product',2).'&amp;id='.$roadmap->fk_categorie; ?>" ><?php print $categ->label; ?></a></td>
+            <td  ><?php print $roadmap->getLibStatut(1); ?></td>
+            <td >
+            <a href="<?php print dol_buildpath('/productcomposer/card.php',2).'?action=edit&id='.$roadmap->id; ?>" ><?php print img_edit(); ?></a>
+            </td>
             <td class="productcomposer_linecolmove" ></td>
-            <td ><a href="<?php print dol_buildpath('/productcomposer/card.php',2).'?action=edit&id='.$roadmap->id; ?>" ><?php print img_edit(); ?></a></td>
             
         </tr>
         <?php } ?>

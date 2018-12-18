@@ -240,6 +240,7 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		,'view' => array(
 			'mode' => $mode
 			,'action' => 'save'
+			,'realaction' => $action
 			,'urlcard' => dol_buildpath('/productcomposer/card_roadmapdet.php', 1)
 		    ,'urllist' => dol_buildpath('/productcomposer/card.php?id='.$object->fk_pcroadmap, 1)
 			//,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object->generic, 'ref', $linkback, 1, 'ref', 'ref', '')

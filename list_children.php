@@ -50,8 +50,11 @@ $TchildrenList = $dbtool->executeS($sql);
             <td  ><a href="<?php print dol_buildpath('/productcomposer/card_roadmapdet.php',2).'?id='.$roadmapStep->id; ?>" ><?php print $roadmapStep->label; ?></a></td>
             <td  ><a href="<?php print dol_buildpath('/categories/viewcat.php?type=product',2).'&amp;id='.$roadmapStep->fk_categorie; ?>" ><?php print $roadmapStep->category_label; ?></a></td>
             <td  ><?php print PCRoadMapDet::translateTypeConst($roadmapStep->type); ?></td>
+            <td >
+            	<a href="<?php print dol_buildpath('/productcomposer/card_roadmapdet.php',2).'?action=edit&id='.$roadmapStep->id; ?>" ><?php print img_edit(); ?></a>
+            	<a href="<?php print dol_buildpath('/productcomposer/card_roadmapdet.php',2).'?action=delete&id='.$roadmapStep->id; ?>" ><?php print img_delete(); ?></a>
+            </td>
             <td class="productcomposer_linecolmove" ></td>
-            <td ><a href="<?php print dol_buildpath('/productcomposer/card_roadmapdet.php',2).'?action=edit&id='.$roadmapStep->id; ?>" ><?php print img_edit(); ?></a></td>
             
         </tr>
         <?php } ?>
