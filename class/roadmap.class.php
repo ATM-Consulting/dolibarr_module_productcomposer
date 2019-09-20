@@ -24,44 +24,44 @@ class PCRoadMap extends SeedObject
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
-	
+
 	public static $TStatus = array(
 		self::STATUS_DRAFT => 'Draft'
 		,self::STATUS_VALIDATED => 'Validate'
 	);
-	
+
 	public $table_element = 'pcroadmap';
 
 	public $element = 'pcroadmap';
-	
+
 	public $withChild = true;
-	
+
 	public $childtables = array(
 	    'PCRoadMapDet'
-	    
+
 	);
-	
+
 	public $fk_element = 'fk_pcroadmap';
-	
-	
+
+
 	public function __construct($db)
 	{
 		global $conf,$langs;
-		
+
 		$this->db = $db;
 		$this->dbTool = new PCDbTool($object->db);
-		
+
 		$this->fields=array(
 		    'label'  => array('type'=>'string')
 		    ,'status' =>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
 		    ,'entity' =>array('type'=>'integer','index'=>true)
-		    ,'fk_categorie'=>array('type'=>'int') // la catégorie principal dans laquele chaque produits devra être associé 
+		    ,'fk_categorie'=>array('type'=>'int') // la catégorie principal dans laquele chaque produits devra être associé
 		    ,'rank'=>array('type'=>'int')
 		);
-		
-		
+
+
 		$this->init();
-		
+
 		$this->status = self::STATUS_DRAFT;
 		$this->entity = $conf->entity;
 	}
@@ -69,56 +69,56 @@ class PCRoadMap extends SeedObject
 	public function save()
 	{
 		global $user;
-		
+
 		if (!$this->getId()) $this->fk_user_author = $user->id;
-		
+
 		$res = $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
-		
+
 		if ($addprov || !empty($this->is_clone))
 		{
-			
+
 			if (!empty($this->is_clone)) $this->status = self::STATUS_DRAFT;
-			
+
 			$wc = $this->withChild;
 			$this->withChild = false;
 			$res = $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
 			$this->withChild = $wc;
 		}
-		
+
 		return $res;
 	}
-	
+
 	public function getId()
 	{
 	    return $this->id;
 	}
-	
+
 	public function loadBy($value, $field, $annexe = false)
 	{
 		$res = parent::loadBy($value, $field, $annexe);
-		
+
 		return $res;
 	}
-	
+
 	public function load($id, $ref='', $loadChild = true)
 	{
 		global $db;
-		
+
 		$res = parent::fetchCommon($id, $ref);
-		
+
 		if ($loadChild) $this->fetchChild();
-		
+
 		return $res;
 	}
-	
+
 	public function delete(User &$user)
 	{
 		global $user;
-		
+
 		$this->fetchChild();
-		
+
 		$errors = 0;
-		
+
 		if(!empty($this->TPCRoadMapDet))
 		{
 		    foreach ($this->TPCRoadMapDet as $roadmapdet )
@@ -129,7 +129,7 @@ class PCRoadMap extends SeedObject
 		        }
 		    }
 		}
-		
+
 		if(empty($errors))
 		{
 		    return parent::deleteCommon($user);
@@ -137,33 +137,33 @@ class PCRoadMap extends SeedObject
 		else {
 		    return -1 * $errors;
 		}
-		
+
 	}
-	
+
 	public function setDraft()
 	{
 		if ($this->status == self::STATUS_VALIDATED)
 		{
 			$this->status = self::STATUS_DRAFT;
 			$this->withChild = false;
-			
+
 			return self::save();
 		}
-		
+
 		return 0;
 	}
-	
+
 	public function setValid()
 	{
 //		global $user;
-		
+
 		$this->status = self::STATUS_VALIDATED;
-		
+
 		return self::save();
 	}
-	
-	
-	
+
+
+
 	public function getNomUrl($withpicto=0, $get_params='')
 	{
 		global $langs;
@@ -171,37 +171,37 @@ class PCRoadMap extends SeedObject
         $result='';
         $label = '<u>' . $langs->trans("Showroadmap") . '</u>';
         if (! empty($this->ref)) $label.= '<br><b>'.$langs->trans('Ref').':</b> '.$this->ref;
-        
+
         $linkclose = '" title="'.dol_escape_htmltag($label, 1).'" class="classfortooltip">';
         $link = '<a href="'.dol_buildpath('/productcomposer/card.php', 1).'?id='.$this->getId(). $get_params .$linkclose;
-       
+
         $linkend='</a>';
 
         $picto='generic';
-		
+
         if ($withpicto) $result.=($link.img_object($label, $picto, 'class="classfortooltip"').$linkend);
         if ($withpicto && $withpicto != 2) $result.=' ';
-		
+
         $result.=$link.$this->ref.$linkend;
-		
+
         return $result;
 	}
-	
+
 	public static function getStaticNomUrl($id, $withpicto=0)
 	{
 		global $db;
-		
+
 		$object = new PCRoadMap($db);
 		$object->load($id, '',false);
-		
+
 		return $object->getNomUrl($withpicto);
 	}
-	
+
 	public function getLibStatut($mode=0)
     {
         return self::LibStatut($this->status, $mode);
     }
-	
+
 	public static function LibStatut($status, $mode)
 	{
 		global $langs;
@@ -213,41 +213,41 @@ class PCRoadMap extends SeedObject
 		if ($mode == 0) return img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 1) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($keytrans);
 	}
-	
-	
-	
+
+
+
 	static public function updateRankOfLine($rowid,$rank)
 	{
 	    global $db;
 	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'pcroadmap SET rank = '.$rank;
 	    $sql.= ' WHERE rowid = '.$rowid;
-	    
+
 	    echo $sql;
 	    if (! $db->query($sql))
 	    {
 	        dol_print_error($db->db);
 	    }
 	}
-	
+
 	public function getAll($returntype = 'object', $active=1 )
 	{
 	    $TResult = array();
-	    
+
 	    $sql = 'SELECT r.rowid as id, r.label, r.date_creation';
 	    $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' r ';
-	    
+
 	    if($active>=0)
 	    {
 	        $sql.= ' WHERE status = '.intval($active);
 	    }
-	    
-	    
+
+
 	    $res = $this->db->query($sql);
 	    if ($res)
 	    {
 	        while ($obj = $this->db->fetch_object($res))
 	        {
-	            
+
 	            if($returntype=='id')
 	            {
 	                $TResult[] = $obj->id;
@@ -260,16 +260,16 @@ class PCRoadMap extends SeedObject
 	            }
 	        }
 	    }
-	    
+
 	    return $TResult;
-	    
-	    
+
+
 	}
-	
+
 	public function getFirstStepId()
 	{
 	    if(empty($this->id)) return -1;
-	    
+
 	    $sql = 'SELECT rowid as id';
 	    $sql.= ' FROM '.MAIN_DB_PREFIX.'pcroadmapdet  ';
 	    $sql.= ' WHERE fk_pcroadmap = '.$this->id . ' ORDER BY rank ASC LIMIT 1 ';
@@ -280,13 +280,13 @@ class PCRoadMap extends SeedObject
 	        $obj = $this->db->fetch_object($res);
 	        return $obj->id;
 	    }
-	    
-	    
+
+
 	    return 0;
-	    
-	    
+
+
 	}
-	
+
 	/**
 	 *      Load properties id_previous and id_next by rank
 	 *
@@ -298,9 +298,9 @@ class PCRoadMap extends SeedObject
 	function load_previous_next_ref($filter, $fieldid, $nodbprefix=0)
 	{
 	    global $user;
-	    
-	    
-	    
+
+
+
 	    $sql = 'SELECT te.rowid id';
 	    $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as te';
 	    $sql.= ' WHERE te.rank < '.intval($this->rank);
@@ -309,16 +309,16 @@ class PCRoadMap extends SeedObject
 	        if (! preg_match('/^\s*AND/i', $filter)) $sql.=' AND ';   // For backward compatibility
 	        $sql.=$filter;
 	    }
-	    
+
 	    if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql.= ' AND te.entity IN ('.getEntity($this->element).')';
-	    
+
 	    $sql.= ' ORDER BY te.rank DESC';
-	    
+
 	    $this->ref_previous =  $this->dbTool->getvalue($sql);
-	    
-	    
-	    
-	    
+
+
+
+
 	    $sql = 'SELECT te.rowid id';
 	    $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as te';
 	    $sql.= ' WHERE te.rank > '.intval($this->rank);
@@ -327,13 +327,13 @@ class PCRoadMap extends SeedObject
 	        if (! preg_match('/^\s*AND/i', $filter)) $sql.=' AND ';   // For backward compatibility
 	        $sql.=$filter;
 	    }
-	    
+
 	    if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql.= ' AND te.entity IN ('.getEntity($this->element).')';
-	    
+
 	    $sql.= ' ORDER BY te.rank ASC';
-	    
+
 	    $this->ref_next = $this->dbTool->getvalue($sql);
-	    
+
 	    return 1;
 	}
 }
@@ -343,10 +343,10 @@ class PCRoadMap extends SeedObject
 
 class PCRoadMapDet extends SeedObject
 {
-    
+
     public $table_element = 'pcroadmapdet';
-    
-    
+
+
     public $element = 'pcroadmapdet';
     public $type;
     public $label;
@@ -357,54 +357,54 @@ class PCRoadMapDet extends SeedObject
     public $fk_pcroadmapdet;
     public $noPrice;
     public $flag_desc;
-    
+
     /**
      * Type status
      */
     const TYPE_SELECT_CATEGORY = 1; // n'est finalement pas utiliser
     const TYPE_SELECT_PRODUCT  = 2;
     const TYPE_GOTO = 3; // permet de boucler sur une étape
-    
-    
-    
-    
+
+
+
+
     public function __construct($db)
     {
         global $conf,$langs;
-        
+
         $this->db =& $db;
         $this->dbTool = new PCDbTool($this->db);
-        
+
         $this->fields=array(
-            
+
             'fk_pcroadmap'=>array('type'=>'int')
             ,'label'=>array('type'=>'string') // le libelle
-            ,'type'=>array('type'=>'int') 
+            ,'type'=>array('type'=>'int')
             ,'fk_categorie'=>array('type'=>'int')
             ,'rank'=>array('type'=>'int')
             ,'linked' =>array('type'=>'int') // si les elements liés à la catégorie doivent aussi êtres liés à la catégorie de la feuille de route
             ,'step_cat_linked' =>array('type'=>'int') // si les elements liés à la catégorie doivent aussi êtres liés à la catégorie de l'étape précédante
-            
-            // type goto 
+
+            // type goto
             ,'fk_pcroadmapdet'=>array('type'=>'int')
-            
+
             // type product
             ,'optional' =>array('type'=>'int') // si l'étape est optionnelle
             ,'noPrice' =>array('type'=>'int') // lors de l'import force le prix à zero
-            
+
             ,'needRoadmapCat' =>array('type'=>'int') // la liste des produits est filtrée aussi avec la catégorie de la feuille de route
-            
+
             ,'flag_desc' =>array('type'=>'int') // Permet la modification de la description du produit
-            
+
             //,'needPreviusCat' =>array('type'=>'int')
         );
-        
-        
+
+
         $this->init();
-        
+
         $this->entity = $conf->entity;
     }
-    
+
     /**
      *	Get object and children from database
      *
@@ -412,135 +412,135 @@ class PCRoadMapDet extends SeedObject
      * 	@param		bool		$loadChild		used to load children from database
      *	@return     int         				>0 if OK, <0 if KO, 0 if not found
      */
-    public function fetch($id, $loadChild = true)
+    public function fetch($id, $loadChild = true, $ref = NULL)
     {
-        $res = parent::fetch($id, $loadChild);
-        
+        $res = parent::fetch($id, $loadChild, $ref);
+
         if($res>0 && !empty($this->fk_categorie))
         {
             $this->categorie = new Categorie($this->db);
             $this->categorie->fetch($this->fk_categorie);
         }
-        
+
         return $res;
     }
-    
-    
+
+
     public function save()
     {
         global $user;
-        
+
         if (!$this->getId()) $this->fk_user_author = $user->id;
-        
+
         if(empty($this->id)){ $this->rank = $this->getMaxRank() + 1; }
-        
+
         $res = $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
-        
+
         if ($addprov || !empty($this->is_clone))
         {
-            
-            
+
+
             $wc = $this->withChild;
             $this->withChild = false;
             $res = $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
             $this->withChild = $wc;
         }
-        
+
         return $res;
     }
-    
+
     public function getMaxRank()
     {
         global $db;
         $sql = 'SELECT MAX(rank) FROM '.MAIN_DB_PREFIX.'pcroadmapdet ';
         $sql.= ' WHERE fk_pcroadmap = '.$this->fk_pcroadmap;
-        
+
         return $this->dbTool->getvalue($sql);
 
     }
-    
-    
+
+
     public function getId()
     {
         return $this->id;
     }
-    
+
     public function loadBy($value, $field, $annexe = false)
     {
         $res = parent::loadBy($value, $field, $annexe);
-        
+
         return $res;
     }
-    
+
     public function load($id, $ref='', $loadChild = true)
     {
         global $db;
-        
+
         $res = parent::fetchCommon($id, $ref);
-        
+
         if ($loadChild) $this->fetchObjectLinked();
-        
+
         return $res;
     }
-    
+
     public function delete(User &$user)
     {
         global $user;
-        
+
         //$this->generic->deleteObjectLinked();
-        
+
         return parent::deleteCommon($user);
     }
-    
-    
+
+
     static public function updateRankOfLine($rowid,$rank)
     {
         global $db;
         $sql = 'UPDATE '.MAIN_DB_PREFIX.'pcroadmapdet SET rank = '.$rank;
         $sql.= ' WHERE rowid = '.$rowid;
-        
+
         if (! $db->query($sql))
         {
             dol_print_error($db->db);
         }
     }
-    
-    
+
+
     public function getClosest($next = false)
     {
-        
+
         $operateur =  !empty($next)?'>':'<';
         $order =  !empty($next)?'ASC':'DESC';
-        
+
         $sql = 'SELECT rowid as id FROM '.MAIN_DB_PREFIX.$this->table_element;
         $sql.= ' WHERE fk_pcroadmap = '.$this->fk_pcroadmap . ' AND rank '.$operateur.' '.$this->rank;
         $sql.= ' ORDER BY rank '.$order;
         $sql.= ' LIMIT 1 ';
-        
+
         $TResult = array();
-        
+
         $res = $this->db->query($sql);
         if ($res)
         {
             return  $this->db->fetch_object($res);
         }
-        
+
         return 0;
-        
+
     }
-    
+
     public function getNext(){
         return $this->getClosest(true);
     }
-    
+
     public function getPrevious(){
         return $this->getClosest();
     }
-    
+
     public function getProductList($fk_category=0){
-        
+
         if(empty($fk_category)){ $fk_category = $this->fk_categorie;}
-        
+
         $sql = "SELECT c.fk_product as id" ;
         $sql .= " FROM " . MAIN_DB_PREFIX . "categorie_product as c, " . MAIN_DB_PREFIX . "categorie o";
         $sql .= " WHERE o.entity IN (" . getEntity('category').")";
@@ -557,33 +557,33 @@ class PCRoadMapDet extends SeedObject
             }
             return $Tlist;
         }
-    
+
         return false;
     }
-    
-    
+
+
     public function getProductListInMultiCat($TCategory=array()){
-        
+
         if(!is_array($TCategory) || empty($TCategory) ) return 0;
         //var_dump($TCategory);
         // récupération des produits lié à la feuille de route
-        $Tall = array(); 
-        
+        $Tall = array();
+
         $i=0;
         foreach ($TCategory as $fk_category)
         {
             $list = $this->getProductList($fk_category);
-            
+
             if(!empty($list))
             {
-                
+
                 if($i==0){
                     $Tall = $list;
                 }
                 else {
                     $Tall = array_intersect($Tall, $list);
                 }
-                
+
                 $i++;
             }
             else
@@ -591,23 +591,23 @@ class PCRoadMapDet extends SeedObject
                 $Tall = array();
             }
         }
-        
+
         return array_unique ( $Tall);
-        
+
     }
-    
-    
-    
-    
+
+
+
+
     public function getCatList($fk_category=0){
-        
+
         if(empty($fk_category)){ $fk_category = $this->fk_categorie;}
-        
+
         $sql = "SELECT o.rowid as id" ;
         $sql .= " FROM " . MAIN_DB_PREFIX . "categorie o";
         $sql .= " WHERE o.entity IN (" . getEntity('category').")";
         $sql .= " AND o.fk_parent = ".intval($fk_category);
-        
+
         $results = $this->dbTool->executeS($sql);
         if($results)
         {
@@ -618,31 +618,31 @@ class PCRoadMapDet extends SeedObject
             }
             return $Tlist;
         }
-        
+
         return false;
     }
-    
+
     public function catHaveChild($fk_category=0,$TCategory=array(), $type = 'all'){
-        
+
         if(empty($fk_category)){ $fk_category = $this->fk_categorie;}
-        
+
         $TCategory[] = $fk_category;
-        
+
         if( ($type=='all' || $type=='category' ) && !empty($this->getCatList($fk_category)) )
         {
             return true;
         }
-        
+
         if( ($type=='all' || $type=='product' ) && !empty($this->getProductListInMultiCat($TCategory)) )
         {
             return true;
         }
-        
+
         return false;
     }
-    
-    
-    
+
+
+
     /**
      *      Load properties id_previous and id_next by rank
      *
@@ -654,27 +654,27 @@ class PCRoadMapDet extends SeedObject
     function load_previous_next_ref($filter, $fieldid, $nodbprefix=0)
     {
         global $user;
-        
-        
-        
+
+
+
         $sql = 'SELECT te.rowid id';
         $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as te';
-        $sql.= ' WHERE te.rank < '.intval($this->rank); 
+        $sql.= ' WHERE te.rank < '.intval($this->rank);
         if (! empty($filter))
         {
             if (! preg_match('/^\s*AND/i', $filter)) $sql.=' AND ';   // For backward compatibility
             $sql.=$filter;
         }
-        
+
         if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql.= ' AND te.entity IN ('.getEntity($this->element).')';
-        
-        $sql.= ' ORDER BY te.rank DESC'; 
-        
+
+        $sql.= ' ORDER BY te.rank DESC';
+
         $this->ref_previous =  $this->dbTool->getvalue($sql);
-        
-        
-        
-        
+
+
+
+
         $sql = 'SELECT te.rowid id';
         $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as te';
         $sql.= ' WHERE te.rank > '.intval($this->rank);
@@ -683,53 +683,53 @@ class PCRoadMapDet extends SeedObject
             if (! preg_match('/^\s*AND/i', $filter)) $sql.=' AND ';   // For backward compatibility
             $sql.=$filter;
         }
-        
+
         if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) $sql.= ' AND te.entity IN ('.getEntity($this->element).')';
-        
+
         $sql.= ' ORDER BY te.rank ASC';
-        
+
         $this->ref_next = $this->dbTool->getvalue($sql);
-        
+
         return 1;
     }
-    
+
     // used for form
     static function listType(){
         return array(
             self::TYPE_SELECT_CATEGORY => self::translateTypeConst(self::TYPE_SELECT_CATEGORY ),
             self::TYPE_SELECT_PRODUCT => self::translateTypeConst(self::TYPE_SELECT_PRODUCT ),
             self::TYPE_GOTO => self::translateTypeConst(self::TYPE_GOTO ),
-            
+
         );
     }
-    
+
     // used for form
     public function listSteps($notIn = array()){
-        
+
         $TRet = array();
-        
+
         $sql = 'SELECT s.rowid id, s.label label';
         $sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as s';
         $sql.= ' WHERE  s.fk_pcroadmap = ' . $this->fk_pcroadmap;
-        
+
         if(!empty($notIn) && is_array($notIn)){
             $notIn = array_map('intval', $notIn);
             $sql.= ' AND  s.rowid NOT IN('.implode(',', $notIn).')';
         }
-        
+
         $sql.= ' ORDER BY s.rank ASC';
-        
+
         $Tlist = $this->dbTool->executeS($sql);
-        
+
         foreach ($Tlist as $step)
         {
             $TRet[$step->id] = $step->label;
         }
-        
+
         return $TRet;
-        
+
     }
-    
+
     static function translateTypeConst($key){
         global $langs;
         switch ($key) {
@@ -744,12 +744,12 @@ class PCRoadMapDet extends SeedObject
                 break;
         }
     }
-    
-    
+
+
     public function typeLabel(){
         return self::translateTypeConst($this->type);
     }
-    
+
     public function getLabel($id){
         $gotoStep = new PCRoadMapDet($this->db);
         $ret = $gotoStep->fetch($id);
@@ -761,7 +761,7 @@ class PCRoadMapDet extends SeedObject
             return false;
         }
     }
-    
-    
+
+
 }
 
