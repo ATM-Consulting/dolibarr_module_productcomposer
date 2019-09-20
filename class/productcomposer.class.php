@@ -327,8 +327,7 @@ class productcomposer
 	            else
 	            {
 	                // AFFICHAGE DE LA LISTE DES PRODUITS
-
-	                if($curentStep->linked || $curentStep->step_cat_linked){
+	                if($curentStep->linked || !empty($curentStep->step_cat_linked)){
 
 	                    $Tcat = array($param['fk_categorie']);
 
@@ -336,11 +335,22 @@ class productcomposer
 	                        $Tcat[] = $this->TcurentComposer['fk_categorie_selected'];
 	                    }
 
-	                    if($curentStep->step_cat_linked){
-	                        $prevStepCat = $this->getPrevStepCat($curentStep);
-	                        if(!empty($prevStepCat)){
-	                            $Tcat[] = $prevStepCat;
-	                        }
+	                    if(!empty($curentStep->step_cat_linked)){
+	                    	if($curentStep->step_cat_linked == 2){
+								$prevStepCat = $this->getAllPrevStepCat($curentStep);
+								if(!empty($prevStepCat)){
+									$Tcat  = array_merge($Tcat, $prevStepCat);
+									$Tcat = array_unique($Tcat);
+									var_dump('test');
+								}
+							}
+	                        else{
+	                        	$prevStepCat = $this->getPrevStepCat($curentStep);
+
+								if(!empty($prevStepCat)){
+									$Tcat[] = $prevStepCat;
+								}
+							}
 	                    }
 
 	                    $products = $curentStep->getProductListInMultiCat( $Tcat );
@@ -953,21 +963,61 @@ class productcomposer
 	    $this->save();
 	}
 
+	/**
+	 * @param $curentStep PCRoadMapDet
+	 * @return array
+	 */
 	public function getPrevStepCat($curentStep)
 	{
 		$curentCycle = $this->getCurentCycle();
-	    if(empty($curentCycle)) return false;
-
 	    $previus  = $curentStep->getPrevious();
 	    if($previus)
 	    {
-	        if(!empty($this->TcurentComposer['steps'][$this->TcurentComposer['currentCycle']][$previus->id])){
-	            return $this->TcurentComposer['steps'][$this->TcurentComposer['currentCycle']][$previus->id] ;
+	        if(!empty($this->TcurentComposer['steps'][$curentCycle][$previus->id])){
+	            return $this->TcurentComposer['steps'][$curentCycle][$previus->id] ;
 	        }
 	        else{
 	            return false;
 	        }
 	    }
+	}
+
+
+	/**
+	 * @param $curentStep PCRoadMapDet
+	 * @return array
+	 */
+	public function getAllPrevStepCat($curentStep)
+	{
+		$curentCycle = $this->getCurentCycle();
+		$previus  = $curentStep->getPrevious();
+		$TCat = array();
+
+		$walk = false;
+		$maxWalk = 100; // petite sécurité
+		$walkStep = 0;
+
+		while ($walk){
+			$walkStep++;
+			if(!empty($previus) && !empty($previus->id)){
+
+				if(!empty($this->TcurentComposer['steps'][$curentCycle][$previus->id])){
+					$TCat[] = $this->TcurentComposer['steps'][$curentCycle][$previus->id] ;
+				}
+
+				$curentStep = new PCRoadMapDet($this->db);
+				$curentStep->fetch($previus->id);
+				$previus  = $curentStep->getPrevious();
+			}
+			else{
+				$walk = false;
+			}
+
+			// security
+			if($walkStep>$maxWalk){ $walk = false; }
+		}
+
+		return array_unique($TCat);
 	}
 
 
