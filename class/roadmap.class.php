@@ -11,8 +11,9 @@ if (!class_exists('TObjetStd'))
 
 require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 dol_include_once('/productcomposer/class/pcdbtool.class.php');
-/*
- * Product composer roadmap
+
+/**
+ * Class PCRoadMap : Product composer roadmap
  */
 class PCRoadMap extends SeedObject
 {
@@ -42,14 +43,20 @@ class PCRoadMap extends SeedObject
 	    'PCRoadMapDet'
 	);
 
+	public $dbTool;
+
 	public $fk_element = 'fk_pcroadmap';
+
+	public $status;
+	public $entity;
+	public $fk_user_author;
 
 	public function __construct($db)
 	{
-		global $conf,$langs;
+		global $conf;
 
 		$this->db = $db;
-		$this->dbTool = new PCDbTool($object->db);
+		$this->dbTool = new PCDbTool($this->db);
 
 		$this->fields=array(
 		    'label'  => array('type'=>'string')
@@ -196,7 +203,11 @@ class PCRoadMap extends SeedObject
 		global $langs;
 		$langs->load('productcomposer@productcomposer');
 
-		if ($status==self::STATUS_DRAFT) { $statustrans='statut0'; $keytrans='productcomposerStatusDraft'; $shortkeytrans='Draft'; }
+		// DRAFT is default status
+		$statustrans='statut0';
+		$keytrans='productcomposerStatusDraft';
+		$shortkeytrans='Draft';
+
 		if ($status==self::STATUS_VALIDATED) { $statustrans='statut1'; $keytrans='productcomposerStatusValidated'; $shortkeytrans='Validate'; }
 
 		if ($mode == 0) return img_picto($langs->trans($keytrans), $statustrans);
@@ -330,7 +341,7 @@ class PCRoadMapDet extends SeedObject
     public $noPrice;
     public $flag_desc;
     public $addprov = false;
-
+	public $linked;
     /**
      * Type status
      */
