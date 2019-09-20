@@ -412,9 +412,9 @@ class PCRoadMapDet extends SeedObject
      * 	@param		bool		$loadChild		used to load children from database
      *	@return     int         				>0 if OK, <0 if KO, 0 if not found
      */
-    public function fetch($id, $loadChild = true)
+    public function fetch($id, $loadChild = true, $ref = NULL)
     {
-        $res = parent::fetch($id, $loadChild);
+        $res = parent::fetch($id, $loadChild, $ref);
         
         if($res>0 && !empty($this->fk_categorie))
         {
