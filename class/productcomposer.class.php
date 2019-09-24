@@ -645,6 +645,7 @@ class productcomposer
 				//$textarea = new DolEditor('description', $content, '', 200, 'dolibarr_notes');
 				//$textarea->Create();
 				print '<textarea id="description" name="description" rows="10" cols="80"  >' . dol_htmlentities($content) . '</textarea>';
+				print '<div style="height: 10px; clear: both; " ></div>';
 			}
 
 			if(!empty($curentStep->flag_dimentions)) {
@@ -652,23 +653,30 @@ class productcomposer
 				$width = '';
 				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['width'])){
 					$width = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['width'];
+				}elseif (!empty($_SESSION['productComposeurLastSurface']['sizewidth'])){
+					$width = $_SESSION['productComposeurLastSurface']['sizewidth'];
 				}
 
 				$height = '';
 				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['height'])){
 					$height = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['height'];
+				}elseif (!empty($_SESSION['productComposeurLastSurface']['sizeheight'])){
+					$height = $_SESSION['productComposeurLastSurface']['sizeheight'];
 				}
 
 				$length = '';
 				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['length'])){
 					$length = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['length'];
+				}elseif (!empty($_SESSION['productComposeurLastSurface']['sizelength'])){
+					$length = $_SESSION['productComposeurLastSurface']['sizelength'];
 				}
 
 				$sizeUnit = !empty($conf->global->PC_DEFAULT_FK_SIZE_UNIT)?$conf->global->PC_DEFAULT_FK_SIZE_UNIT:'';
 				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['sizeunit'])){
 					$sizeUnit = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['sizeunit'];
+				}elseif (!empty($_SESSION['productComposeurLastSurface']['sizeunit'])){
+					$sizeUnit = $_SESSION['productComposeurLastSurface']['sizeunit'];
 				}
-
 
 
 				print '<strong>' . $langs->trans('AddDimentions') . ' :</strong></br>';
@@ -677,9 +685,10 @@ class productcomposer
 				print '<input id="sizewidth" name="sizewidth" min="0"  required="required" value="' . dol_htmlentities($width) . '" placeholder="'.$langs->trans('Width').'" />';
 //				print ' x ';
 //				print '<input id="sizeheight" name="height" min="0" value="' . dol_htmlentities($width) . '" placeholder="'.$langs->trans('Height').'" />';
-				print selectUnits($sizeUnit, 'sizeunits', 0, 'size', '  required="required" ');
-
+				print selectUnits($sizeUnit, 'sizeunit', 0, 'size', '  required="required" ');
+				print '<div style="height: 10px; clear: both; " ></div>';
 			}
+
 
 	        print '</td></tr>';
 	    }
@@ -1063,11 +1072,22 @@ class productcomposer
 		}
 
 	    // Surface
-		if($product && !empty($data['sizewidth']) && !empty($data['sizelength']) && !empty($data['sizeunits'])){
+		if($product && !empty($data['sizewidth']) && !empty($data['sizelength']) && !empty($data['sizeunit'])){
+
+			// store last data session
+			$_SESSION['productComposeurLastSurface'] = array(
+				'sizelength' => $data['sizelength'],
+				'sizeunit' => $data['sizeunit'],
+				'sizewidth' => $data['sizewidth'],
+				'sizeheight' => $data['sizeheight']
+			);
+
+
+
 			/** @var $product Product */
 			$width   = doubleval(price2num($data['sizewidth']));
 			$length  = doubleval(price2num($data['sizelength']));
-			$fk_unit = intval($data['sizeunits']);
+			$fk_unit = intval($data['sizeunit']);
 
 			$surfaceUnitPow = getScaleOfUnitPow($fk_unit);
 			$productUnitPow = getScaleOfUnitPow($product->fk_unit);
