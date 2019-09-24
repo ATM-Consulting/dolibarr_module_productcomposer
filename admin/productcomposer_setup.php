@@ -59,7 +59,7 @@ if (preg_match('/set_(.*)/',$action,$reg))
 		dol_print_error($db);
 	}
 }
-	
+
 if (preg_match('/del_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
@@ -106,6 +106,9 @@ _print_on_off('PC_SHOW_QUANTITY_FORM',false,'PC_SHOW_QUANTITY_FORM_HELP');
 _print_on_off('PC_DO_NOT_CLEAR_ON_ADD_PRODUCT');
 _print_on_off('PC_FORCE_DEL_FOLLOWING_PRODUCT');
 
+// Actually hidden conf :
+// PC_DEFAULT_FK_SIZE_UNIT : use c_unit rowid
+
 print '</table>';
 
 llxFooter();
@@ -125,7 +128,7 @@ function _print_on_off($confkey, $title = false, $desc ='')
 {
     global $var, $bc, $langs, $conf, $form;
     $var=!$var;
-    
+
     print '<tr '.$bc[$var].'>';
     print '<td>';
     if(!empty($desc))
@@ -151,24 +154,24 @@ function _print_input_form_part($confkey, $title = false, $desc ='', $metas = ar
 {
     global $var, $bc, $langs, $conf;
     $var=!$var;
-    
+
     $defaultMetas = array(
         'name' => $confkey
     );
-    
+
     if($type!='textarea'){
         $defaultMetas['type']   = 'text';
         $defaultMetas['value']  = $conf->global->{$confkey};
     }
-    
-    
+
+
     $metas = array_merge ($defaultMetas, $metas);
     $metascompil = '';
     foreach ($metas as $key => $values)
     {
         $metascompil .= ' '.$key.'="'.$values.'" ';
     }
-    
+
     print '<tr '.$bc[$var].'>';
     print '<td>'.$langs->trans($title?$title:$confkey);
     if(!empty($desc))
@@ -187,7 +190,7 @@ function _print_input_form_part($confkey, $title = false, $desc ='', $metas = ar
     else {
         print '<input '.$metascompil.'  />';
     }
-    
+
     print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
     print '</form>';
     print '</td></tr>';
