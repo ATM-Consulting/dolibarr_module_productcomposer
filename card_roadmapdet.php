@@ -58,7 +58,6 @@ if (empty($reshook))
 	            $object->optional = 1;
 	        }
 
-
 	        $linked = GETPOST('linked');
 	        $object->linked = 1;
 	        if($linked==='yes'){
@@ -80,6 +79,15 @@ if (empty($reshook))
 	            $object->flag_desc = 0;
 	        }
 
+			$flag_dimentions = GETPOST('flag_dimentions');
+			$object->flag_dimentions = 0;
+			if($flag_dimentions==='yes'){
+				$object->flag_dimentions = 1;
+			}
+			elseif($flag_dimentions==='no'){
+				$object->flag_dimentions = 0;
+			}
+
 	        $noPrice = GETPOST('noPrice');
 	        $object->noPrice = 0;
 	        if($noPrice==='yes'){
@@ -88,7 +96,6 @@ if (empty($reshook))
 	        elseif($noPrice==='no'){
 	            $object->noPrice = 0;
 	        }
-
 
 	        if(empty($object->label)){
 	            $error++;
@@ -253,9 +260,8 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 		    ,'showOptional' => ($mode == 'edit')? $form->selectyesno('optional',$object->optional) : (empty($object->optional)?$langs->trans('No'):$langs->trans('Yes'))
 		    ,'showNoPrice' => ($mode == 'edit')? $form->selectyesno('noPrice',$object->noPrice) : (empty($object->noPrice)?$langs->trans('No'):$langs->trans('Yes'))
 
-		    ,'showFlagDesc' => ($mode == 'edit')? $form->selectyesno('flag_desc',$object->flag_desc) : (empty($object->flag_desc)?$langs->trans('No'):$langs->trans('Yes'))
-
-
+			,'showFlagDesc' => ($mode == 'edit')? $form->selectyesno('flag_desc',$object->flag_desc) : (empty($object->flag_desc)?$langs->trans('No'):$langs->trans('Yes'))
+			,'showFlagDimentions' => ($mode == 'edit')? $form->selectyesno('flag_dimentions',$object->flag_dimentions) : (empty($object->flag_dimentions)?$langs->trans('No'):$langs->trans('Yes'))
 
 		    ,'showLinkToRoadmapCat' => ($mode == 'edit')? $form->selectyesno('linked',$object->linked) : (empty($object->linked)?$langs->trans('No'):$langs->trans('Yes'))
 		    ,'showLinkToPrevCat' => ($mode == 'edit')? $form->selectarray('step_cat_linked', $step_cat_options, $object->step_cat_linked) : $step_cat_options[$object->step_cat_linked]
@@ -268,6 +274,7 @@ print $TBS->render('tpl/card_roadmapdet.tpl.php'
 	        'help_forcePriceToZero' => $form->textwithtooltip($langs->trans('ForcePriceToZero'), $langs->trans('help_ForcePriceToZero'),2,1,img_help(1,'')),
 	        'help_forcePriceToZero' => $form->textwithtooltip($langs->trans('ForcePriceToZero'), $langs->trans('help_ForcePriceToZero'),2,1,img_help(1,'')),
 	        'help_AddDesc' => $form->textwithtooltip($langs->trans('AddDesc'), $langs->trans('help_AddDesc'),2,1,img_help(1,'')),
+	        'help_AddDimention' => $form->textwithtooltip($langs->trans('AddDimention'), $langs->trans('help_AddDimention'),2,1,img_help(1,'')),
 	    )
 		,'langs' => $langs
 		,'user' => $user

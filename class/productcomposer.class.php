@@ -15,23 +15,61 @@ dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/productcomposer/class/helper_style.class.php');
 
+/**
+ * Class productcomposer
+ */
 class productcomposer
 {
 
-    public $Tcomposer = array();
-    public $roadmap = null;
+	/**
+	 * @var array
+	 */
+	public $Tcomposer = array();
+	/**
+	 * @var PCRoadMap
+	 */
+	public $roadmap = null;
 
-    public $curentRoadMapIndex = 0;
+	/**
+	 * @var int
+	 */
+	public $curentRoadMapIndex = 0;
 
-    public $TcurentComposer = null;
+	/**
+	 * @var null
+	 */
+	public $TcurentComposer = null;
+	/**
+	 * @var
+	 */
 	public $cache_PCRoadMap;
 
+	/**
+	 * @var
+	 */
 	public $db;
+	/**
+	 * @var PCDbTool
+	 */
 	public $dbTool;
+	/**
+	 * @var Translate
+	 */
 	public $langs;
+	/**
+	 * @var CommonObject
+	 */
 	public $object;
 
+	/**
+	 * @var int
+	 */
+	public $fk_categorie;
 
+	/**
+	 * productcomposer constructor.
+	 * @param $object CommonObject
+	 */
 	public function __construct($object)
 	{
 		global $langs;
@@ -57,6 +95,9 @@ class productcomposer
     /*
      * Dans un premier temps la sauvegarde va être basique
      */
+	/**
+	 * @return bool
+	 */
 	public function save()
 	{
 	    $_SESSION['roadmap'][$this->object->element][$this->object->id] = array(
@@ -67,6 +108,9 @@ class productcomposer
 	    return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function load()
 	{
 	    if(!empty($_SESSION['roadmap'][$this->object->element][$this->object->id])){
@@ -80,12 +124,18 @@ class productcomposer
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function delete()
 	{
 	    unset($_SESSION['roadmap'][$this->object->element][$this->object->id]);
 	    return true;
 	}
 
+	/**
+	 *
+	 */
 	public function annuleCurent()
 	{
 	    unset( $this->Tcomposer[$this->curentRoadMapIndex] ); // remove curent
@@ -96,8 +146,12 @@ class productcomposer
 	}
 
 
-
-	public static function loadbyelement($id,$objectName)
+	/**
+	 * @param $id
+	 * @param $objectName
+	 * @return int|productcomposer
+	 */
+	public static function loadbyelement($id, $objectName)
 	{
 	    global $db;
 
@@ -122,6 +176,9 @@ class productcomposer
 	    return 0;
 	}
 
+	/**
+	 *
+	 */
 	public function print_roadmapSelection()
 	{
 	    // load all roadmaps
@@ -146,7 +203,12 @@ class productcomposer
 	    }
 	}
 
-	public function inlineData($data,$prefixKey=true){
+	/**
+	 * @param $data
+	 * @param bool $prefixKey
+	 * @return string
+	 */
+	public function inlineData($data, $prefixKey=true){
 	    $ret = '';
 	    if(!empty($data) && is_array($data))
 	    {
@@ -161,8 +223,13 @@ class productcomposer
 	}
 
 
-
-	public function print_step($id,$param=false, $disableBackBtn=false)
+	/**
+	 * @param $id
+	 * @param bool $param
+	 * @param bool $disableBackBtn
+	 * @return int
+	 */
+	public function print_step($id, $param=false, $disableBackBtn=false)
 	{
 	    global $langs;
 
@@ -407,6 +474,7 @@ class productcomposer
 
 	            // next step
 	            $nextStep = $curentStep->getNext();
+				$nextAttr='';
 	            if(!empty($nextStep))
 	            {
 	                $data['target-action'] = 'loadstep';
@@ -439,7 +507,12 @@ class productcomposer
 	}
 
 
-	public function print_productForStep($curentStep,$product,$wrapData = false)
+	/**
+	 * @param $curentStep PCRoadMapDet
+	 * @param $product Product
+	 * @param bool $wrapData
+	 */
+	public function print_productForStep($curentStep, $product, $wrapData = false)
 	{
 	    global $conf;
 
@@ -466,10 +539,10 @@ class productcomposer
 	       $data['fk_nextstep'] = 0;
 	   }
 
-	   if(!empty($curentStep->flag_desc))
-	   {
-	       $data['target-action'] = 'showProductForm';
-	   }
+		if(!empty($curentStep->flag_desc) || !empty($curentStep->flag_dimentions))
+		{
+			$data['target-action'] = 'showProductForm';
+		}
 
 
 
@@ -495,8 +568,13 @@ class productcomposer
 	   print '</div>';
 	}
 
+	/**
+	 * @param $curentStep PCRoadMapDet
+	 * @param $product Product
+	 * @param bool $wrapData
+	 */
 	public function print_productForm($curentStep, $product, $wrapData = false){
-	    global $conf,$langs,$hookmanager;
+	    global $conf,$langs,$hookmanager,$form;
 
 	    $maxvisiblephotos = 1;
 	    $width=300;
@@ -553,25 +631,56 @@ class productcomposer
 	    {
 	        dol_include_once('core/class/doleditor.class.php');
 
-	        /*print '<tr><td class="label">';
-	        print $langs->trans('label').' :';
-	        print '</td><td class="input">';
-	        print '<input />';
-	        print '</td></tr>';*/
-
-
-	        $content = '';
-	        if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['description']))
-	        {
-	            // get default value or allready set value
-	            $content = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['description'];
-	        }
-
 	        print '<tr><td colspan="2" class="input">';
-	        print '<strong>'.$langs->trans('AddDescription').' :</strong></br>';
-	        //$textarea = new DolEditor('description', $content, '', 200, 'dolibarr_notes');
-	        //$textarea->Create();
-	        print '<textarea id="description" name="description" rows="10" cols="80"  >'.dol_htmlentities($content).'</textarea>';
+
+	        if(!empty($curentStep->flag_desc)) {
+				$content = '';
+				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['description']))
+				{
+					// get default value or allready set value
+					$content = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['description'];
+				}
+
+				print '<strong>' . $langs->trans('AddDescription') . ' :</strong></br>';
+				//$textarea = new DolEditor('description', $content, '', 200, 'dolibarr_notes');
+				//$textarea->Create();
+				print '<textarea id="description" name="description" rows="10" cols="80"  >' . dol_htmlentities($content) . '</textarea>';
+			}
+
+			if(!empty($curentStep->flag_dimentions)) {
+
+				$width = '';
+				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['width'])){
+					$width = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['width'];
+				}
+
+				$height = '';
+				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['height'])){
+					$height = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['height'];
+				}
+
+				$length = '';
+				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['length'])){
+					$length = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['length'];
+				}
+
+				$sizeUnit = !empty($conf->global->PC_DEFAULT_FK_SIZE_UNIT)?$conf->global->PC_DEFAULT_FK_SIZE_UNIT:'';
+				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['sizeunit'])){
+					$sizeUnit = $this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['sizeunit'];
+				}
+
+
+
+				print '<strong>' . $langs->trans('AddDimentions') . ' :</strong></br>';
+				print '<input id="sizelength" name="sizelength" min="0"  required="required" value="' . dol_htmlentities($length) . '" placeholder="'.$langs->trans('Length').'" />';
+				print ' x ';
+				print '<input id="sizewidth" name="sizewidth" min="0"  required="required" value="' . dol_htmlentities($width) . '" placeholder="'.$langs->trans('Width').'" />';
+//				print ' x ';
+//				print '<input id="sizeheight" name="height" min="0" value="' . dol_htmlentities($width) . '" placeholder="'.$langs->trans('Height').'" />';
+				print selectUnits($sizeUnit, 'sizeunits', 0, 'size', '  required="required" ');
+
+			}
+
 	        print '</td></tr>';
 	    }
 	    else
@@ -590,7 +699,12 @@ class productcomposer
 	    print '</table>';
 	}
 
-	public function print_productFormForStep($curentStep,$product,$wrapData = false)
+	/**
+	 * @param $curentStep
+	 * @param $product Product
+	 * @param bool $wrapData
+	 */
+	public function print_productFormForStep($curentStep, $product, $wrapData = false)
 	{
 	    global $conf;
 
@@ -617,7 +731,7 @@ class productcomposer
 	        $data['fk_nextstep'] = 0;
 	    }
 
-	    if(!empty($curentStep->flag_desc))
+	    if(!empty($curentStep->flag_desc) || !empty($curentStep->flag_dimentions))
 	    {
 	        $data['target-action'] = 'showProductForm';
 	    }
@@ -646,7 +760,11 @@ class productcomposer
 	    print '</div>';
 	}
 
-	public function print_cat($object,$wrapData = false)
+	/**
+	 * @param $object Product
+	 * @param bool $wrapData
+	 */
+	public function print_cat($object, $wrapData = false)
 	{
 	    global $conf;
 
@@ -730,20 +848,20 @@ class productcomposer
 	    print '</div>';
 	}
 
-	public function print_catForStep($curentStep,$object,$wrapData = false)
+	/**
+	 * @param $curentStep
+	 * @param $object
+	 * @param bool $wrapData
+	 */
+	public function print_catForStep($curentStep, $object, $wrapData = false)
 	{
-	    global $conf;
-
-
 	    $data['fk_step'] = $curentStep->id;
-
 
 	    $nextStep = $curentStep->getNext();
 	    if(!empty($nextStep))
 	    {
 	        $data['target-action'] = 'selectcatandnextstep';
 	        $data['fk_nextstep'] = $nextStep->id;
-
 	    }
 
 	    if(!empty($wrapData) && is_array($wrapData))
@@ -755,6 +873,11 @@ class productcomposer
 	}
 
 
+	/**
+	 * @param $curentStepId
+	 * @param bool $param
+	 * @param bool $disableBackBtn
+	 */
 	public function print_nextstep($curentStepId, $param = false, $disableBackBtn = false)
 	{
 	    if(empty($curentStepId))
@@ -822,8 +945,12 @@ class productcomposer
 	}
 
 
-
-	public function addRoadmap($roadmapid,$setcurent=true)
+	/**
+	 * @param $roadmapid
+	 * @param bool $setcurent
+	 * @return int
+	 */
+	public function addRoadmap($roadmapid, $setcurent=true)
 	{
 	    $roadMap = new PCRoadMap($this->db);
 	    if($roadMap->fetch($roadmapid)>0)
@@ -861,7 +988,12 @@ class productcomposer
 
 	}
 
-	public function setCurentRoadMap($index,$cache=true){
+	/**
+	 * @param $index
+	 * @param bool $cache
+	 * @return int
+	 */
+	public function setCurentRoadMap($index, $cache=true){
 
 	    if(empty($index) && !isset($this->Tcomposer[$index])) return 0;
 
@@ -891,6 +1023,9 @@ class productcomposer
 	}
 
 
+	/**
+	 * @param string $target
+	 */
 	public function print_searchFilter($target = '#search-filter-target')
 	{
         global $langs;
@@ -904,14 +1039,48 @@ class productcomposer
 	}
 
 
-
-	public function addProduct($productid,$stepid,$qty=1,$data = array())
+	/**
+	 * @param $productid
+	 * @param $stepid
+	 * @param int $qty
+	 * @param array $data
+	 */
+	public function addProduct($productid, $stepid, $qty=1, $data = array())
 	{
-	    global $conf;
+	    global $conf, $db;
 
 	    $currentCycle = $this->getCurentCycle();
 
 	    $curQty = 0;
+		$product = false;
+	    if(!empty($productid)){
+	    	include_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+	    	$product = new Product($db);
+	    	$res = $product->fetch($productid);
+	    	if($res<1){
+	    		$this->errors[] = 'addProduct : Fetch product error';
+			}
+		}
+
+	    // Surface
+		if($product && !empty($data['sizewidth']) && !empty($data['sizelength']) && !empty($data['sizeunits'])){
+			/** @var $product Product */
+			$width   = doubleval(price2num($data['sizewidth']));
+			$length  = doubleval(price2num($data['sizelength']));
+			$fk_unit = intval($data['sizeunits']);
+
+			$surfaceUnitPow = getScaleOfUnitPow($fk_unit);
+			$productUnitPow = getScaleOfUnitPow($product->fk_unit);
+
+			$width   = $width  * $surfaceUnitPow;
+			$length  = $length * $surfaceUnitPow;
+
+			// convert to standard unit
+			$surface =  $width * $length;
+
+			// convert to product unit
+			$qty = round($surface * $productUnitPow, 2);
+		}
 
 	    if(!empty($conf->global->PC_DO_NOT_CLEAR_ON_ADD_PRODUCT))
 	    {
@@ -951,7 +1120,11 @@ class productcomposer
 
 	}
 
-	public function addStepCat($catid,$stepid)
+	/**
+	 * @param $catid
+	 * @param $stepid
+	 */
+	public function addStepCat($catid, $stepid)
 	{
 	    global $conf;
 
@@ -1021,7 +1194,13 @@ class productcomposer
 	}
 
 
-	public function deleteProduct($cycle,$step,$product,$allAfter=true)
+	/**
+	 * @param $cycle
+	 * @param $step
+	 * @param $product
+	 * @param bool $allAfter
+	 */
+	public function deleteProduct($cycle, $step, $product, $allAfter=true)
 	{
 	    global $conf;
 
@@ -1079,6 +1258,9 @@ class productcomposer
 	    $this->save();
 	}
 
+	/**
+	 *
+	 */
 	public function printCart()
 	{
 	    global $langs,$conf,$hookmanager;
@@ -1200,6 +1382,9 @@ class productcomposer
 	}
 
 
+	/**
+	 *
+	 */
 	public function import()
 	{
 	    global $langs, $hookmanager;;
@@ -1366,6 +1551,11 @@ class productcomposer
 	}
 
 
+	/**
+	 * @param $label
+	 * @param int $level
+	 * @param int $rang
+	 */
 	public function  subtotalAddTotal($label, $level=0, $rang=-1)
 	{
 	    if(!class_exists('TSubtotal')){
@@ -1378,7 +1568,17 @@ class productcomposer
 	}
 
 	// subtotal add title
-	function subtotalAddTitle($desc ='', $level=0, $rang = -1, $array_options =0,$txtva =0,$label='')
+
+	/**
+	 * @param string $desc
+	 * @param int $level
+	 * @param int $rang
+	 * @param int $array_options
+	 * @param int $txtva
+	 * @param string $label
+	 * @return mixed
+	 */
+	function subtotalAddTitle($desc ='', $level=0, $rang = -1, $array_options =0, $txtva =0, $label='')
 	{
 	    if(!class_exists('TSubtotal')){
 	        $subtotalModuleNumber = 104777;
@@ -1414,6 +1614,9 @@ class productcomposer
 
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getCurentCycle()
 	{
 	    // Init currentCycle

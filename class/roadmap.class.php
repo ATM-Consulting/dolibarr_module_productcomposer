@@ -43,6 +43,9 @@ class PCRoadMap extends SeedObject
 	    'PCRoadMapDet'
 	);
 
+	/**
+	 * @var PCDbTool
+	 */
 	public $dbTool;
 
 	public $fk_element = 'fk_pcroadmap';
@@ -342,6 +345,10 @@ class PCRoadMapDet extends SeedObject
     public $flag_desc;
     public $addprov = false;
 	public $linked;
+	public $flag_dimentions;
+	public $step_cat_linked;
+
+
     /**
      * Type status
      */
@@ -371,6 +378,7 @@ class PCRoadMapDet extends SeedObject
             ,'noPrice' =>array('type'=>'int') // lors de l'import force le prix à zero
             ,'needRoadmapCat' =>array('type'=>'int') // la liste des produits est filtrée aussi avec la catégorie de la feuille de route
             ,'flag_desc' =>array('type'=>'int') // Permet la modification de la description du produit
+            ,'flag_dimentions' =>array('type'=>'int') // Permet de saisir les dimentions
             //,'needPreviusCat' =>array('type'=>'int')
         );
 
@@ -677,8 +685,7 @@ class PCRoadMapDet extends SeedObject
         return array(
             self::TYPE_SELECT_CATEGORY => self::translateTypeConst(self::TYPE_SELECT_CATEGORY ),
             self::TYPE_SELECT_PRODUCT => self::translateTypeConst(self::TYPE_SELECT_PRODUCT ),
-            self::TYPE_GOTO => self::translateTypeConst(self::TYPE_GOTO ),
-
+			self::TYPE_GOTO => self::translateTypeConst(self::TYPE_GOTO )
         );
     }
 
@@ -741,4 +748,3 @@ class PCRoadMapDet extends SeedObject
         }
     }
 }
-

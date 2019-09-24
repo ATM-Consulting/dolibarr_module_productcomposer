@@ -34,13 +34,19 @@ Processing=En cours
 AllCatLinked=Lier à toutes les catégories des étapes précédantes
 PrevCatLinked=Lier seulement à la catégories de l'étape précédante
 
+help_AddDimention=Saisir les dimentions permet de calculer une surface en m2 appliquer à la quantité du produit
+AddDimention=Saisie de dimentions
+AddDimentions=Saisie des dimentions
+Width=Largeur
+Height=Hauteur
+
 #MENU
 Menuproductcomposer=Feuilles de route
 
 #CONST
 TYPE_SELECT_PRODUCT=Sélection de produit
 TYPE_SELECT_CATEGORY=Sélection de catégorie
-TYPE_GOTO=Retour vers une étape précédente 
+TYPE_GOTO=Retour vers une étape précédente
 
 # CONF
 GeneralOptions=Options générales
