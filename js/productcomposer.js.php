@@ -309,6 +309,19 @@ $( document ).ready(function() {
     		$.post( target , postfields,function(data) {
     			dialogContent.html( data );
 
+    			// fix ajax loaded tooltip
+                if (dialogContent.find('.classfortooltip').length > 0) {
+// Copy of ajaxdirtree.php
+                    dialogContent.find('.classfortooltip').tooltip({
+                        show: { collision: "flipfit", effect:'toggle', delay:50 },
+                        hide: { delay: 50 }, /* If I enable effect:'toggle' here, a bug appears: the tooltip is shown when collpasing a new dir if it was shown before */
+                        tooltipClass: "mytooltip",
+                        content: function () {
+                            return $(this).prop('title'); /* To force to get title as is */
+                        }
+                    });
+                }
+
     			// RELOAD PAGE
     			if(reloadAfter){
             		location.reload();

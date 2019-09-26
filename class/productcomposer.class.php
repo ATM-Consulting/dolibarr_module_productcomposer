@@ -686,6 +686,11 @@ class productcomposer
 //				print ' x ';
 //				print '<input id="sizeheight" name="height" min="0" value="' . dol_htmlentities($width) . '" placeholder="'.$langs->trans('Height').'" />';
 				print selectUnits($sizeUnit, 'sizeunit', 0, 'size', '  required="required" ');
+
+				if(empty($product->fk_unit) && !empty($conf->global->PRODUCT_USE_UNITS)){
+					print '<p class="error" >'.$product->getNomUrl(1).' : '.$langs->transnoentitiesnoconv('ProductHaventSurfaceUnit').'</p>';
+				}
+
 				print '<div style="height: 10px; clear: both; " ></div>';
 			}
 
@@ -1056,7 +1061,7 @@ class productcomposer
 	 */
 	public function addProduct($productid, $stepid, $qty=1, $data = array())
 	{
-	    global $conf, $db;
+	    global $conf, $db, $langs;
 
 	    $currentCycle = $this->getCurentCycle();
 
@@ -1071,7 +1076,12 @@ class productcomposer
 			}
 		}
 
-	    // Surface
+		// init desc
+		if(empty($data['description'])){
+			$data['description'] = '';
+		}
+
+		// Surface
 		if($product && !empty($data['sizewidth']) && !empty($data['sizelength']) && !empty($data['sizeunit'])){
 
 			// store last data session
@@ -1082,13 +1092,23 @@ class productcomposer
 				'sizeheight' => $data['sizeheight']
 			);
 
-
-
 			/** @var $product Product */
 			$width   = doubleval(price2num($data['sizewidth']));
 			$length  = doubleval(price2num($data['sizelength']));
 			$fk_unit = intval($data['sizeunit']);
 
+			// Maj de la description
+			$productStatic = new Product($db);
+			$productStatic->fk_unit = $fk_unit;
+			$dimentionUnitLabel = $productStatic->getLabelOfUnit('short');
+
+			$data['description'].= !empty($data['description'])?'<br/>':'';
+			$data['description'].= $langs->trans('Length').' x '.$langs->trans('Width').' : ';
+
+			$data['description'].= price($length,0, $langs, 1, 0).$dimentionUnitLabel;
+			$data['description'].= ' x '.price($width,0, $langs, 1, 0).$dimentionUnitLabel;
+
+			// Calcul de la qté
 			$surfaceUnitPow = getScaleOfUnitPow($fk_unit);
 			$productUnitPow = getScaleOfUnitPow($product->fk_unit);
 
@@ -1100,6 +1120,11 @@ class productcomposer
 
 			// convert to product unit
 			$qty = round($surface * $productUnitPow, 2);
+
+			if(!empty($conf->global->PRODUCT_USE_UNITS)){
+				$data['description'].= ' = '.$qty.$product->getLabelOfUnit('short');
+			}
+
 		}
 
 	    if(!empty($conf->global->PC_DO_NOT_CLEAR_ON_ADD_PRODUCT))
