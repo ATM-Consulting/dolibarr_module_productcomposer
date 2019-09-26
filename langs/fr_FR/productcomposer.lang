@@ -33,12 +33,15 @@ help_Optional=Si cette étape est optionnelle, il est possible de passer cette �
 Processing=En cours
 AllCatLinked=Lier à toutes les catégories des étapes précédantes
 PrevCatLinked=Lier seulement à la catégories de l'étape précédante
+ProductHaventSurfaceUnit=Le produit n'utilise pas une unité de surface
 
 help_AddDimention=Saisir les dimentions permet de calculer une surface en m2 appliquer à la quantité du produit
 AddDimention=Saisie de dimentions
 AddDimentions=Saisie des dimentions
 Width=Largeur
 Height=Hauteur
+Length=Longueur
+DefaultLenghtUnit=Unité de longeur par défaut
 
 #MENU
 Menuproductcomposer=Feuilles de route

@@ -106,6 +106,24 @@ _print_on_off('PC_SHOW_QUANTITY_FORM',false,'PC_SHOW_QUANTITY_FORM_HELP');
 _print_on_off('PC_DO_NOT_CLEAR_ON_ADD_PRODUCT');
 _print_on_off('PC_FORCE_DEL_FOLLOWING_PRODUCT');
 
+
+
+
+
+
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('DefaultLenghtUnit');
+print '</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="right" width="300">';
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="set_PC_DEFAULT_FK_SIZE_UNIT">';
+print selectUnits($conf->global->PC_DEFAULT_FK_SIZE_UNIT, 'PC_DEFAULT_FK_SIZE_UNIT', 1, 'size');
+print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+print '</form>';
+print '</td></tr>';
+
 // Actually hidden conf :
 // PC_DEFAULT_FK_SIZE_UNIT : use c_unit rowid
 
