@@ -35,9 +35,9 @@ AllCatLinked=Lier à toutes les catégories des étapes précédantes
 PrevCatLinked=Lier seulement à la catégories de l'étape précédante
 ProductHaventSurfaceUnit=Le produit n'utilise pas une unité de surface
 
-help_AddDimention=Saisir les dimentions permet de calculer une surface en m2 appliquer à la quantité du produit
-AddDimention=Saisie de dimentions
-AddDimentions=Saisie des dimentions
+help_AddDimension=Saisir les dimensions permet de calculer une surface en m2 appliquer à la quantité du produit
+AddDimension=Saisie de dimensions
+AddDimensions=Saisie des dimensions
 Width=Largeur
 Height=Hauteur
 Length=Longueur

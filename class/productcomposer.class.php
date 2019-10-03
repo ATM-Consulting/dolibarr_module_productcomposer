@@ -539,7 +539,7 @@ class productcomposer
 	       $data['fk_nextstep'] = 0;
 	   }
 
-		if(!empty($curentStep->flag_desc) || !empty($curentStep->flag_dimentions))
+		if(!empty($curentStep->flag_desc) || !empty($curentStep->flag_dimensions))
 		{
 			$data['target-action'] = 'showProductForm';
 		}
@@ -648,7 +648,7 @@ class productcomposer
 				print '<div style="height: 10px; clear: both; " ></div>';
 			}
 
-			if(!empty($curentStep->flag_dimentions)) {
+			if(!empty($curentStep->flag_dimensions)) {
 
 				$width = '';
 				if(!empty($this->TcurentComposer['productsDetails'][$this->getCurentCycle()][$curentStep->id][$product->id]['width'])){
@@ -679,7 +679,7 @@ class productcomposer
 				}
 
 
-				print '<strong>' . $langs->trans('AddDimentions') . ' :</strong></br>';
+				print '<strong>' . $langs->trans('AddDimensions') . ' :</strong></br>';
 				print '<input id="sizelength" name="sizelength" min="0"  required="required" value="' . dol_htmlentities($length) . '" placeholder="'.$langs->trans('Length').'" />';
 				print ' x ';
 				print '<input id="sizewidth" name="sizewidth" min="0"  required="required" value="' . dol_htmlentities($width) . '" placeholder="'.$langs->trans('Width').'" />';
@@ -745,7 +745,7 @@ class productcomposer
 	        $data['fk_nextstep'] = 0;
 	    }
 
-	    if(!empty($curentStep->flag_desc) || !empty($curentStep->flag_dimentions))
+	    if(!empty($curentStep->flag_desc) || !empty($curentStep->flag_dimensions))
 	    {
 	        $data['target-action'] = 'showProductForm';
 	    }
@@ -1100,13 +1100,13 @@ class productcomposer
 			// Maj de la description
 			$productStatic = new Product($db);
 			$productStatic->fk_unit = $fk_unit;
-			$dimentionUnitLabel = $productStatic->getLabelOfUnit('short');
+			$dimensionUnitLabel = $productStatic->getLabelOfUnit('short');
 
 			$data['description'].= !empty($data['description'])?'<br/>':'';
 			$data['description'].= $langs->trans('Length').' x '.$langs->trans('Width').' : ';
 
-			$data['description'].= price($length,0, $langs, 1, 0).$dimentionUnitLabel;
-			$data['description'].= ' x '.price($width,0, $langs, 1, 0).$dimentionUnitLabel;
+			$data['description'].= price($length,0, $langs, 1, 0).$dimensionUnitLabel;
+			$data['description'].= ' x '.price($width,0, $langs, 1, 0).$dimensionUnitLabel;
 
 			// Calcul de la qté
 			$surfaceUnitPow = getScaleOfUnitPow($fk_unit);

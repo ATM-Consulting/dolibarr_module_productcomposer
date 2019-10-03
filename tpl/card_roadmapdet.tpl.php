@@ -46,8 +46,8 @@
 			</tr>
 
 			<tr class="label  showOnType2" id="addDesc_line" >
-				<td width="25%">[help.help_AddDimention;strconv=no]</td>
-				<td>[view.showFlagDimentions;strconv=no]</td>
+				<td width="25%">[help.help_AddDimension;strconv=no]</td>
+				<td>[view.showFlagDimensions;strconv=no]</td>
 			</tr>
 
 			<tr class="label  showOnType2"  id="optional_line" >

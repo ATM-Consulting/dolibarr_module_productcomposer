@@ -345,7 +345,7 @@ class PCRoadMapDet extends SeedObject
     public $flag_desc;
     public $addprov = false;
 	public $linked;
-	public $flag_dimentions;
+	public $flag_dimensions;
 	public $step_cat_linked;
 
 
@@ -378,7 +378,7 @@ class PCRoadMapDet extends SeedObject
             ,'noPrice' =>array('type'=>'int') // lors de l'import force le prix à zero
             ,'needRoadmapCat' =>array('type'=>'int') // la liste des produits est filtrée aussi avec la catégorie de la feuille de route
             ,'flag_desc' =>array('type'=>'int') // Permet la modification de la description du produit
-            ,'flag_dimentions' =>array('type'=>'int') // Permet de saisir les dimentions
+            ,'flag_dimensions' =>array('type'=>'int') // Permet de saisir les dimensions
             //,'needPreviusCat' =>array('type'=>'int')
         );
 
@@ -556,6 +556,7 @@ class PCRoadMapDet extends SeedObject
             else
             {
                 $Tall = array();
+                break;
             }
         }
 
